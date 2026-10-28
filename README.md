@@ -1,91 +1,148 @@
-# 🛒 Gupta Mart — 12-Minute Farm-Fresh Grocery Delivery
+# AgriMart
 
-> **Gupta Mart** is a high-performance, Blinkit-inspired quick commerce and farm-fresh grocery delivery web application built with **Next.js (JavaScript / JSX)**, Tailwind CSS, Framer Motion, and Firebase.
+AgriMart is an agricultural e-commerce application for discovering and ordering
+certified seeds, fertilizers, micronutrients, and crop-care products. The
+application includes a customer storefront, delivery-area validation, Firebase
+authentication and data storage, an admin product area, Razorpay payments, and
+email subscriptions.
 
-[![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=flat&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-18.2-blue?style=flat&logo=react)](https://reactjs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
-[![Firebase](https://img.shields.io/badge/Firebase-10.14-orange?style=flat&logo=firebase)](https://firebase.google.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+## Features
 
----
+- Product catalog for seeds, fertilizers, bio-inputs, and crop-care products
+- Product search, category filters, product details, ratings, and stock status
+- Shopping cart with quantity controls and order totals
+- Firebase Authentication, Firestore, and Realtime Database integration
+- Admin login and product management screens
+- Razorpay online payments and cash-on-delivery order flows
+- Razorpay payment-order creation and signature verification through the backend
+- Delivery serviceability checks for the Phagwara and Etawah hubs
+- GPS-based location detection and preset delivery locations
+- Subscription email endpoint for promotional updates
+- Responsive Next.js UI with Tailwind CSS and Framer Motion
+- Vitest and Testing Library test coverage for core storefront behavior
 
-## ⚡ Key Highlights
+## Technology
 
-- **Blinkit-Style 12-Minute Delivery Experience**: Express delivery badges, flash coupon banners (`FLASH100`), live cart steppers, and quick categories.
-- **Strict 10 km Geofencing Engine**:
-  - **Primary Dark Store Pod**: Phagwara, Kapurthala, Punjab (`31.2240° N, 75.7708° E`).
-  - **Secondary Hub**: Civil Lines, Etawah, UP (`26.7769° N, 79.0238° E`).
-  - **Location Prompt on Entry**: Automatic prompt for GPS detection or area selection upon entering the site.
-  - **Dynamic Unserviceable Protection**: Areas beyond 10 km (e.g. Jalandhar Cantt, Kapurthala City, Delhi) automatically display *"Currently Not Available in Your Area — Outside 10 km Hub Zone"*, mark product items as unavailable, and prevent checkout with location-switching prompts.
-- **Cash on Delivery (COD) & Online Payments**:
-  - Full support for **Cash on Delivery (COD)** as a native payment method alongside online checkout.
-  - Generates tracked COD orders stored with `Pending (Pay on Delivery)` status in Firebase.
-- **Full Catalog & Aisle Navigation**:
-  - Comprehensive grocery catalog spanning Fresh Fruits & Vegetables, Dairy, Paneer & Eggs, Artisanal Bakery, Staples & Grains, Meat & Seafood, and Household Essentials.
-  - Detailed product specifications including Nutritional Facts, Shelf Life & Storage, Origin, and FSSAI licensing.
-- **Pure JavaScript / Next.js Architecture**: Fully standardized in clean `.js` / `.jsx` format without TypeScript.
+- **Frontend:** Next.js 14, React 18, JavaScript, Tailwind CSS
+- **UI:** Framer Motion and Lucide React
+- **Authentication and data:** Firebase Auth, Firestore, and Realtime Database
+- **Backend:** Node.js, Express, Razorpay, Nodemailer
+- **Testing:** Vitest, JSDOM, and Testing Library
 
----
+## Repository structure
 
-## 🏗️ Project Architecture
-
+```text
+AgriMart/
+├── frontend/
+│   ├── public/images/              Product and brand images
+│   ├── src/app/                   Next.js App Router pages
+│   ├── src/components/            Reusable UI components
+│   ├── src/contexts/              Auth, product, and location state
+│   ├── src/data/                  Default AgriMart product catalog
+│   ├── src/views/                 Storefront and dashboard views
+│   └── src/__tests__/             Unit and integration tests
+├── backend/
+│   ├── server.js                  Express payment and subscription API
+│   └── functions/                 Firebase Functions configuration
+├── render.yaml                    Render service configuration
+└── vercel.json                    Vercel configuration
 ```
-gupta-mart/
-├── frontend/                     # Next.js Application
-│   ├── public/                   # Static assets, logos, and icons
-│   ├── src/
-│   │   ├── app/                  # Next.js App Router (layout.js, page.js, globals.css)
-│   │   ├── components/           # Navbar, ProductCard, LocationSelectorModal, UnserviceableNotice, etc.
-│   │   ├── contexts/             # LocationContext, ProductContext, AuthContext
-│   │   ├── data/                 # Grocery catalog database & dark store configurations
-│   │   ├── views/                # LandingPage, DashboardPage, CartPage, OrdersPage
-│   │   └── __tests__/            # Automated test suite (18 unit/integration tests)
-│   ├── package.json              # Next.js scripts & dependencies
-│   ├── tailwind.config.js        # Artisanal Navy & Citrus theme tokens
-│   └── next.config.mjs           # Next.js configuration
-├── backend/                      # Firebase Cloud Functions & API Services
-└── README.md
-```
 
----
+## Prerequisites
 
-## 🚀 Getting Started
+- Node.js 18 or later
+- npm
+- A Firebase project for authentication and database features
+- Razorpay credentials for online payments
+- SMTP credentials for the subscription email endpoint
 
-### Prerequisites
-- Node.js (v18.x or later)
-- npm or yarn
+## Run the frontend
 
-### Installation
-
-1. Clone repository:
 ```bash
-git clone https://github.com/PRANAV-SINGH-CSE/Gupta-Mart.git
-cd Gupta-Mart/frontend
-```
-
-2. Install dependencies:
-```bash
+cd frontend
 npm install
-```
-
-3. Run development server:
-```bash
 npm run dev
 ```
-Open [http://localhost:3002](http://localhost:3002) in your browser.
 
-4. Run tests:
+The frontend runs at [http://localhost:3002](http://localhost:3002).
+
+Available frontend scripts:
+
 ```bash
-npm run test
+npm run dev       # Start the Next.js development server
+npm run build     # Create a production build
+npm run start     # Serve the production build
+npm run test      # Run the Vitest test suite
+npm run test:watch
 ```
 
-5. Build for production:
+## Run the backend
+
 ```bash
-npm run build
+cd backend
+npm install
+npm start
 ```
 
----
+The backend listens on port `5000` by default. Set `PORT` to use another port.
+Set `NEXT_PUBLIC_BACKEND_URL` in the frontend environment when the backend is
+running on a different origin. If it is not set, the frontend leaves the
+backend payment API disabled.
 
-## 🛡️ License
-Distributed under the MIT License.
+The backend exposes:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Check whether the payment server is running |
+| `POST` | `/api/create-order` | Create a Razorpay payment order |
+| `POST` | `/api/verify-payment` | Verify a Razorpay payment signature |
+| `POST` | `/api/subscribe` | Send a subscription welcome email |
+
+## Environment variables
+
+Create `backend/.env` for server-only settings:
+
+```env
+PORT=5000
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+FRONTEND_URL=http://localhost:3002
+EMAIL_USER=your_smtp_username
+EMAIL_PASS=your_smtp_password
+```
+
+Never commit `backend/.env`, payment secrets, or email credentials. The
+Firebase web configuration is used by the frontend in
+`frontend/src/config/firebase.js`; Firebase security rules and authentication
+providers must be configured in the Firebase console before using those
+features.
+
+## Delivery hubs
+
+The storefront currently evaluates delivery locations against two 10 km hubs:
+
+- **AgriMart Kisan Hub #01:** Phagwara, Kapurthala, Punjab
+- **AgriMart Kisan Hub #02:** Civil Lines, Etawah, Uttar Pradesh
+
+Customers can select a preset location or allow the browser to detect their
+location. Locations outside both service areas are marked unavailable and
+cannot proceed through the serviceable checkout flow.
+
+## Deployment
+
+The frontend is a Next.js application and should be deployed as a Node.js
+service capable of running `npm run build` followed by `npm run start`. The
+Express backend should be deployed as a separate Node.js web service with its
+server-only environment variables configured in the hosting provider.
+
+Before deploying, configure:
+
+1. The production frontend URL in the backend `FRONTEND_URL` variable.
+2. The production backend URL as `NEXT_PUBLIC_BACKEND_URL` for the frontend.
+3. Razorpay production keys and webhook/payment settings as required.
+4. Firebase authentication providers, Firestore, Realtime Database, and rules.
+5. SMTP credentials if newsletter subscriptions are enabled.
+
+## License
+
+This project is distributed under the MIT License.
