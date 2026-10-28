@@ -1,0 +1,71 @@
+# ========================
+# Frontend (React + Vite)
+# ========================
+
+# Dependencies
+node_modules/
+**/node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js Build output
+.next/
+**/.next/
+frontend/.next/
+out/
+build/
+dist/
+frontend/dist/
+frontend/dist-ssr/
+
+# Environment variables (DO NOT COMMIT)
+.env
+.env.local
+.env.*.local
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# Vite
+.vite/
+frontend/.vite/
+
+# ========================
+# Backend (Firebase Cloud Functions)
+# ========================
+
+# Dependencies
+backend/functions/node_modules
+backend/functions/package-lock.json
+backend/node_modules
+backend/package-lock.json
+
+# Firebase
+backend/.firebase/
+backend/.firebaserc
+
+# Environment
+backend/.env
+
+# ========================
+# IDE & OS
+# ========================
+.vscode
+.idea
+*.swp
+*.swo
+*~
+# Personal & Archive Files
+*.xlsx
+*.doc
+*.docx
+*.zip
+
+# Testing
+coverage
+.nyc_output
+
+.DS_Store
+Thumbs.db
