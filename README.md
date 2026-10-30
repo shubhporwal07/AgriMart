@@ -135,6 +135,10 @@ service capable of running `npm run build` followed by `npm run start`. The
 Express backend should be deployed as a separate Node.js web service with its
 server-only environment variables configured in the hosting provider.
 
+For Vercel, set the project Root Directory to `frontend` and leave the
+Output Directory unset (or set it to `.next`). Do not use `dist`, which is a
+static-output directory and is not produced by the Next.js build.
+
 Before deploying, configure:
 
 1. The production frontend URL in the backend `FRONTEND_URL` variable.
