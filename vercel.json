@@ -1,27 +1,6 @@
 {
-    "services": {
-        "frontend": {
-            "root": "frontend/",
-            "framework": "vite"
-        },
-        "backend": {
-            "root": "backend/",
-            "entrypoint": "server.js",
-            "framework": "express"
-        }
-    },
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": {
-                "service": "backend"
-            }
-        },
-        {
-            "source": "/(.*)",
-            "destination": {
-                "service": "frontend"
-            }
-        }
-    ]
+  "framework": "nextjs",
+  "installCommand": "npm install --prefix frontend",
+  "buildCommand": "npm run build --prefix frontend",
+  "outputDirectory": "frontend/.next"
 }
