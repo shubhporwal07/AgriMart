@@ -10,6 +10,17 @@ import Footer from '../components/Footer';
 import Toast from '../components/Toast';
 import { auth, realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, push, set } from 'firebase/database';
+import {
+  backdropVariants,
+  modalVariants,
+  cartItemVariants,
+  qtyNumberVariants,
+  fieldMessageVariants,
+  buttonTap,
+  iconTap,
+  DURATION,
+  EASE,
+} from '../utils/motion';
 
 const getBackendUrl = () => {
   const raw = (
@@ -296,19 +307,25 @@ export default function CartPage() {
         <Navbar />
         <div className="flex items-center justify-center py-16 sm:py-24 px-4">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0.96, opacity: 0, y: 10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: DURATION.normal, ease: EASE.out }}
             className="text-center bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-100 max-w-md w-full"
           >
-            <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-5">
+            <motion.div
+              initial={{ scale: 0.75, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.08, duration: 0.24, ease: EASE.out }}
+              className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-5"
+            >
               <CheckCircle2 className="w-12 h-12" />
-            </div>
+            </motion.div>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF9F43]/15 text-[#E27B12] text-xs font-bold uppercase tracking-wider mb-3">
               ⚡ 12-Minute Express Delivery
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#142B4A] mb-2">Order Confirmed!</h2>
             <p className="text-slate-600 text-sm mb-4">
-              Your harvest is being handpicked right now at the Gupta Mart Phagwara dark store.
+              Your harvest is being handpicked right now at the AgriMart Phagwara Kisan Hub.
             </p>
 
             {/* Payment & Delivery Summary */}
@@ -378,7 +395,12 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-[#F7F9FC]">
         <Navbar />
-        <div className="max-w-4xl mx-auto px-4 py-16 sm:py-24 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: DURATION.normal, ease: EASE.out }}
+          className="max-w-4xl mx-auto px-4 py-16 sm:py-24 text-center"
+        >
           <div className="w-24 h-24 rounded-full bg-[#FF9F43]/15 text-[#E27B12] flex items-center justify-center mx-auto mb-6">
             <ShoppingBag className="w-12 h-12" />
           </div>
@@ -386,14 +408,15 @@ export default function CartPage() {
           <p className="text-slate-600 text-sm sm:text-base mb-8 max-w-md mx-auto">
             You haven't added any certified hybrid seeds, fertilizers, or farm inputs to your basket yet.
           </p>
-          <button
+          <motion.button
+            whileTap={buttonTap}
             onClick={() => router.push('/dashboard')}
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-bold rounded-xl transition shadow-lg shadow-[#FF9F43]/20"
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-bold rounded-xl transition-all duration-150 shadow-lg shadow-[#FF9F43]/20"
           >
             <Zap className="w-4 h-4 fill-current" />
             Explore Certified Farm Inputs
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
         <Footer />
       </div>
     );
@@ -477,7 +500,7 @@ export default function CartPage() {
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
                 <h1 className="text-xl font-extrabold text-[#142B4A] flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-[#FF9F43]" />
-                  Your Grocery Basket
+                  Your Farm Basket
                   <span className="text-xs font-normal text-slate-500">({cartItems.length} items)</span>
                 </h1>
                 <button
@@ -489,67 +512,91 @@ export default function CartPage() {
               </div>
 
               <div className="divide-y divide-slate-100">
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                   {cartItems.map((item) => (
                     <motion.div
                       key={item.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="py-4 flex items-center gap-4"
+                      layout="position"
+                      variants={cartItemVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className="overflow-hidden"
                     >
-                      {/* Product Thumbnail */}
-                      <div className="w-20 h-20 rounded-2xl bg-[#F7F9FC] border border-slate-100 overflow-hidden flex-shrink-0 relative">
-                        <img
-                          src={item.imageUrl || item.imageData || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80'}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                      <div className="py-4 flex items-center gap-4">
+                        {/* Product Thumbnail */}
+                        <div className="w-20 h-20 rounded-2xl bg-[#F7F9FC] border border-slate-100 overflow-hidden flex-shrink-0 relative">
+                          <img
+                            src={item.imageUrl || item.imageData || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80'}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
 
-                      {/* Product Details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                            {item.category?.replace('-', ' ') || 'Fresh'}
-                          </span>
-                          <span className="text-xs text-slate-400 font-medium">{item.packSize || item.weight || '1 unit'}</span>
+                        {/* Product Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                              {item.category?.replace('-', ' ') || 'Fresh'}
+                            </span>
+                            <span className="text-xs text-slate-400 font-medium">{item.packSize || item.weight || '1 unit'}</span>
+                          </div>
+                          <h3 className="text-sm sm:text-base font-bold text-[#142B4A] truncate">{item.name}</h3>
+                          <div className="flex items-baseline gap-2 mt-1">
+                            <span className="text-base font-extrabold text-[#142B4A]">{formatPrice(item.price)}</span>
+                            {item.mrp && item.mrp > item.price && (
+                              <span className="text-xs text-slate-400 line-through">₹{item.mrp}</span>
+                            )}
+                          </div>
                         </div>
-                        <h3 className="text-sm sm:text-base font-bold text-[#142B4A] truncate">{item.name}</h3>
-                        <div className="flex items-baseline gap-2 mt-1">
-                          <span className="text-base font-extrabold text-[#142B4A]">{formatPrice(item.price)}</span>
-                          {item.mrp && item.mrp > item.price && (
-                            <span className="text-xs text-slate-400 line-through">₹{item.mrp}</span>
-                          )}
-                        </div>
-                      </div>
 
-                      {/* Quantity Stepper */}
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center bg-[#F7F9FC] border border-slate-200 rounded-xl overflow-hidden p-1">
-                          <button
-                            onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                            className="w-7 h-7 flex items-center justify-center text-slate-700 hover:bg-white rounded-lg transition font-bold"
+                        {/* Quantity Stepper */}
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center bg-[#F7F9FC] border border-slate-200 rounded-xl overflow-hidden p-1">
+                            <motion.button
+                              type="button"
+                              whileTap={iconTap}
+                              onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                              className="w-7 h-7 flex items-center justify-center text-slate-700 hover:bg-white rounded-lg transition-colors duration-150 font-bold"
+                              aria-label="Decrease quantity"
+                            >
+                              −
+                            </motion.button>
+                            <div className="w-8 flex items-center justify-center overflow-hidden">
+                              <AnimatePresence mode="popLayout" initial={false}>
+                                <motion.span
+                                  key={item.quantity}
+                                  variants={qtyNumberVariants}
+                                  initial="initial"
+                                  animate="animate"
+                                  exit="exit"
+                                  className="text-center text-sm font-extrabold text-[#142B4A] inline-block"
+                                >
+                                  {item.quantity}
+                                </motion.span>
+                              </AnimatePresence>
+                            </div>
+                            <motion.button
+                              type="button"
+                              whileTap={iconTap}
+                              onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                              className="w-7 h-7 flex items-center justify-center text-slate-700 hover:bg-white rounded-lg transition-colors duration-150 font-bold"
+                              aria-label="Increase quantity"
+                            >
+                              +
+                            </motion.button>
+                          </div>
+                          <motion.button
+                            type="button"
+                            whileTap={iconTap}
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-slate-400 hover:text-rose-500 transition-colors duration-150 p-1 rounded-lg hover:bg-rose-50"
+                            title="Remove item"
+                            aria-label="Remove item"
                           >
-                            −
-                          </button>
-                          <span className="w-8 text-center text-sm font-extrabold text-[#142B4A]">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 flex items-center justify-center text-slate-700 hover:bg-white rounded-lg transition font-bold"
-                          >
-                            +
-                          </button>
+                            <Trash2 className="w-4 h-4" />
+                          </motion.button>
                         </div>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-slate-400 hover:text-rose-500 transition p-1"
-                          title="Remove item"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
                       </div>
                     </motion.div>
                   ))}
@@ -636,7 +683,7 @@ export default function CartPage() {
                       <span>Delivery Unavailable at Selected Location</span>
                     </div>
                     <p className="text-[11px] text-rose-700 leading-snug">
-                      Gupta Mart 12-min delivery is only available within 10 km of our Phagwara Dark Pod. You currently have selected <strong>{userLocation?.name || 'Outside Area'}</strong>.
+                      AgriMart farm delivery is only available within 10 km of our Phagwara Dark Pod. You currently have selected <strong>{userLocation?.name || 'Outside Area'}</strong>.
                     </p>
                   </div>
 
@@ -676,11 +723,22 @@ export default function CartPage() {
       {/* Address & Payment Modal */}
       <AnimatePresence>
         {checkoutStep === 'address' && (
-          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <motion.div
+            key="checkout-backdrop"
+            variants={backdropVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            onClick={() => setCheckoutStep('cart')}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+          >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              key="checkout-dialog"
+              variants={modalVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100"
             >
               <div className="px-6 py-5 bg-[#142B4A] text-white flex items-center justify-between">
@@ -777,7 +835,13 @@ export default function CartPage() {
                     placeholder="Enter your full name"
                     className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.fullName ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
-                  {addressErrors.fullName && <p className="text-xs text-red-500 mt-1">{addressErrors.fullName}</p>}
+                  <AnimatePresence>
+                    {addressErrors.fullName && (
+                      <motion.p variants={fieldMessageVariants} initial="initial" animate="animate" exit="exit" className="text-xs text-red-500 mt-1 overflow-hidden">
+                        {addressErrors.fullName}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div>
@@ -788,9 +852,15 @@ export default function CartPage() {
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="10-digit mobile number"
                     maxLength={10}
-                    className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.phone ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                    className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.phone ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
-                  {addressErrors.phone && <p className="text-xs text-red-500 mt-1">{addressErrors.phone}</p>}
+                  <AnimatePresence>
+                    {addressErrors.phone && (
+                      <motion.p variants={fieldMessageVariants} initial="initial" animate="animate" exit="exit" className="text-xs text-red-500 mt-1 overflow-hidden">
+                        {addressErrors.phone}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div>
@@ -800,7 +870,7 @@ export default function CartPage() {
                     value={shippingAddress.flatBuilding}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, flatBuilding: e.target.value }))}
                     placeholder="e.g. House #14, Near Model Town Park"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#142B4A]"
                   />
                 </div>
 
@@ -811,9 +881,15 @@ export default function CartPage() {
                     value={shippingAddress.addressLine1}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine1: e.target.value }))}
                     placeholder="e.g. Model Town, Phagwara"
-                    className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.addressLine1 ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                    className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.addressLine1 ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
-                  {addressErrors.addressLine1 && <p className="text-xs text-red-500 mt-1">{addressErrors.addressLine1}</p>}
+                  <AnimatePresence>
+                    {addressErrors.addressLine1 && (
+                      <motion.p variants={fieldMessageVariants} initial="initial" animate="animate" exit="exit" className="text-xs text-red-500 mt-1 overflow-hidden">
+                        {addressErrors.addressLine1}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -845,33 +921,39 @@ export default function CartPage() {
               </div>
 
               <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
-                <button
+                <motion.button
+                  type="button"
+                  whileTap={buttonTap}
                   onClick={() => setCheckoutStep('cart')}
-                  className="flex-1 py-3 px-4 border border-slate-300 rounded-xl text-slate-700 font-bold text-sm hover:bg-slate-100"
+                  className="flex-1 py-3 px-4 border border-slate-300 rounded-xl text-slate-700 font-bold text-sm hover:bg-slate-100 transition-colors duration-150"
                 >
                   Back to Basket
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  type="button"
+                  whileTap={buttonTap}
                   onClick={handleProceedToPayment}
                   disabled={paymentLoading}
-                  className="flex-1 py-3 px-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 rounded-xl font-black text-sm transition shadow-md disabled:opacity-50"
+                  className="flex-1 py-3 px-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 rounded-xl font-black text-sm transition-colors duration-150 shadow-md disabled:opacity-50"
                 >
                   {paymentLoading
                     ? 'Placing Order...'
                     : paymentMethod === 'cod'
                     ? `Place COD Order • ${formatPrice(grandTotal)}`
                     : `Pay Online • ${formatPrice(grandTotal)}`}
-                </button>
+                </motion.button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       <Footer />
-      {toast.show && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
-      )}
+      <AnimatePresence>
+        {toast.show && (
+          <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

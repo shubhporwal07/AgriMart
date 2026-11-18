@@ -2,12 +2,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Package, ArrowLeft, CheckCircle2, Clock, Truck, ChevronDown, ChevronUp, ShoppingBag } from 'lucide-react';
+import { Package, ArrowLeft, CheckCircle2, Clock, Truck, ChevronDown, ShoppingBag } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { OrderListSkeleton } from '../components/SkeletonLoader';
 import { auth, realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, get, query as rtdbQuery, orderByChild, equalTo } from 'firebase/database';
+import { accordionVariants, buttonTap, EASE } from '../utils/motion';
 
 const statusSteps = [
   { key: 'paid', label: 'Order Placed', icon: CheckCircle2 },
@@ -88,11 +89,13 @@ function OrderCard({ order }) {
               }`}>
                 {order.status === 'paid' ? 'Confirmed' : order.status}
               </span>
-              {expanded ? (
-                <ChevronUp className="h-5 w-5 text-slate-400 ml-2" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-slate-400 ml-2" />
-              )}
+              <motion.span
+                animate={{ rotate: expanded ? 180 : 0 }}
+                transition={{ duration: 0.2, ease: EASE.inOut }}
+                className="ml-2 inline-flex text-slate-400"
+              >
+                <ChevronDown className="h-5 w-5" />
+              </motion.span>
             </div>
           </div>
         </div>
@@ -102,13 +105,13 @@ function OrderCard({ order }) {
       </div>
 
       {/* Expanded Details */}
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {expanded && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            variants={accordionVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="overflow-hidden"
           >
             <div className="border-t border-black/10 p-5 sm:p-6">
@@ -280,43 +283,58 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <OrderListSkeleton count={3} />
-        )}
-
-        {/* Empty State */}
-        {!loading && orders.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-20 text-center"
-          >
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-6">
-              <Package className="h-10 w-10" strokeWidth={1.5} />
-            </div>
-            <h2 className="text-xl font-light text-slate-900 mb-2">No Orders Yet</h2>
-            <p className="text-slate-500 mb-6 max-w-sm">
-              When you purchase certified seeds or fertilizers, your dispatch details and tracking information will appear here.
-            </p>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="px-6 py-3 bg-[#142B4A] text-white rounded-xl font-bold hover:bg-[#1B385D] transition"
+        {/* Smooth Loading → Content Transition */}
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              key="orders-loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.16 }}
             >
-              Browse Seeds &amp; Fertilizers
-            </button>
-          </motion.div>
-        )}
-
-        {/* Orders List */}
-        {!loading && orders.length > 0 && (
-          <div className="space-y-4">
-            <p className="text-sm text-slate-500">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
-            {orders.map(order => (
-              <OrderCard key={order.id} order={order} />
-            ))}
-          </div>
-        )}
+              <OrderListSkeleton count={3} />
+            </motion.div>
+          ) : orders.length === 0 ? (
+            <motion.div
+              key="orders-empty"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22, ease: EASE.out }}
+              className="flex flex-col items-center justify-center py-20 text-center"
+            >
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-6">
+                <Package className="h-10 w-10" strokeWidth={1.5} />
+              </div>
+              <h2 className="text-xl font-light text-slate-900 mb-2">No Orders Yet</h2>
+              <p className="text-slate-500 mb-6 max-w-sm">
+                When you purchase certified seeds or fertilizers, your dispatch details and tracking information will appear here.
+              </p>
+              <motion.button
+                type="button"
+                whileTap={buttonTap}
+                onClick={() => router.push('/dashboard')}
+                className="px-6 py-3 bg-[#142B4A] text-white rounded-xl font-bold hover:bg-[#1B385D] transition-colors duration-150"
+              >
+                Browse Seeds &amp; Fertilizers
+              </motion.button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="orders-list"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: EASE.out }}
+              className="space-y-4"
+            >
+              <p className="text-sm text-slate-500">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
+              {orders.map(order => (
+                <OrderCard key={order.id} order={order} />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <Footer />

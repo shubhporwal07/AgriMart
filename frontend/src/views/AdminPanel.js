@@ -884,12 +884,16 @@ export default function AdminPanel({ onLogout }) {
       transition={{ duration: 0.25, ease: 'easeOut' }}
       className="min-h-screen bg-[#F7F9FC] text-[#263449]"
     >
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        show={toast.show}
-        onClose={() => setToast({ ...toast, show: false })}
-      />
+      <AnimatePresence>
+        {toast.show && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            show={toast.show}
+            onClose={() => setToast({ ...toast, show: false })}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="min-h-screen lg:pl-72">
         <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col border-r border-[#CBD5E1]/20 bg-[#142B4A] px-6 py-7 text-white shadow-2xl lg:flex">

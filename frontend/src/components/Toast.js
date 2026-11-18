@@ -1,7 +1,8 @@
 'use client';
 import { useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { toastVariants, iconTap } from '../utils/motion';
 
 export default function Toast({ message, type = 'error', show = true, onClose }) {
   useEffect(() => {
@@ -40,10 +41,13 @@ export default function Toast({ message, type = 'error', show = true, onClose })
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-      className={`fixed bottom-6 right-6 z-[100] w-full max-w-sm overflow-hidden rounded-xl border ${style.border} ${style.bg} ${style.shadow}`}
+      variants={toastVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      role="status"
+      aria-live="polite"
+      className={`fixed bottom-6 right-6 z-[100] w-[calc(100%-2rem)] max-w-sm overflow-hidden rounded-xl border ${style.border} ${style.bg} ${style.shadow}`}
     >
       <div className={`h-1 w-full ${style.accent}`} />
       <div className="flex items-center gap-4 p-4">
@@ -52,16 +56,18 @@ export default function Toast({ message, type = 'error', show = true, onClose })
           {type === 'error' && <AlertCircle className="h-5 w-5" />}
           {type === 'info' && <Info className="h-5 w-5" />}
         </div>
-        
+
         <p className="flex-1 text-sm font-medium text-slate-800">{message}</p>
-        
-        <button
+
+        <motion.button
+          type="button"
+          whileTap={iconTap}
           onClick={onClose}
-          className="flex-shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-600"
+          className="flex-shrink-0 rounded-lg p-1 text-slate-400 transition-colors duration-150 hover:bg-slate-50 hover:text-slate-600"
           aria-label="Close notification"
         >
           <X className="h-4 w-4" />
-        </button>
+        </motion.button>
       </div>
     </motion.div>
   );

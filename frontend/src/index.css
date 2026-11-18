@@ -31,19 +31,19 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary hover:bg-primary-container text-white font-semibold py-2.5 px-4 rounded-xl transition duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2;
+    @apply bg-primary hover:bg-primary-container text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-150 ease-out active:scale-[0.97] shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2;
   }
 
   .btn-accent {
-    @apply bg-tertiary hover:bg-[#ffb067] text-primary font-bold py-2.5 px-4 rounded-xl transition duration-200 shadow-sm flex items-center justify-center gap-2;
+    @apply bg-tertiary hover:bg-[#ffb067] text-primary font-bold py-2.5 px-4 rounded-xl transition-all duration-150 ease-out active:scale-[0.97] shadow-sm hover:shadow flex items-center justify-center gap-2;
   }
 
   .btn-outline-primary {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-2 px-4 rounded-xl transition duration-200 shadow-sm;
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-2 px-4 rounded-xl transition-all duration-150 ease-out active:scale-[0.97] shadow-sm;
   }
 
   .input-field {
-    @apply w-full px-4 py-2.5 border border-outline-variant bg-white rounded-xl text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-sm;
+    @apply w-full px-4 py-2.5 border border-outline-variant bg-white rounded-xl text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-150 ease-out text-sm;
   }
 
   .input-field:disabled {
@@ -86,5 +86,19 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* Respect user's reduced-motion preference globally */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

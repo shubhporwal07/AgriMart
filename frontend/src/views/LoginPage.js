@@ -2,7 +2,14 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ShieldCheck, Zap, Sparkles, CheckCircle2 } from 'lucide-react';
+import {
+  fieldMessageVariants,
+  accordionVariants,
+  buttonTap,
+  EASE,
+} from '../utils/motion';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -267,20 +274,27 @@ export default function LoginPage({ onAdminLogin }) {
           {/* Right Side - Form Card */}
           <div className="relative w-full md:w-[52%] p-6 sm:p-10 lg:p-14 flex items-center justify-center">
             <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-xl border border-slate-100">
-              {/* Tab Selector */}
-              <div className="flex w-full mb-8 bg-[#F7F9FC] p-1.5 rounded-2xl border border-slate-200">
+              {/* Tab Selector with sliding indicator */}
+              <div className="flex w-full mb-8 bg-[#F7F9FC] p-1.5 rounded-2xl border border-slate-200 relative">
                 <button
                   type="button"
                   onClick={() => {
                     setIsSignup(false);
                     setErrors({});
                   }}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-black tracking-wide transition ${
+                  className={`relative z-10 flex-1 py-2.5 rounded-xl text-xs font-black tracking-wide transition-colors duration-150 ${
                     !isSignup
-                      ? 'bg-[#142B4A] text-white shadow-sm'
+                      ? 'text-white'
                       : 'text-slate-600 hover:text-[#142B4A]'
                   }`}
                 >
+                  {!isSignup && (
+                    <motion.span
+                      layoutId="loginTabIndicator"
+                      transition={{ duration: 0.2, ease: EASE.out }}
+                      className="absolute inset-0 bg-[#142B4A] rounded-xl shadow-sm -z-10"
+                    />
+                  )}
                   SIGN IN
                 </button>
                 <button
@@ -289,12 +303,19 @@ export default function LoginPage({ onAdminLogin }) {
                     setIsSignup(true);
                     setErrors({});
                   }}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-black tracking-wide transition ${
+                  className={`relative z-10 flex-1 py-2.5 rounded-xl text-xs font-black tracking-wide transition-colors duration-150 ${
                     isSignup
-                      ? 'bg-[#142B4A] text-white shadow-sm'
+                      ? 'text-white'
                       : 'text-slate-600 hover:text-[#142B4A]'
                   }`}
                 >
+                  {isSignup && (
+                    <motion.span
+                      layoutId="loginTabIndicator"
+                      transition={{ duration: 0.2, ease: EASE.out }}
+                      className="absolute inset-0 bg-[#142B4A] rounded-xl shadow-sm -z-10"
+                    />
+                  )}
                   CREATE ACCOUNT
                 </button>
               </div>
@@ -331,7 +352,13 @@ export default function LoginPage({ onAdminLogin }) {
                       disabled={loading}
                     />
                   </div>
-                  {errors.email && <p className="mt-1 text-xs text-red-600 font-medium">{errors.email}</p>}
+                  <AnimatePresence>
+                    {errors.email && (
+                      <motion.p variants={fieldMessageVariants} initial="initial" animate="animate" exit="exit" className="mt-1 text-xs text-red-600 font-medium overflow-hidden">
+                        {errors.email}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div>
@@ -350,63 +377,85 @@ export default function LoginPage({ onAdminLogin }) {
                         if (errors.password) setErrors({ ...errors, password: '' });
                       }}
                       placeholder="••••••••"
-                      className={`block w-full pl-10 pr-10 py-2.5 rounded-xl border text-sm text-slate-900 bg-[#F7F9FC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#142B4A] transition ${errors.password ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                      className={`block w-full pl-10 pr-10 py-2.5 rounded-xl border text-sm text-slate-900 bg-[#F7F9FC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#142B4A] transition-all duration-150 ${errors.password ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                       disabled={loading}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors duration-150"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {errors.password && <p className="mt-1 text-xs text-red-600 font-medium">{errors.password}</p>}
+                  <AnimatePresence>
+                    {errors.password && (
+                      <motion.p variants={fieldMessageVariants} initial="initial" animate="animate" exit="exit" className="mt-1 text-xs text-red-600 font-medium overflow-hidden">
+                        {errors.password}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                {isSignup && (
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Lock className="h-4 w-4" />
+                <AnimatePresence initial={false}>
+                  {isSignup && (
+                    <motion.div
+                      key="confirm-password-field"
+                      variants={accordionVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className="overflow-hidden"
+                    >
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        Confirm Password
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                          <Lock className="h-4 w-4" />
+                        </div>
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={(e) => {
+                            setConfirmPassword(e.target.value);
+                            if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: '' });
+                          }}
+                          placeholder="••••••••"
+                          className={`block w-full pl-10 pr-10 py-2.5 rounded-xl border text-sm text-slate-900 bg-[#F7F9FC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#142B4A] transition-all duration-150 ${errors.confirmPassword ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                          disabled={loading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors duration-150"
+                        >
+                          {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
                       </div>
-                      <input
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={confirmPassword}
-                        onChange={(e) => {
-                          setConfirmPassword(e.target.value);
-                          if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: '' });
-                        }}
-                        placeholder="••••••••"
-                        className={`block w-full pl-10 pr-10 py-2.5 rounded-xl border text-sm text-slate-900 bg-[#F7F9FC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#142B4A] transition ${errors.confirmPassword ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
-                        disabled={loading}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
-                      >
-                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                    {errors.confirmPassword && <p className="mt-1 text-xs text-red-600 font-medium">{errors.confirmPassword}</p>}
-                  </div>
-                )}
+                      <AnimatePresence>
+                        {errors.confirmPassword && (
+                          <motion.p variants={fieldMessageVariants} initial="initial" animate="animate" exit="exit" className="mt-1 text-xs text-red-600 font-medium overflow-hidden">
+                            {errors.confirmPassword}
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                <button
+                <motion.button
                   type="submit"
+                  whileTap={buttonTap}
                   disabled={loading}
-                  className="w-full py-3.5 px-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-black rounded-xl transition shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-50 mt-2"
+                  className="w-full py-3.5 px-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-black rounded-xl transition-colors duration-150 shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-50 mt-2"
                 >
                   {loading
                     ? (isSignup ? 'Creating your account...' : 'Signing in...')
-                    : (isSignup ? 'Create Free Gupta Mart Account' : 'Sign In to Gupta Mart')
+                    : (isSignup ? 'Create Free AgriMart Account' : 'Sign In to AgriMart')
                   }
                   {!loading && <ArrowRight className="w-4 h-4" />}
-                </button>
+                </motion.button>
 
                 {!isSignup && (
                   <>
@@ -446,13 +495,15 @@ export default function LoginPage({ onAdminLogin }) {
         </div>
       </main>
 
-      {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast({ ...toast, show: false })}
-        />
-      )}
+      <AnimatePresence>
+        {toast.show && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast({ ...toast, show: false })}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

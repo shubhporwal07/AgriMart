@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { buttonTap, EASE } from '../utils/motion';
 
 export default function Footer() {
   const [contact, setContact] = useState('');
@@ -124,29 +126,47 @@ export default function Footer() {
             {/* Newsletter */}
             <div className="flex flex-col gap-1.5">
               <span className="text-xs font-bold text-[#263449]">Receive Weekly Mandi Rates & Offers</span>
-              {subscribed ? (
-                <div className="bg-emerald-50 text-emerald-700 text-xs p-2 rounded-lg font-semibold flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                  <span>Subscription confirmed! Weekly alerts enabled.</span>
-                </div>
-              ) : (
-                <form onSubmit={handleSubscribe} className="flex gap-1.5">
-                  <input
-                    type="text"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                    placeholder="Enter mobile or email"
-                    required
-                    className="bg-white border border-[#CBD5E1] px-3 py-1.5 rounded-lg text-xs text-[#263449] outline-none w-full focus:border-[#142B4A]"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs px-3 py-1.5 rounded-lg font-bold shrink-0 transition-colors shadow-sm"
+              <AnimatePresence mode="wait" initial={false}>
+                {subscribed ? (
+                  <motion.div
+                    key="subscribed"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.18, ease: EASE.out }}
+                    className="bg-emerald-50 text-emerald-700 text-xs p-2 rounded-lg font-semibold flex items-center gap-1.5"
                   >
-                    Subscribe
-                  </button>
-                </form>
-              )}
+                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span>Subscription confirmed! Weekly alerts enabled.</span>
+                  </motion.div>
+                ) : (
+                  <motion.form
+                    key="subscribe-form"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.14 }}
+                    onSubmit={handleSubscribe}
+                    className="flex gap-1.5"
+                  >
+                    <input
+                      type="text"
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      placeholder="Enter mobile or email"
+                      required
+                      className="bg-white border border-[#CBD5E1] px-3 py-1.5 rounded-lg text-xs text-[#263449] outline-none w-full focus:border-[#142B4A] focus:ring-2 focus:ring-[#142B4A]/15 transition-all duration-150"
+                    />
+                    <motion.button
+                      type="submit"
+                      whileTap={buttonTap}
+                      className="bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs px-3 py-1.5 rounded-lg font-bold shrink-0 transition-colors duration-150 shadow-sm"
+                    >
+                      Subscribe
+                    </motion.button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Accepted Payments */}

@@ -1,6 +1,9 @@
-import { motion } from 'framer-motion';
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { DURATION, EASE, buttonTap, iconTap, qtyNumberVariants } from '../utils/motion';
 
 export default function ProductCard({
   product,
@@ -8,19 +11,32 @@ export default function ProductCard({
   onEdit,
   onDelete,
   isAdmin = false,
+  index = 0,
 }) {
-  const { addToCart, updateCartQuantity, getItemQuantity } = useProducts();
+  const { addToCart, updateCartQuantity, getItemQuantity, wishlistItems, addToWishlist, removeFromWishlist } = useProducts();
+  const { isServiceable, setLocationModalOpen } = useLocationContext();
 
-  let locationCtx = null;
-  try {
-    locationCtx = useLocationContext();
-  } catch {
-    locationCtx = null;
-  }
-  const isServiceable = locationCtx ? locationCtx.isServiceable : true;
-  const setLocationModalOpen = locationCtx ? locationCtx.setLocationModalOpen : () => {};
+  // Defer wishlist state to client-only to prevent SSR/localStorage hydration mismatch
+  const [mounted, setMounted] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+  const imgRef = useRef(null);
+  const addedTimerRef = useRef(null);
 
-  const qty = getItemQuantity(product.id);
+  useEffect(() => {
+    setMounted(true);
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      setImgLoaded(true);
+    }
+    return () => {
+      if (addedTimerRef.current) clearTimeout(addedTimerRef.current);
+    };
+  }, []);
+
+  // Only compute wishlist status after mount — renders false on server & first paint
+  const isWishlisted = mounted && wishlistItems && wishlistItems.some((w) => w.id === product.id);
+
+  const qty = mounted ? getItemQuantity(product.id) : 0;
   const isSoldOut = product.inStock === false;
 
   const handleCardClick = () => {
@@ -37,6 +53,9 @@ export default function ProductCard({
       return;
     }
     addToCart(product, 1);
+    setJustAdded(true);
+    if (addedTimerRef.current) clearTimeout(addedTimerRef.current);
+    addedTimerRef.current = setTimeout(() => setJustAdded(false), 550);
   };
 
   const handleIncrement = (e) => {
@@ -76,13 +95,22 @@ export default function ProductCard({
     product.imageUrl ||
     '/images/products/hybrid-tomato-seeds.png';
 
+  const staggerDelay = Math.min(index * 0.03, 0.21);
+
   return (
     <motion.article
-      layout
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
+      layout="position"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.14, ease: EASE.in } }}
+      whileHover={{ y: -2 }}
+      transition={{
+        opacity: { duration: DURATION.normal, delay: staggerDelay, ease: EASE.out },
+        y: { duration: 0.18, ease: EASE.out },
+        layout: { duration: 0.22, ease: EASE.out },
+      }}
       onClick={handleCardClick}
-      className={`group bg-white rounded-2xl p-3.5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative border border-[#CBD5E1]/50 cursor-pointer ${
+      className={`group bg-white rounded-2xl p-3.5 shadow-sm hover:shadow-lg transition-shadow duration-200 ease-out flex flex-col justify-between relative border border-[#CBD5E1]/50 hover:border-[#CBD5E1] cursor-pointer ${
         isSoldOut ? 'opacity-65' : ''
       }`}
     >
@@ -100,50 +128,74 @@ export default function ProductCard({
 
         {isAdmin ? (
           <div className="flex items-center gap-1 z-10" onClick={(e) => e.stopPropagation()}>
-            <button
+            <motion.button
+              whileTap={buttonTap}
               onClick={handleEditClick}
-              className="bg-[#142B4A] text-white text-[10px] px-2 py-0.5 rounded hover:bg-[#1B385D]"
+              className="bg-[#142B4A] text-white text-[10px] px-2 py-0.5 rounded hover:bg-[#1B385D] transition-colors duration-150"
             >
               Edit
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileTap={buttonTap}
               onClick={handleDelete}
-              className="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded hover:bg-rose-700"
+              className="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded hover:bg-rose-700 transition-colors duration-150"
             >
               Delete
-            </button>
+            </motion.button>
           </div>
         ) : (
-          <button
+          <motion.button
             type="button"
+            whileTap={iconTap}
             onClick={(e) => {
               e.stopPropagation();
-              alert(`Added ${product.name} to wishlist!`);
+              if (isWishlisted) {
+                removeFromWishlist(product.id);
+              } else {
+                addToWishlist(product);
+              }
             }}
-            className="text-slate-400 hover:text-[#E27B12] transition-colors p-1 rounded-full hover:bg-slate-50"
-            title="Save to Wishlist"
+            className={`transition-colors duration-150 p-1 rounded-full hover:bg-slate-50 ${
+              isWishlisted ? 'text-rose-500' : 'text-slate-400 hover:text-rose-400'
+            }`}
+            aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            title={isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}
           >
-            <span className="material-symbols-outlined text-[18px]">favorite</span>
-          </button>
+            <motion.span
+              key={isWishlisted ? 'filled' : 'outline'}
+              initial={mounted ? { scale: 0.8, opacity: 0.7 } : false}
+              animate={{ scale: isWishlisted ? [1, 1.22, 1] : 1, opacity: 1 }}
+              transition={{ duration: 0.22, ease: EASE.out }}
+              className="material-symbols-outlined text-[18px] block"
+              style={isWishlisted ? { fontVariationSettings: "'FILL' 1" } : {}}
+            >
+              favorite
+            </motion.span>
+          </motion.button>
         )}
       </div>
 
       {/* Product Image */}
       <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EDF2F7] mb-3 flex items-center justify-center">
         <img
+          ref={imgRef}
           src={displayImage}
           alt={product.name}
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          onLoad={() => setImgLoaded(true)}
+          className={`w-full h-full object-cover group-hover:scale-[1.02] transition-all duration-300 ease-out ${
+            imgLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = 'https://via.placeholder.com/400x400?text=Farm+Fresh';
+            setImgLoaded(true);
           }}
         />
 
         {/* Delivery Serviceability Badge */}
         {isServiceable ? (
-          <span className="absolute bottom-2 left-2 bg-white/95 text-[#142B4A] text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm border border-slate-100">
+          <span className="absolute bottom-2 left-2 bg-white/95 text-[#142B4A] text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm border border-slate-100 transition-opacity duration-200">
             <span className="material-symbols-outlined text-[13px] text-[#FF9F43]">local_shipping</span>
             <span>{product.deliveryTime || '⚡ Fast Dispatch'}</span>
           </span>
@@ -178,7 +230,7 @@ export default function ProductCard({
       </div>
 
       {/* Product Title */}
-      <h3 className="font-headline text-[14px] font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors line-clamp-2 min-h-[38px] leading-snug">
+      <h3 className="font-headline text-[14px] font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 line-clamp-2 min-h-[38px] leading-snug">
         {product.name}
       </h3>
 
@@ -204,51 +256,99 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Stepper Button */}
-        {isSoldOut ? (
-          <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1.5 rounded-lg cursor-not-allowed">
-            OUT OF STOCK
-          </span>
-        ) : qty > 0 ? (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center bg-[#142B4A] text-white rounded-lg shadow-sm overflow-hidden"
-          >
-            <button
-              onClick={handleDecrement}
-              className="px-2 py-1.5 hover:bg-[#1B385D] transition-colors flex items-center justify-center"
-              aria-label="Decrease quantity"
+        {/* Stepper / Add Button with smooth state transition */}
+        <AnimatePresence mode="wait" initial={false}>
+          {isSoldOut ? (
+            <span
+              key="soldout"
+              className="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1.5 rounded-lg cursor-not-allowed"
             >
-              <span className="material-symbols-outlined text-[14px]">remove</span>
-            </button>
-            <span className="px-2 font-bold text-xs">{qty}</span>
-            <button
-              onClick={handleIncrement}
-              className="px-2 py-1.5 hover:bg-[#1B385D] transition-colors flex items-center justify-center"
-              aria-label="Increase quantity"
+              OUT OF STOCK
+            </span>
+          ) : justAdded ? (
+            <motion.span
+              key="added"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ duration: DURATION.fast, ease: EASE.out }}
+              className="bg-emerald-600 text-white font-headline text-xs px-3 py-1.5 rounded-lg font-bold shadow-sm inline-flex items-center gap-1"
             >
-              <span className="material-symbols-outlined text-[14px]">add</span>
-            </button>
-          </div>
-        ) : !isServiceable ? (
-          <button
-            onClick={handleAdd}
-            aria-label="Not deliverable to selected area"
-            className="bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-headline text-[11px] px-2.5 py-1.5 rounded-lg font-bold transition-all shadow-sm flex items-center gap-1"
-            title="Outside 10 km hub. Tap to change location."
-          >
-            <span>Unavailable</span>
-            <span className="material-symbols-outlined text-[13px]">pin_drop</span>
-          </button>
-        ) : (
-          <button
-            onClick={handleAdd}
-            aria-label="Add to Cart"
-            className="bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white font-headline text-xs px-3.5 py-1.5 rounded-lg font-bold transition-all shadow-sm"
-          >
-            ADD
-          </button>
-        )}
+              <span>✓ ADDED</span>
+            </motion.span>
+          ) : qty > 0 ? (
+            <motion.div
+              key="stepper"
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ duration: DURATION.fast, ease: EASE.out }}
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center bg-[#142B4A] text-white rounded-lg shadow-sm overflow-hidden"
+            >
+              <motion.button
+                type="button"
+                whileTap={iconTap}
+                onClick={handleDecrement}
+                className="px-2 py-1.5 hover:bg-[#1B385D] transition-colors duration-150 flex items-center justify-center"
+                aria-label="Decrease quantity"
+              >
+                <span className="material-symbols-outlined text-[14px]">remove</span>
+              </motion.button>
+              <div className="min-w-[24px] flex items-center justify-center overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={qty}
+                    variants={qtyNumberVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    className="px-1 font-bold text-xs inline-block text-center"
+                  >
+                    {qty}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+              <motion.button
+                type="button"
+                whileTap={iconTap}
+                onClick={handleIncrement}
+                className="px-2 py-1.5 hover:bg-[#1B385D] transition-colors duration-150 flex items-center justify-center"
+                aria-label="Increase quantity"
+              >
+                <span className="material-symbols-outlined text-[14px]">add</span>
+              </motion.button>
+            </motion.div>
+          ) : !isServiceable ? (
+            <motion.button
+              key="unavailable"
+              type="button"
+              whileTap={buttonTap}
+              onClick={handleAdd}
+              aria-label="Not deliverable to selected area"
+              className="bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-headline text-[11px] px-2.5 py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm flex items-center gap-1"
+              title="Outside 10 km hub. Tap to change location."
+            >
+              <span>Unavailable</span>
+              <span className="material-symbols-outlined text-[13px]">pin_drop</span>
+            </motion.button>
+          ) : (
+            <motion.button
+              key="add"
+              type="button"
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              whileTap={buttonTap}
+              transition={{ duration: DURATION.fast, ease: EASE.out }}
+              onClick={handleAdd}
+              aria-label="Add to Cart"
+              className="bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white font-headline text-xs px-3.5 py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm"
+            >
+              ADD
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
     </motion.article>
   );

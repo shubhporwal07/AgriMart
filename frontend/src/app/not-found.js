@@ -20,7 +20,7 @@ export default function NotFound() {
           className="inline-flex items-center gap-2 bg-[#142B4A] hover:bg-[#1B385D] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md transition-all"
         >
           <span className="material-symbols-outlined text-[18px]">home</span>
-          Back to Gupta Mart Home
+          Back to AgriMart Home
         </Link>
       </div>
       <Footer />

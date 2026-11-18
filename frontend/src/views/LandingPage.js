@@ -2,13 +2,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import UnserviceableNotice from '../components/UnserviceableNotice';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 import { useProducts } from '../contexts/ProductContext';
+import { floatingBarVariants, sectionRevealProps, buttonTap, iconTap } from '../utils/motion';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -260,7 +261,7 @@ export default function LandingPage() {
         </section>
 
         {/* SECTION 2: EXPLORE BY CATEGORY */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
+        <motion.section {...sectionRevealProps} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-2">
             <div>
               <div className="flex items-center gap-2 text-[#142B4A] text-xs font-bold uppercase tracking-wider">
@@ -287,9 +288,9 @@ export default function LandingPage() {
               <Link
                 key={tile.name}
                 href={`/dashboard?category=${tile.slug}`}
-                className={`group flex flex-col items-center text-center p-4 rounded-2xl ${tile.bg} hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-[#CBD5E1]/30`}
+                className={`group flex flex-col items-center text-center p-4 rounded-2xl ${tile.bg} hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 ease-out border border-[#CBD5E1]/30`}
               >
-                <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 shadow-inner group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 shadow-inner group-hover:scale-105 transition-transform duration-200 ease-out">
                   <span className={`material-symbols-outlined ${tile.text} text-[28px]`}>
                     {tile.icon}
                   </span>
@@ -301,10 +302,10 @@ export default function LandingPage() {
               </Link>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         {/* SECTION 3: TODAY'S KISAN SOWING DEALS */}
-        <section id="flash-deals" className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
+        <motion.section {...sectionRevealProps} id="flash-deals" className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
           {/* Header with Countdown */}
           <div className="bg-white rounded-3xl p-6 shadow-sm mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-[#CBD5E1]/40">
             <div className="flex items-center gap-4">
@@ -366,18 +367,19 @@ export default function LandingPage() {
 
           {/* Flash Deals Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {flashProducts.map((p) => (
+            {flashProducts.map((p, idx) => (
               <ProductCard
                 key={p.id}
                 product={p}
+                index={idx}
                 onViewDetails={(item) => setSelectedProduct(item)}
               />
             ))}
           </div>
-        </section>
+        </motion.section>
 
         {/* SECTION 4: CURATED SOIL NUTRITION CORNER */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
+        <motion.section {...sectionRevealProps} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
           <div className="rounded-3xl bg-gradient-to-br from-[#142B4A] via-[#10233D] to-[#0B1728] text-white p-6 sm:p-10 relative overflow-hidden shadow-2xl border border-white/10">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#94B3FD_1px,transparent_1px)] [background-size:16px_16px]" />
             <div className="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-[#FF9F43]/10 blur-3xl pointer-events-none" />
@@ -412,13 +414,13 @@ export default function LandingPage() {
                 <div
                   key={item.id}
                   onClick={() => setSelectedProduct(item)}
-                  className="bg-white text-[#263449] rounded-2xl p-4 shadow-lg flex flex-col justify-between group border border-[#CBD5E1]/30 cursor-pointer"
+                  className="bg-white text-[#263449] rounded-2xl p-4 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 ease-out flex flex-col justify-between group border border-[#CBD5E1]/30 cursor-pointer"
                 >
                   <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#EDF2F7] mb-3">
                     <img
                       src={item.imageUrl}
                       alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
                     />
                     <span className="absolute top-2 left-2 bg-[#142B4A] text-white text-[9px] px-2 py-0.5 rounded font-bold uppercase">
                       FCO Certified
@@ -426,7 +428,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <span className="text-[11px] text-[#5A6B82]">{item.unit}</span>
-                    <h4 className="font-headline text-sm font-bold text-[#142B4A] mt-0.5 line-clamp-1">
+                    <h4 className="font-headline text-sm font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 mt-0.5 line-clamp-1">
                       {item.name}
                     </h4>
                     <p className="text-[11px] text-[#74777E] line-clamp-1">{item.description}</p>
@@ -435,25 +437,27 @@ export default function LandingPage() {
                     <span className="font-price text-base font-extrabold text-[#142B4A]">
                       ₹{item.price}
                     </span>
-                    <button
+                    <motion.button
+                      type="button"
+                      whileTap={iconTap}
                       onClick={(e) => {
                         e.stopPropagation();
                         addToCart(item, 1);
                       }}
-                      className="bg-[#142B4A] hover:bg-[#1B385D] text-white p-2 rounded-xl transition-colors shadow-sm"
+                      className="bg-[#142B4A] hover:bg-[#1B385D] text-white p-2 rounded-xl transition-colors duration-150 shadow-sm"
                       title="Add to Farm Cart"
                     >
                       <span className="material-symbols-outlined text-[18px]">add</span>
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* SECTION 5: WHY OVER 250,000+ FARMERS TRUST AGRIMART */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-10 w-full">
+        <motion.section {...sectionRevealProps} className="max-w-7xl mx-auto px-4 sm:px-6 py-10 w-full">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="text-xs uppercase tracking-widest text-[#142B4A] font-extrabold">
               Uncompromising Quality & Trust
@@ -543,10 +547,10 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* SECTION 6: FARMER TESTIMONIALS & SOCIAL PROOF */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
+        <motion.section {...sectionRevealProps} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-2">
             <div>
               <span className="text-xs font-bold text-[#142B4A] uppercase tracking-wider">
@@ -672,45 +676,53 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* SECTION 7: FLOATING QUICK FARM CART BAR */}
-        {cartCount > 0 && (
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="fixed bottom-6 right-6 z-40"
-          >
-            <Link
-              href="/cart"
-              className="flex items-center gap-3 bg-[#142B4A] hover:bg-[#1B385D] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-105 active:scale-95 group transition-all border border-white/20"
+        <AnimatePresence>
+          {cartCount > 0 && (
+            <motion.div
+              key="landing-floating-cart"
+              variants={floatingBarVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="fixed bottom-6 right-6 z-40"
             >
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[24px] text-[#FF9F43]">agriculture</span>
-                <span className="font-headline text-xs font-bold">
-                  {cartCount === 1 ? '1 Farm Input in Cart' : `${cartCount} Farm Inputs in Cart`}
-                </span>
-              </div>
-              <span className="text-slate-400">|</span>
-              <div className="flex items-center gap-2">
-                <span className="font-price text-sm font-extrabold text-[#FF9F43]">₹{cartTotal}</span>
-                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
-                  east
-                </span>
-              </div>
-            </Link>
-          </motion.div>
-        )}
+              <Link
+                href="/cart"
+                className="flex items-center gap-3 bg-[#142B4A] hover:bg-[#1B385D] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-[1.03] active:scale-[0.97] group transition-all duration-150 border border-white/20"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[24px] text-[#FF9F43]">agriculture</span>
+                  <span className="font-headline text-xs font-bold">
+                    {cartCount === 1 ? '1 Farm Input in Cart' : `${cartCount} Farm Inputs in Cart`}
+                  </span>
+                </div>
+                <span className="text-slate-400">|</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-price text-sm font-extrabold text-[#FF9F43]">₹{cartTotal}</span>
+                  <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform duration-150">
+                    east
+                  </span>
+                </div>
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Product Details Modal */}
-      {selectedProduct && (
-        <ProductDetailsModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          onSelectProduct={(p) => setSelectedProduct(p)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProduct && (
+          <ProductDetailsModal
+            key={selectedProduct.id}
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+            onSelectProduct={(p) => setSelectedProduct(p)}
+          />
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

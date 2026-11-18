@@ -68,7 +68,7 @@ export function AuthProvider({ children }) {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [auth, db]);
+  }, []);
 
   // Logout function
   const logout = async () => {

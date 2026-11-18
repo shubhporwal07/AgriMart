@@ -13,6 +13,14 @@ import ProductGrid from '../components/ProductGrid';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 import AdminAddProductModal from '../components/AdminAddProductModal';
 import Footer from '../components/Footer';
+import {
+  accordionVariants,
+  backdropVariants,
+  drawerRightVariants,
+  floatingBarVariants,
+  buttonTap,
+  iconTap,
+} from '../utils/motion';
 
 export default function DashboardPage() {
   const { isAdmin } = useAuth();
@@ -40,10 +48,12 @@ export default function DashboardPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
+  const categoryParam = searchParams.get('category');
+
   useEffect(() => {
-    if (!searchParams.has('category')) return;
-    applyNavCategorySlug(searchParams.get('category') || 'all');
-  }, [searchParams, applyNavCategorySlug]);
+    if (categoryParam === null) return;
+    applyNavCategorySlug(categoryParam || 'all');
+  }, [categoryParam, applyNavCategorySlug]);
 
   useEffect(() => {
     document.body.style.overflow = filtersOpen ? 'hidden' : '';
@@ -74,36 +84,47 @@ export default function DashboardPage() {
 
       <main className="w-full">
         {/* KISAN200 Coupon Banner */}
-        {!bannerDismissed && (
-          <div className="w-full bg-[#FFE8D6]/80 border-b border-[#FFDCC2]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#E27B12] text-white shadow-sm">
-                  <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    spa
+        <AnimatePresence>
+          {!bannerDismissed && (
+            <motion.div
+              key="kisan-banner"
+              variants={accordionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="w-full overflow-hidden bg-[#FFE8D6]/80 border-b border-[#FFDCC2]"
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#E27B12] text-white shadow-sm">
+                    <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      spa
+                    </span>
                   </span>
-                </span>
-                <span className="text-xs text-[#263449]">
-                  <strong className="font-extrabold text-[#A74E00]">KISAN200 Active:</strong> Extra ₹200 subsidy savings on certified seeds and organic bio-fertilizers above ₹999
-                </span>
-                <span className="hidden sm:inline-flex items-center text-[#5A6B82] text-xs">
-                  • Direct dispatch from accredited research centers
-                </span>
+                  <span className="text-xs text-[#263449]">
+                    <strong className="font-extrabold text-[#A74E00]">KISAN200 Active:</strong> Extra ₹200 subsidy savings on certified seeds and organic bio-fertilizers above ₹999
+                  </span>
+                  <span className="hidden sm:inline-flex items-center text-[#5A6B82] text-xs">
+                    • Direct dispatch from accredited research centers
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] bg-white px-2.5 py-0.5 rounded shadow-sm text-[#A74E00] font-bold tracking-wider border border-[#FFDCC2]">
+                    KISAN200
+                  </span>
+                  <motion.button
+                    type="button"
+                    whileTap={buttonTap}
+                    onClick={() => setBannerDismissed(true)}
+                    className="text-xs text-[#142B4A] hover:text-[#E27B12] font-bold underline transition-colors duration-150"
+                  >
+                    Dismiss
+                  </motion.button>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] bg-white px-2.5 py-0.5 rounded shadow-sm text-[#A74E00] font-bold tracking-wider border border-[#FFDCC2]">
-                  KISAN200
-                </span>
-                <button
-                  onClick={() => setBannerDismissed(true)}
-                  className="text-xs text-[#142B4A] hover:text-[#E27B12] font-bold underline transition-colors"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Breadcrumbs & Header Summary */}
         <section className="w-full bg-white shadow-sm border-b border-[#CBD5E1]/40">
@@ -219,17 +240,18 @@ export default function DashboardPage() {
               {filtersOpen && (
                 <>
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    variants={backdropVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
                     onClick={() => setFiltersOpen(false)}
                     className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
                   />
                   <motion.div
-                    initial={{ x: '100%' }}
-                    animate={{ x: 0 }}
-                    exit={{ x: '100%' }}
-                    transition={{ type: 'tween', duration: 0.25 }}
+                    variants={drawerRightVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
                     className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-white shadow-2xl p-5 lg:hidden flex flex-col justify-between"
                   >
                     <div>
@@ -237,22 +259,26 @@ export default function DashboardPage() {
                         <span className="font-headline font-bold text-base text-[#142B4A]">
                           Filters
                         </span>
-                        <button
+                        <motion.button
+                          type="button"
+                          whileTap={iconTap}
                           onClick={() => setFiltersOpen(false)}
-                          className="p-1 rounded-full text-slate-500 hover:bg-slate-100"
+                          className="p-1 rounded-full text-slate-500 hover:bg-slate-100 transition-colors duration-150"
                         >
                           <span className="material-symbols-outlined text-[20px]">close</span>
-                        </button>
+                        </motion.button>
                       </div>
                       <SidebarFilters className="border-0 shadow-none p-0" />
                     </div>
                     <div className="pt-4 border-t border-slate-100">
-                      <button
+                      <motion.button
+                        type="button"
+                        whileTap={buttonTap}
                         onClick={() => setFiltersOpen(false)}
-                        className="w-full bg-[#142B4A] text-white py-3 rounded-xl text-xs font-bold hover:bg-[#1B385D]"
+                        className="w-full bg-[#142B4A] text-white py-3 rounded-xl text-xs font-bold hover:bg-[#1B385D] transition-colors duration-150"
                       >
                         View {filteredProducts.length} Results
-                      </button>
+                      </motion.button>
                     </div>
                   </motion.div>
                 </>
@@ -270,58 +296,64 @@ export default function DashboardPage() {
         </section>
 
         {/* Floating Quick Cart Bar */}
-        {cartCount > 0 && (
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="fixed bottom-6 right-6 z-40"
-          >
-            <Link
-              href="/cart"
-              className="flex items-center gap-3 bg-[#142B4A] hover:bg-[#1B385D] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-105 active:scale-95 group transition-all border border-white/20"
+        <AnimatePresence>
+          {cartCount > 0 && (
+            <motion.div
+              key="dashboard-floating-cart"
+              variants={floatingBarVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="fixed bottom-6 right-6 z-40"
             >
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[22px] text-[#FF9F43]">shopping_bag</span>
-                <span className="font-headline text-xs font-bold">
-                  {cartCount === 1 ? '1 Item in Cart' : `${cartCount} Items in Cart`}
-                </span>
-              </div>
-              <span className="text-slate-400">|</span>
-              <div className="flex items-center gap-2">
-                <span className="font-price text-sm font-extrabold text-[#FF9F43]">₹{cartTotal}</span>
-                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
-                  east
-                </span>
-              </div>
-            </Link>
-          </motion.div>
-        )}
+              <Link
+                href="/cart"
+                className="flex items-center gap-3 bg-[#142B4A] hover:bg-[#1B385D] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-[1.03] active:scale-[0.97] group transition-all duration-150 border border-white/20"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[22px] text-[#FF9F43]">shopping_bag</span>
+                  <span className="font-headline text-xs font-bold">
+                    {cartCount === 1 ? '1 Item in Cart' : `${cartCount} Items in Cart`}
+                  </span>
+                </div>
+                <span className="text-slate-400">|</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-price text-sm font-extrabold text-[#FF9F43]">₹{cartTotal}</span>
+                  <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform duration-150">
+                    east
+                  </span>
+                </div>
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Product Details Modal */}
-      {selectedProduct && (
-        <ProductDetailsModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          onSelectProduct={(p) => setSelectedProduct(p)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProduct && (
+          <ProductDetailsModal
+            key={selectedProduct.id}
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+            onSelectProduct={(p) => setSelectedProduct(p)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Admin Add/Edit Modal */}
-      {showAddModal && (
-        <AdminAddProductModal
-          isOpen={showAddModal}
-          onClose={() => {
-            setShowAddModal(false);
-            setEditingProduct(null);
-          }}
-          editProduct={editingProduct}
-          onSaved={() => {
-            setShowAddModal(false);
-            setEditingProduct(null);
-          }}
-        />
-      )}
+      <AdminAddProductModal
+        isOpen={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditingProduct(null);
+        }}
+        editProduct={editingProduct}
+        onSaved={() => {
+          setShowAddModal(false);
+          setEditingProduct(null);
+        }}
+      />
 
       <Footer />
     </div>

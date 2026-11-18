@@ -8,6 +8,7 @@ const ProductContext = createContext(null);
 const PRODUCTS_CACHE_KEY = 'agrimart_seeds_products_v5';
 const CART_STORAGE_KEY = 'agrimart_cart_v2';
 const LOCAL_PRODUCTS_KEY = 'agrimart_seeds_local_v5';
+const WISHLIST_STORAGE_KEY = 'agrimart_wishlist_v1';
 const DB_TIMEOUT_MS = 25000;
 
 // Compress image helper
@@ -134,9 +135,131 @@ const writeCartStorage = (items) => {
   }
 };
 
+const readWishlistStorage = () => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeWishlistStorage = (items) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // ignore
+  }
+};
+
+// Pure filter & sort computation (derived via useMemo — avoids stale closures and loop bugs)
+const computeFilteredProducts = (sourceProducts, currentFilters, currentSort) => {
+  let result = [...sourceProducts];
+
+  // Search query filter
+  if (currentFilters.searchQuery && currentFilters.searchQuery.trim()) {
+    const q = currentFilters.searchQuery.toLowerCase().trim();
+    result = result.filter(
+      (p) =>
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q)) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        (p.description && p.description.toLowerCase().includes(q))
+    );
+  }
+
+  // Category filter
+  if (currentFilters.category) {
+    if (Array.isArray(currentFilters.category) && currentFilters.category.length > 0) {
+      result = result.filter((p) => currentFilters.category.includes(p.category));
+    } else if (
+      typeof currentFilters.category === 'string' &&
+      currentFilters.category.trim() &&
+      currentFilters.category !== 'all'
+    ) {
+      result = result.filter((p) => p.category === currentFilters.category);
+    }
+  }
+
+  // Price range filter
+  if (Array.isArray(currentFilters.priceRange) && currentFilters.priceRange.length > 0) {
+    result = result.filter((p) => {
+      return currentFilters.priceRange.some((range) => {
+        if (range === 'under-200' || range === 'under-50' || range === 'below-50') return p.price < 200;
+        if (range === '200-500' || range === '50-150' || range === '150-300') return p.price >= 200 && p.price <= 500;
+        if (range === '500-1000') return p.price > 500 && p.price <= 1000;
+        if (range === 'above-1000' || range === '1000+' || range === 'above-300' || range === '300+') {
+          return p.price > 1000 || (range.includes('300') && p.price > 300);
+        }
+        return true;
+      });
+    });
+  }
+
+  // Certifications & Agricultural Standards filter
+  if (Array.isArray(currentFilters.dietary) && currentFilters.dietary.length > 0) {
+    result = result.filter((p) => {
+      return currentFilters.dietary.some((tag) => {
+        if (tag === 'icar') return p.dietaryTags && p.dietaryTags.some((t) => /icar|nsc|govt/i.test(t));
+        if (tag === 'npop' || tag === 'organic') {
+          return p.isOrganic || (p.dietaryTags && p.dietaryTags.some((t) => /organic|npop|bio/i.test(t)));
+        }
+        if (tag === 'water-soluble' || tag === 'hydroponic') {
+          return p.dietaryTags && p.dietaryTags.some((t) => /soluble|drip|hydroponic/i.test(t));
+        }
+        if (tag === 'bio-certified' || tag === 'vegan' || tag === 'gluten-free') {
+          return p.dietaryTags && p.dietaryTags.some((t) => /fco|bio|certified|germination/i.test(t));
+        }
+        return true;
+      });
+    });
+  }
+
+  // In Stock Only - strict: must be inStock === true AND stockCount > 0
+  if (currentFilters.inStockOnly) {
+    result = result.filter((p) => p.inStock === true && (p.stockCount === undefined || p.stockCount > 0));
+  }
+
+  // Min Rating
+  if (currentFilters.minRating) {
+    result = result.filter((p) => (p.rating || 0) >= Number(currentFilters.minRating));
+  }
+
+  // Sorting
+  switch (currentSort) {
+    case 'price-low':
+      result.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-high':
+      result.sort((a, b) => b.price - a.price);
+      break;
+    case 'rating':
+      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      break;
+    case 'discount':
+      result.sort((a, b) => {
+        const discA = a.mrp && a.price ? (a.mrp - a.price) / a.mrp : 0;
+        const discB = b.mrp && b.price ? (b.mrp - b.price) / b.mrp : 0;
+        return discB - discA;
+      });
+      break;
+    case 'newest':
+      result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      break;
+    case 'recommended':
+    default:
+      break;
+  }
+
+  return result;
+};
+
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState(() => readProductsCache());
-  const [filteredProducts, setFilteredProducts] = useState(() => readProductsCache());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -154,13 +277,28 @@ export function ProductProvider({ children }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
 
-  // Cart state
-  const [cartItems, setCartItems] = useState(() => readCartStorage());
+  // Cart & Wishlist state (hydrated after mount to avoid SSR/localStorage mismatch)
+  const [storageHydrated, setStorageHydrated] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
   const [cartNotice, setCartNotice] = useState(null);
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [wishlistNotice, setWishlistNotice] = useState(null);
 
   useEffect(() => {
+    setCartItems(readCartStorage());
+    setWishlistItems(readWishlistStorage());
+    setStorageHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!storageHydrated) return;
     writeCartStorage(cartItems);
-  }, [cartItems]);
+  }, [cartItems, storageHydrated]);
+
+  useEffect(() => {
+    if (!storageHydrated) return;
+    writeWishlistStorage(wishlistItems);
+  }, [wishlistItems, storageHydrated]);
 
   const withTimeout = (promise, timeoutMs, timeoutMessage) => {
     return Promise.race([
@@ -210,99 +348,18 @@ export function ProductProvider({ children }) {
     }
   };
 
-  // Filter & Sort Logic
-  const applyFiltersAndSort = useCallback((sourceProducts, currentFilters = filters, currentSort = sortBy) => {
-    let result = [...sourceProducts];
+  // Derive filtered & sorted products cleanly whenever products, filters, or sortBy change
+  const filteredProducts = useMemo(
+    () => computeFilteredProducts(products, filters, sortBy),
+    [products, filters, sortBy]
+  );
 
-    // Search query filter
-    if (currentFilters.searchQuery && currentFilters.searchQuery.trim()) {
-      const q = currentFilters.searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (p) =>
-          (p.name && p.name.toLowerCase().includes(q)) ||
-          (p.category && p.category.toLowerCase().includes(q)) ||
-          (p.brand && p.brand.toLowerCase().includes(q)) ||
-          (p.description && p.description.toLowerCase().includes(q))
-      );
-    }
-
-    // Category filter
-    if (currentFilters.category) {
-      if (Array.isArray(currentFilters.category) && currentFilters.category.length > 0) {
-        result = result.filter((p) => currentFilters.category.includes(p.category));
-      } else if (typeof currentFilters.category === 'string' && currentFilters.category.trim() && currentFilters.category !== 'all') {
-        result = result.filter((p) => p.category === currentFilters.category);
-      }
-    }
-
-    // Price range filter
-    if (currentFilters.priceRange && currentFilters.priceRange.length > 0) {
-      result = result.filter((p) => {
-        return currentFilters.priceRange.some((range) => {
-          if (range === 'under-200' || range === 'under-50' || range === 'below-50') return p.price < 200;
-          if (range === '200-500' || range === '50-150' || range === '150-300') return p.price >= 200 && p.price <= 500;
-          if (range === '500-1000') return p.price > 500 && p.price <= 1000;
-          if (range === 'above-1000' || range === '1000+' || range === 'above-300' || range === '300+') return p.price > 1000 || (range.includes('300') && p.price > 300);
-          return true;
-        });
-      });
-    }
-
-    // Certifications & Agricultural Standards filter
-    if (currentFilters.dietary && currentFilters.dietary.length > 0) {
-      result = result.filter((p) => {
-        return currentFilters.dietary.some((tag) => {
-          if (tag === 'icar') return p.dietaryTags && p.dietaryTags.some(t => /icar|nsc|govt/i.test(t));
-          if (tag === 'npop' || tag === 'organic') return p.isOrganic || (p.dietaryTags && p.dietaryTags.some(t => /organic|npop|bio/i.test(t)));
-          if (tag === 'water-soluble' || tag === 'hydroponic') return p.dietaryTags && p.dietaryTags.some(t => /soluble|drip|hydroponic/i.test(t));
-          if (tag === 'bio-certified' || tag === 'vegan' || tag === 'gluten-free') return p.dietaryTags && p.dietaryTags.some(t => /fco|bio|certified|germination/i.test(t));
-          return true;
-        });
-      });
-    }
-
-    // In Stock Only - strict: must be inStock === true AND stockCount > 0
-    if (currentFilters.inStockOnly) {
-      result = result.filter((p) => p.inStock === true && (p.stockCount === undefined || p.stockCount > 0));
-    }
-
-    // Min Rating
-    if (currentFilters.minRating) {
-      result = result.filter((p) => (p.rating || 0) >= Number(currentFilters.minRating));
-    }
-
-    // Sorting
-    switch (currentSort) {
-      case 'price-low':
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-        break;
-      case 'discount':
-        result.sort((a, b) => {
-          const discA = a.mrp && a.price ? (a.mrp - a.price) / a.mrp : 0;
-          const discB = b.mrp && b.price ? (b.mrp - b.price) / b.mrp : 0;
-          return discB - discA;
-        });
-        break;
-      case 'newest':
-        result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-        break;
-      case 'recommended':
-      default:
-        // Keep natural curated order
-        break;
-    }
-
-    setFilteredProducts(result);
+  // Reset pagination to page 1 when filters or sort order change
+  useEffect(() => {
     setCurrentPage(1);
   }, [filters, sortBy]);
 
-  // Subscribe to Realtime Database
+  // Subscribe to Realtime Database once on mount
   useEffect(() => {
     let isMounted = true;
     const productsRef = rtdbRef(realtimeDb, 'products');
@@ -316,13 +373,11 @@ export function ProductProvider({ children }) {
           const list = Object.entries(val).map(([id, data]) => normalizeProductData(id, data));
           writeProductsCache(list);
           setProducts(list);
-          applyFiltersAndSort(list);
         } else {
           // If RTDB is empty, seed default items so user sees a rich store
           const defaults = DEFAULT_GROCERY_PRODUCTS.map((p) => normalizeProductData(p.id, p));
           writeProductsCache(defaults);
           setProducts(defaults);
-          applyFiltersAndSort(defaults);
         }
         setLoading(false);
       },
@@ -331,7 +386,6 @@ export function ProductProvider({ children }) {
         console.warn('Realtime Database notice (using local/default grocery catalog):', err?.message);
         const fallback = loadLocalProducts();
         setProducts(fallback);
-        applyFiltersAndSort(fallback);
         setLoading(false);
       }
     );
@@ -340,97 +394,91 @@ export function ProductProvider({ children }) {
       isMounted = false;
       unsubscribe();
     };
-  }, [applyFiltersAndSort]);
+  }, []);
 
-  // Update filter helper
-  const updateFilter = (filterType, value, isChecked) => {
+  // Update filter helper (stable reference, pure state update)
+  const updateFilter = useCallback((filterType, value, isChecked) => {
     setFilters((prev) => {
       const updated = { ...prev };
       if (filterType === 'inStockOnly') {
         updated.inStockOnly = isChecked !== undefined ? Boolean(isChecked) : Boolean(value);
       } else if (filterType === 'minRating') {
+        const numericVal = value === null || value === undefined ? null : Number(value);
         if (isChecked !== undefined) {
-          updated.minRating = isChecked ? Number(value) : null;
+          updated.minRating = isChecked ? numericVal : null;
         } else {
-          updated.minRating = prev.minRating === Number(value) ? null : Number(value);
+          updated.minRating = prev.minRating === numericVal ? null : numericVal;
         }
       } else if (filterType === 'searchQuery') {
         updated.searchQuery = typeof value === 'string' ? value : '';
       } else if (filterType === 'category') {
+        const currentList = Array.isArray(prev.category) ? prev.category : [];
         if (Array.isArray(value)) {
           updated.category = value;
         } else if (isChecked !== undefined) {
-          if (isChecked) {
-            updated.category = [...(updated.category || []).filter((c) => c !== value), value];
-          } else {
-            updated.category = (updated.category || []).filter((item) => item !== value);
-          }
+          updated.category = isChecked
+            ? [...currentList.filter((c) => c !== value), value]
+            : currentList.filter((item) => item !== value);
         } else {
-          const exists = (updated.category || []).includes(value);
+          const exists = currentList.includes(value);
           updated.category = exists
-            ? (updated.category || []).filter((item) => item !== value)
-            : [...(updated.category || []), value];
+            ? currentList.filter((item) => item !== value)
+            : [...currentList, value];
         }
       } else if (filterType === 'priceRange') {
+        const currentList = Array.isArray(prev.priceRange) ? prev.priceRange : [];
         if (isChecked !== undefined) {
-          if (isChecked) {
-            updated.priceRange = [...(updated.priceRange || []).filter((r) => r !== value), value];
-          } else {
-            updated.priceRange = (updated.priceRange || []).filter((item) => item !== value);
-          }
+          updated.priceRange = isChecked
+            ? [...currentList.filter((r) => r !== value), value]
+            : currentList.filter((item) => item !== value);
         } else {
-          const exists = (updated.priceRange || []).includes(value);
+          const exists = currentList.includes(value);
           updated.priceRange = exists
-            ? (updated.priceRange || []).filter((item) => item !== value)
-            : [...(updated.priceRange || []), value];
+            ? currentList.filter((item) => item !== value)
+            : [...currentList, value];
         }
       } else if (filterType === 'dietary') {
+        const currentList = Array.isArray(prev.dietary) ? prev.dietary : [];
         if (isChecked !== undefined) {
-          if (isChecked) {
-            updated.dietary = [...(updated.dietary || []).filter((d) => d !== value), value];
-          } else {
-            updated.dietary = (updated.dietary || []).filter((item) => item !== value);
-          }
+          updated.dietary = isChecked
+            ? [...currentList.filter((d) => d !== value), value]
+            : currentList.filter((item) => item !== value);
         } else {
-          const exists = (updated.dietary || []).includes(value);
+          const exists = currentList.includes(value);
           updated.dietary = exists
-            ? (updated.dietary || []).filter((item) => item !== value)
-            : [...(updated.dietary || []), value];
+            ? currentList.filter((item) => item !== value)
+            : [...currentList, value];
         }
       } else {
+        const currentList = Array.isArray(prev[filterType]) ? prev[filterType] : [];
         if (isChecked !== undefined) {
-          if (isChecked) {
-            updated[filterType] = [...(updated[filterType] || []).filter((x) => x !== value), value];
-          } else {
-            updated[filterType] = (updated[filterType] || []).filter((item) => item !== value);
-          }
+          updated[filterType] = isChecked
+            ? [...currentList.filter((x) => x !== value), value]
+            : currentList.filter((item) => item !== value);
         } else {
           updated[filterType] = value;
         }
       }
-      applyFiltersAndSort(products, updated, sortBy);
       return updated;
     });
-  };
+  }, []);
 
-  const setSearchQuery = (query) => {
+  const setSearchQuery = useCallback((query) => {
     updateFilter('searchQuery', query, true);
-  };
+  }, [updateFilter]);
 
-  const clearAllFilters = () => {
-    const cleared = {
+  const clearAllFilters = useCallback(() => {
+    setFilters({
       category: [],
       priceRange: [],
       dietary: [],
       inStockOnly: false,
       minRating: null,
       searchQuery: '',
-    };
-    setFilters(cleared);
-    applyFiltersAndSort(products, cleared, sortBy);
-  };
+    });
+  }, []);
 
-  // Nav category slug helper
+  // Nav category slug helper (stable reference — NEVER re-triggers when user modifies filters)
   const applyNavCategorySlug = useCallback((slug) => {
     const map = {
       all: [],
@@ -463,9 +511,12 @@ export function ProductProvider({ children }) {
       minRating: null,
       searchQuery: '',
     };
-    setFilters(newFilters);
-    applyFiltersAndSort(products, newFilters, sortBy);
-  }, [products, sortBy, applyFiltersAndSort]);
+
+    setFilters((prev) => {
+      if (JSON.stringify(prev) === JSON.stringify(newFilters)) return prev;
+      return newFilters;
+    });
+  }, []);
 
   // Add Product (Admin)
   const addProduct = async (productData, imageFiles = []) => {
@@ -493,7 +544,7 @@ export function ProductProvider({ children }) {
 
       const normalized = normalizeProductData(productId, {
         ...productData,
-        imageDatas: imageDatas.length > 0 ? imageDatas : [productData.imageUrl || 'https://via.placeholder.com/400x400?text=Gupta+Mart'],
+        imageDatas: imageDatas.length > 0 ? imageDatas : [productData.imageUrl || 'https://via.placeholder.com/400x400?text=AgriMart'],
       });
 
       await withTimeout(
@@ -504,7 +555,6 @@ export function ProductProvider({ children }) {
 
       const next = [normalized, ...products];
       setProducts(next);
-      applyFiltersAndSort(next);
       return normalized;
     } catch (err) {
       console.warn('Realtime Database fallback for addProduct:', err);
@@ -526,13 +576,12 @@ export function ProductProvider({ children }) {
 
       const localProduct = normalizeProductData(localId, {
         ...productData,
-        imageDatas: imageDatas.length > 0 ? imageDatas : [productData.imageUrl || 'https://via.placeholder.com/400x400?text=Gupta+Mart'],
+        imageDatas: imageDatas.length > 0 ? imageDatas : [productData.imageUrl || 'https://via.placeholder.com/400x400?text=AgriMart'],
       });
 
       const next = [localProduct, ...products];
       saveLocalProducts(next);
       setProducts(next);
-      applyFiltersAndSort(next);
       return localProduct;
     } finally {
       setLoading(false);
@@ -576,7 +625,6 @@ export function ProductProvider({ children }) {
 
       const next = products.map((p) => (p.id === productId ? updated : p));
       setProducts(next);
-      applyFiltersAndSort(next);
       return updated;
     } catch (err) {
       console.warn('Realtime Database fallback for editProduct:', err);
@@ -589,7 +637,6 @@ export function ProductProvider({ children }) {
       const next = products.map((p) => (p.id === productId ? updated : p));
       saveLocalProducts(next);
       setProducts(next);
-      applyFiltersAndSort(next);
       return updated;
     } finally {
       setLoading(false);
@@ -612,9 +659,39 @@ export function ProductProvider({ children }) {
     const next = products.filter((p) => p.id !== productId);
     saveLocalProducts(next);
     setProducts(next);
-    applyFiltersAndSort(next);
     setLoading(false);
   };
+
+  // Wishlist Functions
+  const addToWishlist = (product) => {
+    setWishlistItems((prev) => {
+      if (prev.some((p) => p.id === product.id)) return prev;
+      return [...prev, product];
+    });
+    setWishlistNotice({
+      id: `wl-add-${product.id}-${Date.now()}`,
+      action: 'added',
+      name: product.name,
+    });
+  };
+
+  const removeFromWishlist = (productId) => {
+    const existing = wishlistItems.find((p) => p.id === productId);
+    setWishlistItems((prev) => prev.filter((p) => p.id !== productId));
+    setWishlistNotice({
+      id: `wl-rem-${productId}-${Date.now()}`,
+      action: 'removed',
+      name: existing?.name || 'Item',
+    });
+  };
+
+  const clearWishlistNotice = useCallback(() => {
+    setWishlistNotice(null);
+  }, []);
+
+  const isInWishlist = (productId) => wishlistItems.some((p) => p.id === productId);
+
+  const wishlistCount = wishlistItems.length;
 
   // Cart Functions
   const addToCart = (product, quantity = 1) => {
@@ -660,9 +737,9 @@ export function ProductProvider({ children }) {
     setCartItems([]);
   };
 
-  const clearCartNotice = () => {
+  const clearCartNotice = useCallback(() => {
     setCartNotice(null);
-  };
+  }, []);
 
   // Total cart calculation
   const cartCount = useMemo(() => {
@@ -690,14 +767,18 @@ export function ProductProvider({ children }) {
     clearAllFilters,
     applyNavCategorySlug,
     sortBy,
-    setSortBy: (newSort) => {
-      setSortBy(newSort);
-      applyFiltersAndSort(products, filters, newSort);
-    },
+    setSortBy,
     currentPage,
     setCurrentPage,
     totalPages,
     itemsPerPage,
+    wishlistItems,
+    wishlistCount,
+    wishlistNotice,
+    addToWishlist,
+    removeFromWishlist,
+    clearWishlistNotice,
+    isInWishlist,
     cartItems,
     cartCount,
     cartTotal,

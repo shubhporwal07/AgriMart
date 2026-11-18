@@ -1,33 +1,35 @@
+'use client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, X } from 'lucide-react';
+import { backdropVariants, modalVariants, buttonTap, iconTap } from '../utils/motion';
 
-export default function ConfirmDialog({ 
-  isOpen, 
-  title = 'Confirm Action', 
+export default function ConfirmDialog({
+  isOpen,
+  title = 'Confirm Action',
   message = 'Are you sure?',
   confirmText = 'Delete',
   cancelText = 'Cancel',
   onConfirm,
   onCancel,
   isLoading = false,
-  isDangerous = false
+  isDangerous = false,
 }) {
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          variants={backdropVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50 flex items-center justify-center p-4"
           onClick={onCancel}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            variants={modalVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
@@ -38,71 +40,52 @@ export default function ConfirmDialog({
             <div className="relative p-6 sm:p-8">
               {/* Close button */}
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                type="button"
+                whileTap={iconTap}
                 onClick={onCancel}
-                className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition"
+                className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-150"
+                aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
               </motion.button>
 
               {/* Icon */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1, type: 'spring', stiffness: 300 }}
+              <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
-                  isDangerous
-                    ? 'bg-red-100'
-                    : 'bg-amber-100'
+                  isDangerous ? 'bg-red-100' : 'bg-amber-100'
                 }`}
               >
                 <AlertCircle className={`w-6 h-6 ${isDangerous ? 'text-red-600' : 'text-amber-600'}`} />
-              </motion.div>
+              </div>
 
               {/* Title */}
-              <motion.h2
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="text-xl font-bold text-slate-900 mb-2"
-              >
+              <h2 className="text-xl font-bold text-slate-900 mb-2">
                 {title}
-              </motion.h2>
+              </h2>
 
               {/* Message */}
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-sm text-gray-600 mb-6 leading-relaxed"
-              >
+              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
                 {message}
-              </motion.p>
+              </p>
 
               {/* Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="flex gap-3"
-              >
+              <div className="flex gap-3">
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  whileTap={buttonTap}
                   onClick={onCancel}
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-150 disabled:opacity-50"
                 >
                   {cancelText}
                 </motion.button>
 
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  whileTap={buttonTap}
                   onClick={onConfirm}
                   disabled={isLoading}
-                  className={`flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition disabled:opacity-50 ${
+                  className={`flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-colors duration-150 disabled:opacity-50 ${
                     isDangerous
                       ? 'bg-red-600 hover:bg-red-700'
                       : 'bg-slate-900 hover:bg-slate-800'
@@ -110,7 +93,7 @@ export default function ConfirmDialog({
                 >
                   {isLoading ? 'Deleting...' : confirmText}
                 </motion.button>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </motion.div>

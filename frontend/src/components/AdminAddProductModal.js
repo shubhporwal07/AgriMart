@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
+import { backdropVariants, modalVariants, fieldMessageVariants, iconTap } from '../utils/motion';
 
 export default function AdminAddProductModal({
   isOpen,
@@ -122,8 +123,6 @@ export default function AdminAddProductModal({
     setSuccess('');
   }, [editProduct, isOpen]);
 
-  if (!isOpen) return null;
-
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -229,15 +228,22 @@ export default function AdminAddProductModal({
 
   return (
     <AnimatePresence>
-      <div
+      {isOpen && (
+      <motion.div
+        key="admin-modal-backdrop"
+        variants={backdropVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
         className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
         onClick={onClose}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          transition={{ duration: 0.2 }}
+          key="admin-modal-dialog"
+          variants={modalVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
           onClick={(e) => e.stopPropagation()}
           className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[92vh] overflow-hidden flex flex-col border border-slate-100 my-auto"
         >
@@ -253,28 +259,50 @@ export default function AdminAddProductModal({
                 {editProduct ? 'Edit Agricultural Product' : 'Add New Seed or Fertilizer'}
               </h2>
             </div>
-            <button
+            <motion.button
+              type="button"
+              whileTap={iconTap}
               onClick={onClose}
-              className="p-1 rounded-full text-slate-400 hover:text-slate-700"
+              className="p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors duration-150"
             >
               <span className="material-symbols-outlined text-[20px]">close</span>
-            </button>
+            </motion.button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(92vh-80px)] space-y-6">
-            {error && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">error</span>
-                <span>{error}</span>
-              </div>
-            )}
-            {success && (
-              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                <span>{success}</span>
-              </div>
-            )}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  key="admin-error"
+                  variants={fieldMessageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="overflow-hidden"
+                >
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">error</span>
+                    <span>{error}</span>
+                  </div>
+                </motion.div>
+              )}
+              {success && (
+                <motion.div
+                  key="admin-success"
+                  variants={fieldMessageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="overflow-hidden"
+                >
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                    <span>{success}</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Step 1: Basic Information */}
             <div className="space-y-4">
@@ -694,7 +722,8 @@ export default function AdminAddProductModal({
             </div>
           </form>
         </motion.div>
-      </div>
+      </motion.div>
+      )}
     </AnimatePresence>
   );
 }
