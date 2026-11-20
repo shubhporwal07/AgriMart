@@ -66,6 +66,8 @@ backend/.env
 # Testing
 coverage
 .nyc_output
+screenshots/
+.agents/
 
 .DS_Store
 Thumbs.db

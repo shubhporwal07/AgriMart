@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,11 +7,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
 import LocationSelectorModal from './LocationSelectorModal';
+import { ChevronDown } from 'lucide-react';
 import { dropdownVariants, backdropVariants, EASE, buttonTap, iconTap } from '../utils/motion';
 
 export default function Navbar() {
   const { user, isAdmin, logout } = useAuth();
-  const { cartCount, cartTotal, filters, setSearchQuery, wishlistCount, products } = useProducts();
+  const { cartCount, cartTotal, filters, setSearchQuery, wishlistCount, products, categories: contextCategories } = useProducts();
   const {
     location: userLocation,
     isServiceable,
@@ -94,7 +95,7 @@ export default function Navbar() {
     }
   };
 
-  const categories = [
+  const defaultNavCategories = [
     { label: 'Vegetable Seeds', slug: 'vegetable-seeds' },
     { label: 'Grain & Crop Seeds', slug: 'field-crop-seeds' },
     { label: 'Organic Manure & Compost', slug: 'organic-fertilizers' },
@@ -105,51 +106,67 @@ export default function Navbar() {
     { label: 'Soil Health Kits', slug: 'soil-kits' },
   ];
 
+  const categories = useMemo(() => {
+    if (!contextCategories || contextCategories.length === 0) return defaultNavCategories;
+    return contextCategories.map((cat) => {
+      const name = typeof cat === 'string' ? cat : cat?.name;
+      const matched = defaultNavCategories.find((d) => d.label.toLowerCase() === name.toLowerCase());
+      if (matched) return matched;
+      return {
+        label: name,
+        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      };
+    });
+  }, [contextCategories]);
+
   const safeCartCount = mounted ? cartCount : 0;
   const safeCartTotal = mounted ? cartTotal : 0;
   const safeWishlistCount = mounted ? wishlistCount : 0;
+  const isHomePage = pathname === '/';
 
   return (
     <>
-      <header className="sticky top-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md shadow-[0_1px_8px_rgba(20,43,74,0.06)] border-b border-[#E2E8F0]">
-        {/* Top Kisan Notice Bar */}
-        <div className="bg-[#142B4A] text-white text-[11px] font-semibold">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-8 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[16px] text-[#FF9F43]">local_shipping</span>
-              <span>
-                Express Farm Delivery & Certified Inputs | Flat ₹200 OFF on orders above ₹999 | Code:{' '}
-                <span className="font-bold tracking-wider text-[#FF9F43] bg-white/10 px-1.5 py-0.5 rounded">
-                  KISAN200
+      <header className="sticky top-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md shadow-[0_1px_8px_rgba(11,27,48,0.08)] border-b border-[#E2E8F0]">
+        {/* Top Kisan Notice Bar - only displayed on home page */}
+        {isHomePage && (
+          <div className="bg-[#0B1B30] text-white text-[11px] font-semibold">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-8 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-[#FF9F43]">local_shipping</span>
+                <span>
+                  Express Farm Delivery & Certified Inputs | Flat ₹200 OFF on orders above ₹999 | Code:{' '}
+                  <span className="font-bold tracking-wider text-[#FF9F43] bg-white/10 px-1.5 py-0.5 rounded">
+                    KISAN200
+                  </span>
                 </span>
-              </span>
-            </div>
-            <div className="hidden md:flex items-center gap-4 text-slate-200">
-              <a href="tel:18002474627" className="hover:text-white transition-colors duration-150 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px] text-[#FF9F43]">support_agent</span>
-                Kisan Helpline: 1800-AGRI-MART
-              </a>
-              <span className="opacity-30">|</span>
-              <Link href="/about-us" className="hover:text-white transition-colors duration-150">
-                Dealer & FPO Inquiries
-              </Link>
-              <span className="opacity-30">|</span>
-              <Link href="/dashboard?category=soil-kits" className="hover:text-white transition-colors duration-150">
-                Soil Testing Lab
-              </Link>
+              </div>
+              <div className="hidden md:flex items-center gap-4 text-slate-200">
+                <a href="tel:18002474627" className="hover:text-white transition-colors duration-150 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px] text-[#FF9F43]">support_agent</span>
+                  Kisan Helpline: 1800-AGRI-MART
+                </a>
+                <span className="opacity-30">|</span>
+                <Link href="/about-us" className="hover:text-white transition-colors duration-150">
+                  Dealer & FPO Inquiries
+                </Link>
+                <span className="opacity-30">|</span>
+                <Link href="/dashboard?category=soil-kits" className="hover:text-white transition-colors duration-150">
+                  Soil Testing Lab
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Main Brand & Actions Header */}
         <div className="h-20 max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           {/* Brand Logo & Name */}
           <div className="flex items-center gap-4 shrink-0">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-[#142B4A] flex items-center justify-center text-[#FF9F43] shadow-sm transition-transform duration-150 ease-out group-hover:scale-[1.04]">
+              <div className="w-9 h-9 rounded-xl bg-[#0B1B30] flex items-center justify-center text-[#FF9F43] shadow-sm transition-transform duration-150 ease-out group-hover:scale-[1.04]">
                 <span className="material-symbols-outlined text-[24px]">potted_plant</span>
               </div>
-              <span className="font-headline text-xl sm:text-2xl text-[#142B4A] tracking-tight font-extrabold flex items-center">
+              <span className="font-headline text-xl sm:text-2xl text-[#0B1B30] tracking-tight font-extrabold flex items-center">
                 Agri<span className="text-[#FF9F43]">Mart</span>
               </span>
             </Link>
@@ -167,7 +184,7 @@ export default function Navbar() {
             >
               <span
                 className={`material-symbols-outlined text-[20px] ${
-                  isServiceable ? 'text-[#142B4A]' : 'text-rose-600'
+                  isServiceable ? 'text-[#0B1B30]' : 'text-rose-600'
                 }`}
               >
                 pin_drop
@@ -178,7 +195,7 @@ export default function Navbar() {
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                       isServiceable
-                        ? 'bg-[#142B4A] text-[#FF9F43]'
+                        ? 'bg-[#0B1B30] text-[#FF9F43]'
                         : 'bg-rose-600 text-white'
                     }`}
                   >
@@ -196,7 +213,7 @@ export default function Navbar() {
           {/* Global Live Search Bar with smooth Suggestions Dropdown */}
           <div ref={searchRef} className="relative flex-1 max-w-2xl lg:max-w-3xl px-2 hidden sm:block">
             <form onSubmit={handleSearchSubmit}>
-              <div className="relative flex items-center bg-[#EDF2F7] rounded-xl px-3.5 py-1.5 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#142B4A]/20 border border-[#CBD5E1]/60 focus-within:border-[#142B4A]/40 transition-all duration-150">
+              <div className="relative flex items-center bg-[#EDF2F7] rounded-xl px-3.5 py-1.5 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#0B1B30]/20 border border-[#CBD5E1]/60 focus-within:border-[#0B1B30]/40 transition-all duration-150">
                 <span className="material-symbols-outlined text-[#74777E] mr-2 text-[20px] shrink-0">search</span>
                 <input
                   type="text"
@@ -230,7 +247,7 @@ export default function Navbar() {
                 <motion.button
                   type="submit"
                   whileTap={buttonTap}
-                  className="text-xs bg-[#142B4A] text-white px-3.5 py-1.5 rounded-lg font-bold hover:bg-[#1B385D] transition-colors duration-150 shrink-0 shadow-sm"
+                  className="text-xs bg-[#0B1B30] text-white px-3.5 py-1.5 rounded-lg font-bold hover:bg-[#152B48] transition-colors duration-150 shrink-0 shadow-sm"
                 >
                   Search
                 </motion.button>
@@ -252,16 +269,16 @@ export default function Navbar() {
                       key={item.id}
                       type="button"
                       onClick={() => handleSuggestionSelect(item.name)}
-                      className="w-full px-3.5 py-2 flex items-center justify-between gap-3 text-left hover:bg-[#F7F9FC] transition-colors duration-150"
+                      className="w-full px-3.5 py-2 flex items-center justify-between gap-3 text-left hover:bg-[#FAF5EB] transition-colors duration-150"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span className="material-symbols-outlined text-[16px] text-slate-400 shrink-0">search</span>
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-[#142B4A] truncate">{item.name}</p>
+                          <p className="text-xs font-bold text-[#0B1B30] truncate">{item.name}</p>
                           <p className="text-[10px] text-[#5A6B82] truncate">{item.category}</p>
                         </div>
                       </div>
-                      <span className="font-price text-xs font-extrabold text-[#142B4A] shrink-0">
+                      <span className="font-price text-xs font-extrabold text-[#0B1B30] shrink-0">
                         ₹{item.price}
                       </span>
                     </button>
@@ -276,7 +293,7 @@ export default function Navbar() {
             {/* Wishlist / Favorites */}
             <Link
               href="/wishlist"
-              className="hidden md:flex relative items-center justify-center p-2 text-[#5A6B82] hover:text-rose-500 transition-colors duration-150 rounded-xl hover:bg-slate-100/80 active:scale-[0.95]"
+              className="flex relative items-center justify-center p-2 text-[#5A6B82] hover:text-rose-500 transition-colors duration-150 rounded-xl hover:bg-slate-100/80 active:scale-[0.95]"
               title="My Wishlist"
               aria-label="My Wishlist"
             >
@@ -310,29 +327,30 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-slate-100 transition-colors duration-150 active:scale-[0.97]"
+                  className="flex items-center gap-2 cursor-pointer p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-colors duration-150 active:scale-[0.97]"
+                  aria-expanded={userDropdownOpen}
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#142B4A] flex items-center justify-center text-white font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-[#0B1B30] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-xs">
                     {user.displayName ? user.displayName[0].toUpperCase() : 'U'}
                   </div>
-                  <div className="hidden md:flex flex-col text-left">
-                    <span className="text-[10px] text-[#5A6B82] leading-none">Welcome</span>
-                    <span className="text-xs text-[#263449] font-bold flex items-center gap-0.5 truncate max-w-[90px]">
+                  <div className="hidden md:flex flex-col text-left min-w-0">
+                    <span className="text-[10px] text-[#5A6B82] leading-none font-medium">Welcome</span>
+                    <span className="text-xs text-[#263449] font-bold truncate max-w-[110px] lg:max-w-[130px]">
                       {user.displayName || user.email?.split('@')[0]}
-                      <motion.span
-                        animate={{ rotate: userDropdownOpen ? 180 : 0 }}
-                        transition={{ duration: 0.18, ease: EASE.inOut }}
-                        className="material-symbols-outlined text-[14px] inline-block"
-                      >
-                        expand_more
-                      </motion.span>
                     </span>
                   </div>
+                  <motion.span
+                    animate={{ rotate: userDropdownOpen ? 180 : 0 }}
+                    transition={{ duration: 0.18, ease: EASE.inOut }}
+                    className="inline-flex items-center justify-center shrink-0 text-slate-500"
+                  >
+                    <ChevronDown className="w-4 h-4 stroke-[2.25]" />
+                  </motion.span>
                 </button>
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#142B4A] hover:bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all duration-150 active:scale-[0.97]"
+                  className="flex items-center gap-1.5 text-xs font-bold text-[#0B1B30] hover:bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all duration-150 active:scale-[0.97]"
                 >
                   <span className="material-symbols-outlined text-[18px]">account_circle</span>
                   <span>Sign In</span>
@@ -394,7 +412,7 @@ export default function Navbar() {
             {/* Cart Pill */}
             <Link
               href="/cart"
-              className="flex items-center gap-2.5 bg-[#142B4A] hover:bg-[#1B385D] text-white px-3.5 py-2 rounded-xl transition-all duration-150 active:scale-[0.97] shadow-[0_2px_8px_rgba(20,43,74,0.18)]"
+              className="flex items-center gap-2.5 bg-[#0B1B30] hover:bg-[#152B48] text-white px-3.5 py-2 rounded-xl transition-all duration-150 active:scale-[0.97] shadow-[0_2px_8px_rgba(11,27,48,0.22)]"
             >
               <div className="relative flex items-center">
                 <motion.span
@@ -413,7 +431,7 @@ export default function Navbar() {
                       animate={{ scale: [1, 1.22, 1], opacity: 1 }}
                       exit={{ scale: 0.7, opacity: 0 }}
                       transition={{ duration: 0.22, ease: EASE.out }}
-                      className="absolute -top-2.5 -right-2.5 bg-[#FF9F43] text-[#142B4A] font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-sm"
+                      className="absolute -top-2.5 -right-2.5 bg-[#FF9F43] text-[#0B1B30] font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-sm"
                     >
                       {safeCartCount}
                     </motion.span>
@@ -435,7 +453,7 @@ export default function Navbar() {
               type="button"
               whileTap={iconTap}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#142B4A] sm:hidden rounded-lg hover:bg-slate-100 transition-colors duration-150"
+              className="p-2 text-[#0B1B30] sm:hidden rounded-lg hover:bg-slate-100 transition-colors duration-150"
               aria-label="Toggle Navigation"
               aria-expanded={mobileMenuOpen}
             >
@@ -457,7 +475,7 @@ export default function Navbar() {
 
         {/* Mobile Search Bar (Only visible on small phones) */}
         <div className="sm:hidden px-4 pb-3">
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-[#EDF2F7] rounded-xl px-3 py-1.5 border border-[#CBD5E1]/60 focus-within:bg-white focus-within:border-[#142B4A]/40 transition-all duration-150">
+          <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-[#EDF2F7] rounded-xl px-3 py-1.5 border border-[#CBD5E1]/60 focus-within:bg-white focus-within:border-[#0B1B30]/40 transition-all duration-150">
             <span className="material-symbols-outlined text-[#74777E] mr-2 text-[18px] shrink-0">search</span>
             <input
               type="text"
@@ -489,7 +507,7 @@ export default function Navbar() {
             <motion.button
               type="submit"
               whileTap={buttonTap}
-              className="text-[11px] bg-[#142B4A] text-white px-2.5 py-1 rounded-md font-bold hover:bg-[#1B385D] transition-colors duration-150 shrink-0 shadow-sm"
+              className="text-[11px] bg-[#0B1B30] text-white px-2.5 py-1 rounded-md font-bold hover:bg-[#152B48] transition-colors duration-150 shrink-0 shadow-sm"
             >
               Search
             </motion.button>
@@ -502,7 +520,7 @@ export default function Navbar() {
             <nav className="flex items-center gap-4 overflow-x-auto no-scrollbar py-1">
               <Link
                 href="/dashboard?category=all"
-                className="flex items-center gap-1 text-xs font-extrabold text-[#142B4A] shrink-0 hover:text-[#E27B12] transition-colors duration-150"
+                className="flex items-center gap-1 text-xs font-extrabold text-[#0B1B30] shrink-0 hover:text-[#E27B12] transition-colors duration-150"
               >
                 <span className="material-symbols-outlined text-[17px]">grid_view</span>
                 <span>All Agri Products</span>
@@ -513,7 +531,7 @@ export default function Navbar() {
                 <Link
                   key={cat.slug}
                   href={`/dashboard?category=${cat.slug}`}
-                  className="text-xs font-semibold text-[#5A6B82] hover:text-[#142B4A] whitespace-nowrap transition-colors duration-150"
+                  className="text-xs font-semibold text-[#5A6B82] hover:text-[#0B1B30] whitespace-nowrap transition-colors duration-150"
                 >
                   {cat.label}
                 </Link>
@@ -529,7 +547,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/dashboard?category=soil-nutrition-corner"
-                className="flex items-center gap-1 text-xs bg-[#E2E8F0] text-[#142B4A] px-3 py-1 rounded-full font-bold hover:bg-slate-300 transition-colors duration-150 active:scale-[0.97]"
+                className="flex items-center gap-1 text-xs bg-[#E2E8F0] text-[#0B1B30] px-3 py-1 rounded-full font-bold hover:bg-slate-300 transition-colors duration-150 active:scale-[0.97]"
               >
                 <span>🧪</span> Soil Nutrition Corner
               </Link>
@@ -563,7 +581,7 @@ export default function Navbar() {
                       setMobileMenuOpen(false);
                       setLocationModalOpen(true);
                     }}
-                    className="flex items-center gap-1.5 text-xs font-bold text-[#142B4A] bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg text-left transition-colors duration-150"
+                    className="flex items-center gap-1.5 text-xs font-bold text-[#0B1B30] bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg text-left transition-colors duration-150"
                   >
                     <span className="material-symbols-outlined text-[16px] text-[#E27B12]">location_on</span>
                     <span className="truncate max-w-[170px]">
@@ -576,7 +594,7 @@ export default function Navbar() {
                       isServiceable ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
                     }`}
                   >
-                    {isServiceable ? deliveryTime || '⚡ 10 Mins' : 'Outside 10km'}
+                    {isServiceable ? deliveryTime || '⚡ Express Delivery' : 'Outside 10km'}
                   </span>
                 </div>
                 {categories.map((cat) => (

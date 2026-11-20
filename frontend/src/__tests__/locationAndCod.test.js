@@ -1,76 +1,84 @@
 import { describe, it, expect } from 'vitest';
-import { calculateDistanceKm, PHAGWARA_HUB, PRESET_LOCATIONS } from '../contexts/LocationContext';
+import { calculateDistanceKm, LPU_HUB, PRESET_LOCATIONS } from '../contexts/LocationContext';
 
-describe('10 km Geofencing & Serviceability Engine (Phagwara, Kapurthala)', () => {
-  it('correctly calculates distance for locations within 10 km radius', () => {
-    // Model Town, Phagwara
-    const modelTownDist = calculateDistanceKm(
-      31.2205,
-      75.7750,
-      PHAGWARA_HUB.lat,
-      PHAGWARA_HUB.lng
-    );
-    expect(modelTownDist).toBeLessThanOrEqual(10);
-    expect(modelTownDist).toBeLessThan(5);
-
-    // LPU Campus, Phagwara
+describe('AgriMart 30 km Serviceability & Delivery Engine (Hub: LPU Phagwara)', () => {
+  it('correctly calculates distance for locations within 10 km express delivery zone from LPU', () => {
+    // LPU Campus (Hub Location)
     const lpuDist = calculateDistanceKm(
       31.2536,
       75.7037,
-      PHAGWARA_HUB.lat,
-      PHAGWARA_HUB.lng
+      LPU_HUB.lat,
+      LPU_HUB.lng
     );
-    expect(lpuDist).toBeLessThanOrEqual(10);
-    expect(lpuDist).toBeLessThan(10);
+    expect(lpuDist).toBeLessThanOrEqual(1.0);
 
-    // Central Bus Stand & GT Road, Phagwara
+    // Model Town, Phagwara (~7.7 km from LPU)
+    const modelTownDist = calculateDistanceKm(
+      31.2205,
+      75.7750,
+      LPU_HUB.lat,
+      LPU_HUB.lng
+    );
+    expect(modelTownDist).toBeLessThanOrEqual(10);
+    expect(modelTownDist).toBeGreaterThan(5);
+
+    // Central Bus Stand & GT Road, Phagwara (~6.8 km from LPU)
     const gtRoadDist = calculateDistanceKm(
       31.2272,
       75.7680,
-      PHAGWARA_HUB.lat,
-      PHAGWARA_HUB.lng
+      LPU_HUB.lat,
+      LPU_HUB.lng
     );
     expect(gtRoadDist).toBeLessThanOrEqual(10);
-    expect(gtRoadDist).toBeLessThan(3);
   });
 
-  it('correctly flags locations outside 10 km radius as unserviceable', () => {
-    // Kapurthala City Center (~26-38 km)
+  it('correctly handles locations between 10 km and 30 km (Standard Delivery Zone)', () => {
+    // Jalandhar City Center (~14.5 km from LPU)
+    const jalandharCityDist = calculateDistanceKm(
+      31.3260,
+      75.5762,
+      LPU_HUB.lat,
+      LPU_HUB.lng
+    );
+    expect(jalandharCityDist).toBeGreaterThan(10);
+    expect(jalandharCityDist).toBeLessThanOrEqual(30);
+
+    // Kartarpur (~28.4 km from LPU)
+    const kartarpurDist = calculateDistanceKm(
+      31.4410,
+      75.5000,
+      LPU_HUB.lat,
+      LPU_HUB.lng
+    );
+    expect(kartarpurDist).toBeGreaterThan(15);
+    expect(kartarpurDist).toBeLessThanOrEqual(30);
+  });
+
+  it('flags locations beyond 30 km as unserviceable', () => {
+    // Kapurthala City Center (~33.8 km > 30 km)
     const kapurthalaDist = calculateDistanceKm(
       31.3800,
       75.3800,
-      PHAGWARA_HUB.lat,
-      PHAGWARA_HUB.lng
+      LPU_HUB.lat,
+      LPU_HUB.lng
     );
-    expect(kapurthalaDist).toBeGreaterThan(10);
     expect(kapurthalaDist).toBeGreaterThan(30);
 
-    // Jalandhar Cantt (~15.7 km > 10 km)
-    const jalandharDist = calculateDistanceKm(
-      31.2789,
-      75.6190,
-      PHAGWARA_HUB.lat,
-      PHAGWARA_HUB.lng
-    );
-    expect(jalandharDist).toBeGreaterThan(10);
-    expect(jalandharDist).toBeGreaterThan(15);
-
-    // Connaught Place, New Delhi (~340 km)
+    // Connaught Place, New Delhi (~326 km)
     const delhiDist = calculateDistanceKm(
       28.6315,
       77.2167,
-      PHAGWARA_HUB.lat,
-      PHAGWARA_HUB.lng
+      LPU_HUB.lat,
+      LPU_HUB.lng
     );
-    expect(delhiDist).toBeGreaterThan(10);
-    expect(delhiDist).toBeGreaterThan(300);
+    expect(delhiDist).toBeGreaterThan(30);
   });
 
-  it('provides preset delivery locations covering Phagwara and demo unserviceable zones', () => {
-    expect(PRESET_LOCATIONS.length).toBeGreaterThanOrEqual(6);
-    const phagwaraTown = PRESET_LOCATIONS.find((l) => l.id === 'phagwara-modeltown');
-    expect(phagwaraTown).toBeDefined();
-    expect(phagwaraTown.area).toContain('Phagwara, Kapurthala');
+  it('provides preset delivery locations with LPU hub location', () => {
+    expect(PRESET_LOCATIONS.length).toBeGreaterThanOrEqual(8);
+    const lpuCampus = PRESET_LOCATIONS.find((l) => l.id === 'lpu-main-gate');
+    expect(lpuCampus).toBeDefined();
+    expect(lpuCampus.area).toContain('Lovely Professional University');
 
     const kapurthalaOutside = PRESET_LOCATIONS.find((l) => l.id === 'kapurthala-center');
     expect(kapurthalaOutside).toBeDefined();
@@ -85,16 +93,16 @@ describe('Cash on Delivery (COD) Order Logic', () => {
       paymentMethod: 'Cash on Delivery (COD)',
       paymentStatus: 'Pending (Pay on Delivery)',
       status: 'placed',
-      deliverySlot: '12-15 Mins Express',
+      deliverySlot: 'Express Delivery (Fast Parcel Dispatch)',
       amount: 450,
       currency: 'INR',
       shippingAddress: {
         fullName: 'Test User',
         phone: '9876543210',
-        addressLine1: 'Model Town',
+        addressLine1: 'LPU Campus Law Gate',
         city: 'Phagwara',
         state: 'Punjab',
-        pincode: '144401',
+        pincode: '144411',
       },
     };
 
@@ -102,6 +110,6 @@ describe('Cash on Delivery (COD) Order Logic', () => {
     expect(codOrder.paymentStatus).toBe('Pending (Pay on Delivery)');
     expect(codOrder.status).toBe('placed');
     expect(codOrder.shippingAddress.city).toBe('Phagwara');
-    expect(codOrder.shippingAddress.pincode).toBe('144401');
+    expect(codOrder.shippingAddress.pincode).toBe('144411');
   });
 });

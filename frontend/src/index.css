@@ -20,7 +20,7 @@
   body {
     margin: 0;
     padding: 0;
-    @apply antialiased bg-[#F7F9FC] text-[#263449];
+    @apply antialiased bg-[#FAF5EB] text-[#263449];
     font-family: 'Inter', sans-serif;
   }
 
@@ -67,25 +67,63 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbars */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Custom Colored Website Scrollbar (Non-generic, branded cyan-emerald styling) */
+html,
+body {
+  scrollbar-color: #00ead5 rgba(11, 27, 48, 0.08);
+  scrollbar-width: thin;
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(11, 27, 48, 0.04);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ead5 0%, #10B981 100%);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 8px rgba(0, 234, 213, 0.35);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00c7b5 0%, #059669 100%);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #00a89a;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Modals & Dialogs where scrollbar is hidden while preserving smooth scrolling */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+.no-scrollbar,
+.scrollbar-hide {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox, Chrome 121+, Safari 18.2+ */
 }
 
 @layer utilities {
   .animate-skeleton-shimmer {
     animation: skeleton-shimmer 1.35s ease-in-out infinite;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
   }
 }
 

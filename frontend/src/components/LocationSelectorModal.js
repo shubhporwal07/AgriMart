@@ -71,7 +71,7 @@ export default function LocationSelectorModal() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-scrollbar"
           onClick={() => setLocationModalOpen(false)}
         >
           <motion.div
@@ -80,7 +80,7 @@ export default function LocationSelectorModal() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto my-auto relative z-10"
+            className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto no-scrollbar my-auto relative z-10"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -92,7 +92,7 @@ export default function LocationSelectorModal() {
                     Select Delivery Location
                   </h3>
                   <p className="text-[11px] text-[#5A6B82] leading-tight mt-0.5">
-                    12-min express delivery within 10 km of Phagwara Dark Pod (Kapurthala)
+                    Express (&le;10 km) &amp; Standard (&le;30 km) delivery from AgriMart Hub @ LPU
                   </p>
                 </div>
               </div>
@@ -131,7 +131,7 @@ export default function LocationSelectorModal() {
                     : 'bg-rose-100 text-rose-800'
                 }`}
               >
-                {location.isServiceable ? 'In 10km Zone' : 'Outside 10km'}
+                {location.isServiceable ? 'In 30km Zone' : 'Outside 30km'}
               </span>
             </div>
 
@@ -157,7 +157,7 @@ export default function LocationSelectorModal() {
                       {calculatingGPS ? 'Detecting Your GPS Location...' : 'Detect My Exact Location'}
                     </span>
                     <span className="text-[10px] text-slate-300 font-normal">
-                      Automatic GPS coordinates with Phagwara 10 km geofence check
+                      Automatic GPS coordinates with LPU 30 km serviceability check
                     </span>
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function LocationSelectorModal() {
                   Phagwara Express Hub (Within 10 km)
                 </span>
                 <span className="text-[10px] bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-bold">
-                  ⚡ 10-15 Min Delivery
+                  ⚡ Express &amp; Standard Delivery
                 </span>
               </div>
 

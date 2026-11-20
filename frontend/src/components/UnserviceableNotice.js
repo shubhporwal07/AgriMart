@@ -39,12 +39,12 @@ export default function UnserviceableNotice({ className = '' }) {
                     Currently Not Available in Your Area
                   </h2>
                   <span className="text-[11px] bg-rose-100 text-rose-700 font-extrabold px-2.5 py-0.5 rounded-full border border-rose-200">
-                    Outside 10 km Hub Zone
+                    Outside 30 km Hub Zone
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
-                  AgriMart farm dispatch is currently live strictly within a <strong>10 km radius</strong> of our{' '}
-                  <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong>.
+                  AgriMart farm dispatch is currently live within a <strong>30 km radius</strong> of our{' '}
+                  <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong> (Express &le;10 km, Standard &le;30 km).
                   Your current selection is{' '}
                   <span className="font-semibold text-rose-900 underline">
                     {location.name || location.area || 'Outside Area'}

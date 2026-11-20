@@ -1,15 +1,16 @@
 'use client';
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, forwardRef } from 'react';
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { AuthProvider } from '../contexts/AuthContext';
 import { LocationProvider } from '../contexts/LocationContext';
 import { ProductProvider, useProducts } from '../contexts/ProductContext';
+import { CouponProvider } from '../contexts/CouponContext';
 import { PageSkeletonLoader } from './SkeletonLoader';
 import CartAddedPopup from './CartAddedPopup';
 import { toastVariants, iconTap } from '../utils/motion';
 
-function WishlistToast({ notice, onClose }) {
+const WishlistToast = forwardRef(function WishlistToast({ notice, onClose }, ref) {
   useEffect(() => {
     const timer = setTimeout(onClose, 2200);
     return () => clearTimeout(timer);
@@ -19,6 +20,7 @@ function WishlistToast({ notice, onClose }) {
 
   return (
     <motion.div
+      ref={ref}
       layout
       variants={toastVariants}
       initial="initial"
@@ -57,7 +59,7 @@ function WishlistToast({ notice, onClose }) {
       </div>
     </motion.div>
   );
-}
+});
 
 function NoticeRenderer() {
   const { cartNotice, clearCartNotice, wishlistNotice, clearWishlistNotice } = useProducts();
@@ -91,10 +93,12 @@ export default function ClientProviders({ children }) {
       <AuthProvider>
         <LocationProvider>
           <ProductProvider>
-            <NoticeRenderer />
-            <Suspense fallback={<PageSkeletonLoader />}>
-              {children}
-            </Suspense>
+            <CouponProvider>
+              <NoticeRenderer />
+              <Suspense fallback={<PageSkeletonLoader />}>
+                {children}
+              </Suspense>
+            </CouponProvider>
           </ProductProvider>
         </LocationProvider>
       </AuthProvider>

@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ProductDetailsModal from '../components/ProductDetailsModal';
 import { useProducts } from '../contexts/ProductContext';
 import { wishlistItemVariants, buttonTap, iconTap, DURATION, EASE } from '../utils/motion';
 
 export default function WishlistPage() {
-  const { wishlistItems, removeFromWishlist, addToCart } = useProducts();
+  const { wishlistItems, removeFromWishlist, addToCart, storageHydrated } = useProducts();
   const [addedIds, setAddedIds] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleAddToCart = (product) => {
     addToCart(product, 1);
@@ -20,7 +22,7 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] flex flex-col">
+    <div className="min-h-screen bg-[#FAF5EB] flex flex-col">
       <Navbar />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
         {/* Header */}
@@ -42,7 +44,12 @@ export default function WishlistPage() {
         </p>
 
         <AnimatePresence mode="wait">
-          {wishlistItems.length === 0 ? (
+          {!storageHydrated ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-10 h-10 rounded-full border-3 border-[#142B4A] border-t-transparent animate-spin mb-4" />
+              <p className="text-sm font-bold text-[#5A6B82]">Loading your wishlist...</p>
+            </div>
+          ) : wishlistItems.length === 0 ? (
             /* Empty State */
             <motion.div
               key="wishlist-empty"
@@ -138,7 +145,10 @@ export default function WishlistPage() {
                       </div>
 
                       {/* Product Image */}
-                      <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EDF2F7] mb-3">
+                      <div
+                        onClick={() => setSelectedProduct(product)}
+                        className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EDF2F7] mb-3 cursor-pointer"
+                      >
                         <img
                           src={displayImage}
                           alt={product.name}
@@ -164,7 +174,10 @@ export default function WishlistPage() {
                       </div>
 
                       {/* Name */}
-                      <h3 className="font-headline text-[13px] font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 line-clamp-2 leading-snug min-h-[34px]">
+                      <h3
+                        onClick={() => setSelectedProduct(product)}
+                        className="font-headline text-[13px] font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 line-clamp-2 leading-snug min-h-[34px] cursor-pointer"
+                      >
                         {product.name}
                       </h3>
                       <p className="text-[11px] text-[#5A6B82] mt-0.5 truncate">
@@ -216,6 +229,19 @@ export default function WishlistPage() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* Product Details Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <ProductDetailsModal
+            key={selectedProduct.id}
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+            onSelectProduct={(p) => setSelectedProduct(p)}
+          />
+        )}
+      </AnimatePresence>
+
       <Footer />
     </div>
   );

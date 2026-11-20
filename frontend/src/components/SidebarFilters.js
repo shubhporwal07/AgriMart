@@ -1,11 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { accordionVariants, buttonTap, EASE } from '../utils/motion';
 
 export default function SidebarFilters({ className = '' }) {
-  const { filters, updateFilter, clearAllFilters, products } = useProducts();
+  const { filters, updateFilter, clearAllFilters, products, categories: contextCategories } = useProducts();
 
   const [expandedSections, setExpandedSections] = useState({
     categories: true,
@@ -18,16 +18,42 @@ export default function SidebarFilters({ className = '' }) {
     setExpandedSections((prev) => ({ ...prev, [sec]: !prev[sec] }));
   };
 
-  const categories = [
-    { name: 'Vegetable Seeds', count: products.filter(p => p.category === 'Vegetable Seeds').length || 118 },
-    { name: 'Grain & Crop Seeds', count: products.filter(p => p.category === 'Grain & Crop Seeds').length || 74 },
-    { name: 'Organic Manure & Compost', count: products.filter(p => p.category === 'Organic Manure & Compost').length || 85 },
-    { name: 'NPK & Water Soluble', count: products.filter(p => p.category === 'NPK & Water Soluble').length || 52 },
-    { name: 'Micronutrients & Growth', count: products.filter(p => p.category === 'Micronutrients & Growth').length || 46 },
-    { name: 'Bio-Pesticides & Fungicides', count: products.filter(p => p.category === 'Bio-Pesticides & Fungicides').length || 41 },
-    { name: 'Farm Tools & Sprayers', count: products.filter(p => p.category === 'Farm Tools & Sprayers').length || 65 },
-    { name: 'Soil Health Kits', count: products.filter(p => p.category === 'Soil Health Kits').length || 28 },
+  const defaultCategoryList = [
+    'Vegetable Seeds',
+    'Grain & Crop Seeds',
+    'Organic Manure & Compost',
+    'NPK & Water Soluble',
+    'Micronutrients & Growth',
+    'Bio-Pesticides & Fungicides',
+    'Farm Tools & Sprayers',
+    'Soil Health Kits',
   ];
+
+  const activeCategoryNames = useMemo(() => {
+    const base = Array.isArray(contextCategories) && contextCategories.length > 0 ? contextCategories : defaultCategoryList;
+    const set = new Set(base);
+    (products || []).forEach((p) => {
+      if (p.category) set.add(p.category);
+    });
+    return Array.from(set);
+  }, [contextCategories, products]);
+
+  const categories = useMemo(() => {
+    return activeCategoryNames.map((catName) => {
+      const count = (products || []).filter((p) => {
+        if (!p.category) return false;
+        if (p.category === catName) return true;
+        return (
+          p.category.toLowerCase().includes(catName.toLowerCase()) ||
+          catName.toLowerCase().includes(p.category.toLowerCase())
+        );
+      }).length;
+      return {
+        name: catName,
+        count: count,
+      };
+    });
+  }, [activeCategoryNames, products]);
 
   const pricePresets = [
     { id: 'under-200', label: 'Under ₹200' },
@@ -122,7 +148,7 @@ export default function SidebarFilters({ className = '' }) {
             aria-expanded={expandedSections.categories}
           >
             <h3 className="font-headline text-xs font-bold text-[#142B4A] uppercase tracking-wider group-hover:text-[#E27B12] transition-colors duration-150">
-              Aisles & Categories
+              Agri Categories & Inputs
             </h3>
             <motion.span
               animate={{ rotate: expandedSections.categories ? 180 : 0 }}
@@ -142,7 +168,7 @@ export default function SidebarFilters({ className = '' }) {
                 exit="exit"
                 className="overflow-hidden"
               >
-                <div className="space-y-2 max-h-56 overflow-y-auto pr-1 pt-0.5">
+                <div className="space-y-2 max-h-56 overflow-y-auto no-scrollbar pr-1 pt-0.5">
                   {categories.map((cat) => {
                     const isChecked = selectedCategories.includes(cat.name);
                     return (
@@ -236,7 +262,7 @@ export default function SidebarFilters({ className = '' }) {
             aria-expanded={expandedSections.dietary}
           >
             <h3 className="font-headline text-xs font-bold text-[#142B4A] uppercase tracking-wider group-hover:text-[#E27B12] transition-colors duration-150">
-              Dietary & Sourcing
+              Certifications & Standards
             </h3>
             <motion.span
               animate={{ rotate: expandedSections.dietary ? 180 : 0 }}

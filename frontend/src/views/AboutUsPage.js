@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const AboutUs = () => {
   return (
-    <div className="min-h-screen bg-[#F7F9FC]">
+    <div className="min-h-screen bg-[#FAF5EB]">
       <Navbar />
 
       <main className="w-full">

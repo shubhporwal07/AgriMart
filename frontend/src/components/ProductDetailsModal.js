@@ -14,7 +14,15 @@ import {
 } from '../utils/motion';
 
 export default function ProductDetailsModal({ product, onClose, onSelectProduct }) {
-  const { addToCart, updateCartQuantity, getItemQuantity, products } = useProducts();
+  const {
+    addToCart,
+    updateCartQuantity,
+    getItemQuantity,
+    products,
+    isInWishlist,
+    addToWishlist,
+    removeFromWishlist,
+  } = useProducts();
   const { isServiceable, location: userLocation, setLocationModalOpen } = useLocationContext();
 
   const [activeTab, setActiveTab] = useState('highlights');
@@ -40,15 +48,17 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
 
   if (!product) return null;
 
+  const isWishlisted = isInWishlist(product.id);
   const qty = getItemQuantity(product.id);
   const isSoldOut = product.inStock === false;
 
-  const allImages =
-    Array.isArray(product.imageDatas) && product.imageDatas.length > 0
-      ? product.imageDatas
-      : product.imageData
-      ? [product.imageData]
-      : [product.imageUrl || 'https://via.placeholder.com/500x500?text=AgriMart'];
+  const validImages = [
+    product.imageUrl,
+    ...(Array.isArray(product.imageDatas) ? product.imageDatas : []),
+    product.imageData,
+  ].filter((img) => img && typeof img === 'string' && !img.includes('lh3.googleusercontent.com'));
+
+  const allImages = validImages.length > 0 ? validImages : ['/images/products/hybrid-tomato-seeds.png'];
 
   const currentImage = allImages[currentImageIndex] || allImages[0];
 
@@ -69,7 +79,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
       initial="initial"
       animate="animate"
       exit="exit"
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto no-scrollbar"
       onClick={onClose}
     >
       <motion.div
@@ -91,19 +101,46 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
               ⚡ Fast Farm Dispatch
             </span>
           </div>
-          <motion.button
-            type="button"
-            whileTap={iconTap}
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors duration-150 shadow-sm"
-            aria-label="Close"
-          >
-            <span className="material-symbols-outlined text-[20px]">close</span>
-          </motion.button>
+          <div className="flex items-center gap-2">
+            <motion.button
+              type="button"
+              whileTap={iconTap}
+              onClick={() => {
+                if (isWishlisted) {
+                  removeFromWishlist(product.id);
+                } else {
+                  addToWishlist(product);
+                }
+              }}
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-150 shadow-sm border ${
+                isWishlisted
+                  ? 'bg-rose-50 border-rose-200 text-rose-500'
+                  : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500'
+              }`}
+              aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              title={isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}
+            >
+              <span
+                className="material-symbols-outlined text-[20px]"
+                style={isWishlisted ? { fontVariationSettings: "'FILL' 1" } : {}}
+              >
+                favorite
+              </span>
+            </motion.button>
+            <motion.button
+              type="button"
+              whileTap={iconTap}
+              onClick={onClose}
+              className="w-9 h-9 rounded-full bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors duration-150 shadow-sm border border-slate-200"
+              aria-label="Close"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </motion.button>
+          </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto max-h-[calc(92vh-80px)]">
+        <div className="p-6 overflow-y-auto no-scrollbar max-h-[calc(92vh-80px)]">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             {/* Left Column: Images (5 Cols) */}
             <div className="md:col-span-5 flex flex-col gap-3">
@@ -190,8 +227,34 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                 {product.name}
               </h1>
               <p className="text-sm text-[#5A6B82] font-semibold mt-1">
-                Pack Size: <span className="text-[#263449] font-bold">{product.unit}</span>
+                Pack Size / Measurement: <span className="text-[#263449] font-bold">{product.unit}</span>
               </p>
+
+              {/* Weight / Measurement indicator & packaging standards */}
+              <div className="mt-2.5 p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#142B4A] mb-1.5">
+                  <span>{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
+                  <span>Pack Size Measurement:</span>
+                  <span className="text-emerald-700 font-extrabold ml-auto">{product.unit}</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {(String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml')
+                    ? ['250 ml', '500 ml', '1 Litre', '5 Litres']
+                    : ['500 g', '1 kg', '2 kg', '5 kg', '25 kg']
+                  ).map((size) => (
+                    <span
+                      key={size}
+                      className={`text-[10px] px-2 py-0.5 rounded-md font-bold border ${
+                        String(product.unit || '').toLowerCase().includes(size.toLowerCase())
+                          ? 'bg-[#142B4A] text-white border-[#142B4A]'
+                          : 'bg-white text-slate-600 border-slate-200'
+                      }`}
+                    >
+                      {size}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
               {/* Rating & Review */}
               <div className="flex items-center gap-2 mt-2">
@@ -227,8 +290,37 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                   <span className="text-[10px] text-[#5A6B82]">Inclusive of all taxes</span>
                 </div>
 
-                {/* Add / Stepper */}
-                <div>
+                {/* Add / Stepper + Wishlist */}
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    type="button"
+                    whileTap={buttonTap}
+                    onClick={() => {
+                      if (isWishlisted) {
+                        removeFromWishlist(product.id);
+                      } else {
+                        addToWishlist(product);
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl border font-bold text-xs transition-colors duration-150 shadow-sm ${
+                      isWishlisted
+                        ? 'bg-rose-50 border-rose-300 text-rose-600 hover:bg-rose-100'
+                        : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-rose-600'
+                    }`}
+                    title={isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist'}
+                    aria-label={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  >
+                    <span
+                      className="material-symbols-outlined text-[18px]"
+                      style={isWishlisted ? { fontVariationSettings: "'FILL' 1" } : {}}
+                    >
+                      favorite
+                    </span>
+                    <span className="hidden sm:inline">
+                      {isWishlisted ? 'Saved' : 'Wishlist'}
+                    </span>
+                  </motion.button>
+
                   <AnimatePresence mode="wait" initial={false}>
                     {isSoldOut ? (
                       <span key="sold" className="bg-slate-200 text-slate-500 font-bold text-xs px-4 py-2.5 rounded-xl block">

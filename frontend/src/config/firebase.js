@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getDatabase } from 'firebase/database';
 
-// Gupta Mart Firebase configuration
+// AgriMart Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBI6lvnetMIOHED-kUWvokIqXqDoKm83Ac",
   authDomain: "autotype-1d493.firebaseapp.com",

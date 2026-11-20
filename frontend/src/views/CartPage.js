@@ -1,15 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Trash2, ArrowLeft, CheckCircle2, MapPin, Zap, ShieldCheck, ShoppingBag, Clock, Sparkles, Banknote, CreditCard, AlertTriangle } from 'lucide-react';
+import { Trash2, ArrowLeft, CheckCircle2, MapPin, Zap, ShieldCheck, ShoppingBag, Clock, Sparkles, Banknote, CreditCard, AlertTriangle, Truck, Tag, Percent, Check, AlertCircle, IndianRupee, BookmarkCheck, UserCheck } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import { useAuth } from '../contexts/AuthContext';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useCoupons } from '../contexts/CouponContext';
 import Footer from '../components/Footer';
 import Toast from '../components/Toast';
+import RazorpaySandboxModal from '../components/RazorpaySandboxModal';
 import { auth, realtimeDb } from '../config/firebase';
-import { ref as rtdbRef, push, set } from 'firebase/database';
+import { ref as rtdbRef, push, set, get } from 'firebase/database';
 import {
   backdropVariants,
   modalVariants,
@@ -26,7 +29,7 @@ const getBackendUrl = () => {
   const raw = (
     (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_BACKEND_URL) ||
     (typeof process !== 'undefined' && process.env?.VITE_BACKEND_URL) ||
-    ''
+    (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5000' : '')
   ).trim();
   if (!raw) return '';
   let url = raw;
@@ -41,7 +44,9 @@ const API_URL = BACKEND_URL ? `${BACKEND_URL}/api` : '';
 
 export default function CartPage() {
   const router = useRouter();
-  const { cartItems, removeFromCart, updateCartQuantity, clearCart } = useProducts();
+  const searchParams = useSearchParams();
+  const { user, isAuthenticated } = useAuth();
+  const { cartItems, removeFromCart, updateCartQuantity, clearCart, storageHydrated } = useProducts();
   const {
     location: userLocation,
     isServiceable,
@@ -49,14 +54,25 @@ export default function CartPage() {
     primaryHub,
   } = useLocationContext();
 
+  const [deliveryType, setDeliveryType] = useState('express'); // 'express' | 'standard'
   const [deliveryInstruction, setDeliveryInstruction] = useState('');
-  const [deliverySlot, setDeliverySlot] = useState('instant'); // 'instant' | 'morning' | 'evening'
   const [paymentMethod, setPaymentMethod] = useState('cod'); // 'cod' | 'online'
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: 'error' });
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paidOrderId, setPaidOrderId] = useState('');
   const [checkoutStep, setCheckoutStep] = useState('cart'); // 'cart' | 'address'
+  const [sandboxModalOpen, setSandboxModalOpen] = useState(false);
+  const [sandboxOrderData, setSandboxOrderData] = useState(null);
+  const [confirmedAmount, setConfirmedAmount] = useState(0);
+  const [hasSavedAddress, setHasSavedAddress] = useState(false);
+
+  // Discount Coupons & Price Band State
+  const { activeCoupons, validateCoupon } = useCoupons();
+  const [couponCodeInput, setCouponCodeInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState('');
+  const [showCouponsList, setShowCouponsList] = useState(false);
 
   const [shippingAddress, setShippingAddress] = useState({
     fullName: '',
@@ -70,14 +86,102 @@ export default function CartPage() {
   });
   const [addressErrors, setAddressErrors] = useState({});
 
+  // 1. Auto-fill saved address from localStorage and Firebase RTDB for logged-in user
   useEffect(() => {
-    if (userLocation?.name) {
+    if (!user) {
+      setHasSavedAddress(false);
+      return;
+    }
+
+    let loaded = false;
+    const localKey = `agrimart_saved_address_${user.uid}`;
+    if (typeof window !== 'undefined') {
+      const savedLocal = localStorage.getItem(localKey) || localStorage.getItem('agrimart_saved_address');
+      if (savedLocal) {
+        try {
+          const parsed = JSON.parse(savedLocal);
+          if (parsed && typeof parsed === 'object') {
+            setShippingAddress((prev) => ({
+              ...prev,
+              ...parsed,
+              fullName: parsed.fullName || prev.fullName || user.displayName || '',
+              phone: parsed.phone || prev.phone || user.phoneNumber || '',
+              addressLine1: parsed.addressLine1 || userLocation?.name || prev.addressLine1,
+            }));
+            setHasSavedAddress(true);
+            loaded = true;
+          }
+        } catch (err) {
+          console.warn('Failed parsing local address:', err);
+        }
+      }
+    }
+
+    // Also fetch from Firebase Realtime Database
+    try {
+      const userAddressRef = rtdbRef(realtimeDb, `users/${user.uid}/savedAddress`);
+      get(userAddressRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            setShippingAddress((prev) => ({
+              ...prev,
+              ...data,
+              fullName: data.fullName || prev.fullName || user.displayName || '',
+              phone: data.phone || prev.phone || user.phoneNumber || '',
+              addressLine1: data.addressLine1 || userLocation?.name || prev.addressLine1,
+            }));
+            setHasSavedAddress(true);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem(localKey, JSON.stringify(data));
+            }
+          } else if (!loaded && (user.displayName || user.phoneNumber)) {
+            setShippingAddress((prev) => ({
+              ...prev,
+              fullName: prev.fullName || user.displayName || '',
+              phone: prev.phone || user.phoneNumber || '',
+            }));
+          }
+        })
+        .catch((e) => {
+          console.warn('Firebase RTDB address read:', e.message);
+        });
+    } catch (e) {
+      console.warn('RTDB address fetch error:', e);
+    }
+  }, [user]);
+
+  // 1b. Auto-persist address to localStorage whenever user types valid address details
+  useEffect(() => {
+    if (user && shippingAddress.fullName && shippingAddress.phone && shippingAddress.addressLine1) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`agrimart_saved_address_${user.uid}`, JSON.stringify(shippingAddress));
+        localStorage.setItem('agrimart_saved_address', JSON.stringify(shippingAddress));
+      }
+    }
+  }, [user, shippingAddress]);
+
+  // 2. Handle auto-recovery to address step when returning from login
+  useEffect(() => {
+    if (user && typeof window !== 'undefined') {
+      const stepParam = searchParams?.get('step');
+      const pendingCheckout = sessionStorage.getItem('agrimart_pending_checkout');
+      if (stepParam === 'address' || pendingCheckout === 'true') {
+        sessionStorage.removeItem('agrimart_pending_checkout');
+        setCheckoutStep('address');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [user, searchParams]);
+
+  useEffect(() => {
+    if (userLocation?.name && !hasSavedAddress) {
       setShippingAddress((prev) => ({
         ...prev,
         addressLine1: userLocation.name || prev.addressLine1,
       }));
     }
-  }, [userLocation]);
+  }, [userLocation, hasSavedAddress]);
 
   const showToast = (message, type = 'error') => {
     setToast({ show: true, message, type });
@@ -87,10 +191,90 @@ export default function CartPage() {
   const itemTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const mrpTotal = cartItems.reduce((sum, item) => sum + ((item.mrp || item.price * 1.2) * item.quantity), 0);
   const savings = Math.max(0, mrpTotal - itemTotal);
-  const freeDeliveryThreshold = 299;
-  const deliveryFee = itemTotal >= freeDeliveryThreshold || itemTotal === 0 ? 0 : 25;
+  const distanceKm = userLocation?.distanceKm ?? 0.5;
+  const isExpressEligible = distanceKm <= 10.0;
+  const activeDeliveryType = (!isExpressEligible && deliveryType === 'express') ? 'standard' : deliveryType;
+
+  // Coupon Discount Calculation based on Price Band & Percentage
+  let couponDiscountAmount = 0;
+  if (appliedCoupon && itemTotal > 0) {
+    if (itemTotal >= (appliedCoupon.minOrderValue || 0)) {
+      couponDiscountAmount = Math.round((itemTotal * appliedCoupon.discountPercentage) / 100);
+      if (appliedCoupon.maxDiscountAmount && couponDiscountAmount > appliedCoupon.maxDiscountAmount) {
+        couponDiscountAmount = appliedCoupon.maxDiscountAmount;
+      }
+    }
+  }
+
+  // Automatic coupon invalidation check if cart subtotal drops below the coupon's price band
+  useEffect(() => {
+    if (appliedCoupon && itemTotal > 0 && itemTotal < (appliedCoupon.minOrderValue || 0)) {
+      const removedCode = appliedCoupon.code;
+      const minRequired = appliedCoupon.minOrderValue;
+      setTimeout(() => {
+        setAppliedCoupon(null);
+        showToast(
+          `Coupon ${removedCode} removed: Order subtotal fell below ₹${minRequired.toLocaleString('en-IN')}`,
+          'info'
+        );
+      }, 0);
+    }
+  }, [itemTotal, appliedCoupon]);
+
+  const handleApplyCoupon = (codeToApply) => {
+    setCouponError('');
+    const code = (codeToApply || couponCodeInput || '').trim();
+    if (!code) {
+      setCouponError('Please enter a coupon code.');
+      return;
+    }
+
+    const result = validateCoupon(code, itemTotal);
+    if (!result.valid) {
+      setCouponError(result.error);
+      showToast(result.error, 'error');
+      return;
+    }
+
+    setAppliedCoupon({
+      ...result.coupon,
+      discountAmount: result.discountAmount,
+    });
+    setCouponCodeInput('');
+    setCouponError('');
+    showToast(
+      `🎉 Coupon "${result.coupon.code}" applied! You saved ₹${result.discountAmount.toLocaleString('en-IN')}`,
+      'success'
+    );
+  };
+
+  const handleRemoveCoupon = () => {
+    if (appliedCoupon) {
+      const prevCode = appliedCoupon.code;
+      setAppliedCoupon(null);
+      setCouponError('');
+      showToast(`Coupon "${prevCode}" removed`, 'info');
+    }
+  };
+
+  const calculateExpressFee = (km) => (km <= 5.0 ? 50 : km <= 7.5 ? 100 : 150);
+  const expressFee = calculateExpressFee(distanceKm);
+
+  // Standard fee: base is 0 if itemTotal >= 1000 else 20.
+  // Plus distance surcharge if distance > 15 km (+₹50 per 10 km bracket beyond 15 km)
+  const standardBaseFee = itemTotal >= 1000 ? 0 : 20;
+  let standardDistanceSurcharge = 0;
+  if (distanceKm > 15.0) {
+    const extraKm = distanceKm - 15.0;
+    const brackets = Math.ceil(extraKm / 10.0);
+    standardDistanceSurcharge = brackets * 50;
+  }
+  const standardFee = standardBaseFee + standardDistanceSurcharge;
+
+  const freeDeliveryThreshold = 1000;
+  const deliveryFee = itemTotal === 0 ? 0 : (activeDeliveryType === 'express' ? expressFee : standardFee);
   const handlingFee = itemTotal > 0 ? 4 : 0; // Eco-friendly packaging charge
-  const grandTotal = itemTotal + deliveryFee + handlingFee;
+  const grandTotal = Math.max(0, itemTotal - couponDiscountAmount + deliveryFee + handlingFee);
 
   // Save order to Realtime Database
   const saveOrderToDatabase = async (paymentData) => {
@@ -101,9 +285,9 @@ export default function CartPage() {
       const isCOD = (paymentData.paymentMethod || paymentMethod) === 'cod' || String(paymentData.paymentMethod || '').includes('COD');
 
       const orderDoc = {
-        userId: auth.currentUser?.uid || 'guest',
-        userEmail: auth.currentUser?.email || '',
-        userName: shippingAddress.fullName || auth.currentUser?.displayName || 'Customer',
+        userId: user?.uid || auth.currentUser?.uid || 'guest',
+        userEmail: (user?.email || auth.currentUser?.email || shippingAddress.email || '').trim().toLowerCase(),
+        userName: shippingAddress.fullName || user?.displayName || auth.currentUser?.displayName || 'Customer',
         items: cartItems.map(item => ({
           id: item.id,
           name: item.name,
@@ -118,18 +302,23 @@ export default function CartPage() {
         razorpayPaymentId: paymentData.razorpay_payment_id || `COD-${Date.now()}`,
         paymentMethod: isCOD ? 'Cash on Delivery (COD)' : 'Online Payment (UPI/Card)',
         paymentStatus: isCOD ? 'Pending (Pay on Delivery)' : 'Paid',
+        appliedCoupon: appliedCoupon ? appliedCoupon.code : null,
+        couponDiscount: couponDiscountAmount,
+        discountPercentage: appliedCoupon ? appliedCoupon.discountPercentage : 0,
         amount: grandTotal,
         currency: 'INR',
         status: 'placed',
-        deliverySlot: deliverySlot === 'instant' ? '12-15 Mins Express' : deliverySlot,
+        deliverySlot: activeDeliveryType === 'express' ? 'Express Delivery (Fast Parcel Dispatch)' : 'Standard Delivery (Evening 8 PM Vehicle Dispatch)',
+        deliveryType: activeDeliveryType,
+        deliveryFee: deliveryFee,
         deliveryInstruction: deliveryInstruction || '',
         shippingAddress: shippingAddress,
-        deliveryLocation: userLocation?.name || 'Phagwara Hub',
+        deliveryLocation: userLocation?.name || 'AgriMart Hub @ LPU',
         createdAt: new Date().toISOString(),
       };
 
       await set(newOrderRef, orderDoc);
-      console.log('✅ Gupta Mart Order saved to Realtime DB:', newOrderRef.key);
+      console.log('✅ AgriMart Order saved to Realtime DB:', newOrderRef.key);
       return newOrderRef.key;
     } catch (error) {
       console.error('Failed to save order to Database:', error);
@@ -149,19 +338,174 @@ export default function CartPage() {
     return Object.keys(errors).length === 0;
   };
 
+  const persistUserAddress = async (address) => {
+    if (!user) return;
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`agrimart_saved_address_${user.uid}`, JSON.stringify(address));
+        localStorage.setItem('agrimart_saved_address', JSON.stringify(address));
+      }
+      const userAddressRef = rtdbRef(realtimeDb, `users/${user.uid}/savedAddress`);
+      await set(userAddressRef, {
+        ...address,
+        updatedAt: new Date().toISOString(),
+      });
+      setHasSavedAddress(true);
+      console.log('✅ Shipping address saved to user profile');
+    } catch (err) {
+      console.warn('Failed saving address to Firebase RTDB:', err);
+    }
+  };
+
   const handleProceedToAddress = () => {
-    if (!isServiceable) {
-      setLocationModalOpen(true);
-      showToast('Please select a delivery address within 10 km of Phagwara hub.', 'error');
+    // 1. Mandatory User Authentication Check
+    if (!user) {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('agrimart_pending_checkout', 'true');
+      }
+      showToast('Please sign in to proceed with your farm delivery & checkout.', 'info');
+      router.push('/login?redirect=/cart&step=address');
       return;
     }
+
+    // 2. Serviceability Check
+    if (!isServiceable) {
+      setLocationModalOpen(true);
+      showToast('Please select a delivery address within 30 km of AgriMart Hub @ LPU.', 'error');
+      return;
+    }
+
     setCheckoutStep('address');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleProceedToPayment = () => {
     if (!validateAddress()) return;
+    persistUserAddress(shippingAddress);
     handleCheckout();
+  };
+
+  const handlePaymentSuccess = async (response) => {
+    setPaymentLoading(true);
+    try {
+      let paymentId = response.razorpay_payment_id || `pay_${Date.now()}`;
+      if (API_URL) {
+        try {
+          const verifyRes = await fetch(`${API_URL}/verify-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature || '',
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.paymentId) paymentId = verifyData.paymentId;
+        } catch (vErr) {
+          console.warn('Backend payment verification fallback:', vErr);
+        }
+      }
+
+      await saveOrderToDatabase(response);
+      setConfirmedAmount(grandTotal);
+      setPaidOrderId(paymentId);
+      setPaymentSuccess(true);
+      setSandboxModalOpen(false);
+      setCheckoutStep('cart');
+      if (clearCart) clearCart();
+      showToast('Payment successful! Your certified farm inputs are scheduled for dispatch.', 'success');
+    } catch (err) {
+      console.error('Payment completion error:', err);
+      showToast('Error completing order. Please contact AgriMart support.', 'error');
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const handlePaymentFailure = (errorData) => {
+    setPaymentLoading(false);
+    showToast(errorData?.error?.description || 'Payment was cancelled or declined.', 'error');
+  };
+
+  const openLiveRazorpayPopup = async (orderId, amount, currency, key) => {
+    try {
+      setPaymentLoading(true);
+
+      const customKey = typeof window !== 'undefined' ? localStorage.getItem('agrimart_custom_razorpay_key') : null;
+      const activeKey = customKey || key || 'rzp_test_1DP5mmOlF5G5ag';
+      const isDummyKey = !activeKey || activeKey === 'rzp_test_1DP5mmOlF5G5ag' || activeKey === 'rzp_test_agrimart';
+
+      // If active key is the dummy placeholder, don't trigger the broken official popup that shows "No appropriate payment method found"
+      if (isDummyKey) {
+        setSandboxOrderData({
+          orderId: orderId || 'order_agri_' + Date.now(),
+          amount: amount || Math.round(grandTotal * 100),
+          currency: currency || 'INR',
+          key: activeKey,
+          initialView: 'key_notice',
+        });
+        setSandboxModalOpen(true);
+        setPaymentLoading(false);
+        showToast('Official Razorpay requires your personal Test Key. Use AgriMart Sandbox or enter your key.', 'info');
+        return;
+      }
+
+      if (typeof window !== 'undefined' && !window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.async = true;
+          script.onload = () => resolve(true);
+          script.onerror = () => reject(new Error('Failed to load Razorpay payment SDK'));
+          document.body.appendChild(script);
+        });
+      }
+
+      // STRICT VALIDATION: Only pass order_id if it's an authentic Razorpay order ID (created via orders.create API, format order_XXXXXXXXXXXXXX)
+      // Passing fake/local IDs like "order_agri_..." to Razorpay causes immediate 400 Bad Request / "No appropriate payment method found"
+      const isOfficialOrderId = typeof orderId === 'string' && /^order_[a-zA-Z0-9]{12,}$/.test(orderId) && !orderId.startsWith('order_agri_');
+
+      const options = {
+        key: activeKey,
+        amount: amount || Math.round(grandTotal * 100),
+        currency: currency || 'INR',
+        name: 'AGRIMART',
+        description: 'Certified Seeds, Fertilizers & Farm Inputs',
+        ...(isOfficialOrderId ? { order_id: orderId } : {}),
+        handler: async function (response) {
+          await handlePaymentSuccess(response);
+        },
+        prefill: {
+          name: shippingAddress.fullName || '',
+          email: auth.currentUser?.email || 'kisan@agrimart.farm',
+          contact: shippingAddress.phone || '',
+        },
+        theme: {
+          color: '#142B4A',
+        },
+        modal: {
+          ondismiss: function () {
+            setPaymentLoading(false);
+            showToast('Official Razorpay modal closed. Switched to AgriMart Sandbox Gateway.', 'info');
+            setSandboxModalOpen(true);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        setPaymentLoading(false);
+        showToast(`Payment failed: ${response.error?.description || 'Declined'}`, 'error');
+        setSandboxModalOpen(true);
+      });
+      rzp.open();
+    } catch (e) {
+      console.error('Razorpay popup error:', e);
+      setPaymentLoading(false);
+      showToast('Switched to AgriMart Verified Sandbox Gateway.', 'info');
+      setSandboxModalOpen(true);
+    }
   };
 
   const handleCheckout = async () => {
@@ -171,12 +515,13 @@ export default function CartPage() {
     try {
       // 1. CASH ON DELIVERY (COD) ORDER PLACEMENT
       if (paymentMethod === 'cod') {
-        const codOrderId = 'cod_gm_' + Date.now();
+        const codOrderId = 'cod_agri_' + Date.now();
         await saveOrderToDatabase({
           razorpay_order_id: 'cod_' + Date.now(),
           razorpay_payment_id: codOrderId,
           paymentMethod: 'Cash on Delivery (COD)',
         });
+        setConfirmedAmount(grandTotal);
         setPaidOrderId(codOrderId);
         setPaymentSuccess(true);
         if (clearCart) clearCart();
@@ -187,27 +532,25 @@ export default function CartPage() {
 
       // 2. ONLINE PAYMENT FLOW
       if (!API_URL) {
-        // Fallback demo order flow if backend server is not running
-        const demoPaymentId = 'pay_gmart_' + Math.random().toString(36).substring(2, 9);
-        await saveOrderToDatabase({
-          razorpay_order_id: 'order_gmart_' + Date.now(),
-          razorpay_payment_id: demoPaymentId,
-          paymentMethod: 'Online Payment (Demo)',
+        // Fallback to sandbox modal if backend server URL not configured
+        setSandboxOrderData({
+          orderId: 'order_agri_' + Date.now(),
+          amount: Math.round(grandTotal * 100),
+          currency: 'INR',
+          key: 'rzp_test_agrimart',
         });
-        setPaidOrderId(demoPaymentId);
-        setPaymentSuccess(true);
-        if (clearCart) clearCart();
+        setSandboxModalOpen(true);
         setPaymentLoading(false);
         return;
       }
 
-      // 1. Create Razorpay order via Express backend
+      // Create order via Express backend
       const orderRes = await fetch(`${API_URL}/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: grandTotal,
-          cartItems: cartItems.map(item => ({
+          cartItems: cartItems.map((item) => ({
             id: item.id,
             name: item.name,
             price: item.price,
@@ -221,77 +564,27 @@ export default function CartPage() {
         throw new Error(orderData.error || 'Failed to create order');
       }
 
-      const { orderId, amount, currency, key } = orderData;
+      const { orderId, amount, currency, key, gatewayMode } = orderData;
 
-      // 2. Open Razorpay payment popup
-      const options = {
-        key: key,
-        amount: amount,
-        currency: currency,
-        name: "AGRIMART",
-        description: 'Certified Seeds, Fertilizers & Farm Inputs',
-        order_id: orderId,
-        handler: async function (response) {
-          try {
-            const verifyRes = await fetch(`${API_URL}/verify-payment`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-              }),
-            });
-
-            const verifyData = await verifyRes.json();
-            if (verifyData.success) {
-              await saveOrderToDatabase(response);
-              setPaidOrderId(verifyData.paymentId);
-              setPaymentSuccess(true);
-              if (clearCart) clearCart();
-              showToast('Payment successful! Your certified farm inputs are scheduled for dispatch.', 'success');
-            } else {
-              showToast('Payment verification failed. Please contact AgriMart support.', 'error');
-            }
-          } catch (verifyError) {
-            console.error('Payment verification failed:', verifyError);
-            showToast('Payment verification failed. Please contact AgriMart support.', 'error');
-          }
-          setPaymentLoading(false);
-        },
-        prefill: {
-          name: shippingAddress.fullName || '',
-          email: auth.currentUser?.email || '',
-          contact: shippingAddress.phone || '',
-        },
-        theme: {
-          color: '#142B4A',
-        },
-        modal: {
-          ondismiss: function () {
-            setPaymentLoading(false);
-            showToast('Payment was cancelled.', 'info');
-          },
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', function (response) {
+      if (gatewayMode === 'razorpay_live') {
+        // Real authenticated Razorpay account configured
+        await openLiveRazorpayPopup(orderId, amount, currency, key);
+      } else {
+        // Open AgriMart Razorpay Sandbox Gateway
+        setSandboxOrderData({ orderId, amount, currency, key });
+        setSandboxModalOpen(true);
         setPaymentLoading(false);
-        showToast(`Payment failed: ${response.error.description}`, 'error');
-      });
-      rzp.open();
+      }
     } catch (error) {
       console.error('Checkout error:', error);
-      // If backend is unavailable, gracefully allow demo fulfillment so user can test UI
-      const demoPaymentId = 'pay_gmart_' + Math.random().toString(36).substring(2, 9);
-      await saveOrderToDatabase({
-        razorpay_order_id: 'order_gmart_' + Date.now(),
-        razorpay_payment_id: demoPaymentId,
+      // Seamlessly open sandbox fallback if server encountered issues
+      setSandboxOrderData({
+        orderId: 'order_agri_' + Date.now(),
+        amount: Math.round(grandTotal * 100),
+        currency: 'INR',
+        key: 'rzp_test_agrimart',
       });
-      setPaidOrderId(demoPaymentId);
-      setPaymentSuccess(true);
-      if (clearCart) clearCart();
+      setSandboxModalOpen(true);
       setPaymentLoading(false);
     }
   };
@@ -303,7 +596,7 @@ export default function CartPage() {
   // Payment success view
   if (paymentSuccess) {
     return (
-      <div className="min-h-screen bg-[#F7F9FC]">
+      <div className="min-h-screen bg-[#FAF5EB]">
         <Navbar />
         <div className="flex items-center justify-center py-16 sm:py-24 px-4">
           <motion.div
@@ -321,15 +614,23 @@ export default function CartPage() {
               <CheckCircle2 className="w-12 h-12" />
             </motion.div>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF9F43]/15 text-[#E27B12] text-xs font-bold uppercase tracking-wider mb-3">
-              ⚡ 12-Minute Express Delivery
+              {activeDeliveryType === 'express' ? '⚡ Express Parcel Dispatch' : '🚚 Standard Route (8 PM Dispatch)'}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#142B4A] mb-2">Order Confirmed!</h2>
             <p className="text-slate-600 text-sm mb-4">
-              Your harvest is being handpicked right now at the AgriMart Phagwara Kisan Hub.
+              Your certified inputs are being processed right now at AgriMart Kisan Hub @ LPU.
             </p>
 
             {/* Payment & Delivery Summary */}
             <div className="p-4 bg-slate-50 rounded-2xl mb-6 text-left border border-slate-100 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500 font-semibold">Delivery Speed:</span>
+                <span className="font-extrabold text-[#142B4A]">
+                  {activeDeliveryType === 'express'
+                    ? `Express Dispatch (⚡ ${distanceKm} km radius)`
+                    : `Standard Vehicle (🚚 Evening 8 PM Dispatch • ${distanceKm} km)`}
+                </span>
+              </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-semibold">Payment Mode:</span>
                 <span className="font-extrabold text-[#142B4A] flex items-center gap-1">
@@ -347,9 +648,22 @@ export default function CartPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 font-semibold">Amount to Pay:</span>
-                <span className="font-black text-[#142B4A] text-sm">{formatPrice(grandTotal)}</span>
+                <span className="text-slate-500 font-semibold">
+                  {paymentMethod === 'cod' ? 'Amount to Pay on Delivery:' : 'Amount Paid:'}
+                </span>
+                <span className="font-black text-[#142B4A] text-sm">
+                  {formatPrice(confirmedAmount || grandTotal)}
+                </span>
               </div>
+              {couponDiscountAmount > 0 && appliedCoupon && (
+                <div className="flex items-center justify-between text-xs text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200">
+                  <span className="font-bold flex items-center gap-1">
+                    <Tag className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Coupon Savings ({appliedCoupon.code}):</span>
+                  </span>
+                  <span className="font-black text-emerald-700">− {formatPrice(couponDiscountAmount)} ({appliedCoupon.discountPercentage}% OFF)</span>
+                </div>
+              )}
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-semibold">Deliver to:</span>
                 <span className="font-bold text-slate-800 truncate max-w-[200px]">
@@ -359,7 +673,7 @@ export default function CartPage() {
               {paymentMethod === 'cod' && (
                 <div className="pt-2 border-t border-slate-200 text-[11px] text-emerald-800 bg-emerald-50/80 p-2 rounded-xl flex items-start gap-1.5 font-medium">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>Please keep {formatPrice(grandTotal)} cash or UPI QR scanner ready for our delivery partner.</span>
+                  <span>Please keep {formatPrice(confirmedAmount || grandTotal)} cash or UPI QR scanner ready for our delivery partner.</span>
                 </div>
               )}
             </div>
@@ -391,9 +705,22 @@ export default function CartPage() {
     );
   }
 
+  if (!storageHydrated) {
+    return (
+      <div className="min-h-screen bg-[#FAF5EB]">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 py-28 text-center">
+          <div className="w-10 h-10 rounded-full border-3 border-[#142B4A] border-t-transparent animate-spin mx-auto mb-4" />
+          <p className="text-sm font-bold text-[#5A6B82]">Loading your farm basket...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-[#F7F9FC]">
+      <div className="min-h-screen bg-[#FAF5EB]">
         <Navbar />
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -423,7 +750,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC]">
+    <div className="min-h-screen bg-[#FAF5EB]">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -445,53 +772,146 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items List */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Free Delivery Bar */}
+            {/* Free Delivery Bar (Free Standard Delivery on ₹1,000+) */}
             <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
               <div className="flex items-center justify-between text-xs font-bold mb-2">
-                {itemTotal >= freeDeliveryThreshold ? (
+                {itemTotal >= 1000 ? (
                   <span className="text-emerald-700 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" /> You unlocked FREE Express Delivery!
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> You unlocked FREE Standard Delivery!
                   </span>
                 ) : (
                   <span className="text-slate-700">
-                    Add <strong className="text-[#E27B12]">₹{freeDeliveryThreshold - itemTotal}</strong> more for FREE Express Delivery
+                    Add <strong className="text-[#E27B12]">₹{1000 - itemTotal}</strong> more for FREE Standard Delivery
                   </span>
                 )}
-                <span className="text-slate-400 font-mono">₹{itemTotal} / ₹{freeDeliveryThreshold}</span>
+                <span className="text-slate-400 font-mono">₹{itemTotal} / ₹1,000</span>
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-[#FF9F43] to-emerald-500 rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(100, (itemTotal / freeDeliveryThreshold) * 100)}%` }}
+                  style={{ width: `${Math.min(100, (itemTotal / 1000) * 100)}%` }}
                 />
               </div>
             </div>
 
-            {/* Delivery Slot Selection */}
+            {/* Delivery Option Selection */}
             <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-              <div className="flex items-center gap-2 text-sm font-bold text-[#142B4A] mb-3">
-                <Clock className="w-4 h-4 text-[#FF9F43]" />
-                Select Preferred Delivery Window
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2 text-sm font-bold text-[#142B4A]">
+                  <Truck className="w-4 h-4 text-[#FF9F43]" />
+                  Select Delivery Mode
+                </div>
+                <span className="text-xs text-slate-500 font-medium">
+                  Hub: {primaryHub?.name || 'AgriMart Kisan Hub @ LPU'} ({distanceKm} km away)
+                </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {[
-                  { id: 'instant', label: 'Express Delivery', time: '⚡ 12-15 Mins' },
-                  { id: 'morning', label: 'Tomorrow Morning', time: '7:00 AM - 9:00 AM' },
-                  { id: 'evening', label: 'Tomorrow Evening', time: '5:00 PM - 7:00 PM' },
-                ].map((slot) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {/* Express Delivery Option */}
+                {isExpressEligible ? (
                   <button
-                    key={slot.id}
-                    onClick={() => setDeliverySlot(slot.id)}
-                    className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
-                      deliverySlot === slot.id
-                        ? 'border-[#142B4A] bg-[#142B4A]/5 ring-2 ring-[#142B4A]/20'
+                    type="button"
+                    id="delivery-type-express-btn"
+                    onClick={() => setDeliveryType('express')}
+                    className={`p-4 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between ${
+                      activeDeliveryType === 'express'
+                        ? 'border-[#FF9F43] bg-amber-50/40 ring-2 ring-[#FF9F43]/20 shadow-sm'
                         : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
-                    <span className="text-xs font-medium text-slate-500">{slot.label}</span>
-                    <span className="text-sm font-bold text-[#142B4A] mt-1">{slot.time}</span>
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-[#FF9F43]/15 text-[#E27B12] flex items-center justify-center font-black text-sm">
+                          ⚡
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-[#E27B12]">
+                            Fast Dispatch (&le;10 km)
+                          </span>
+                          <h4 className="text-sm font-extrabold text-[#142B4A]">Express Delivery</h4>
+                        </div>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full text-xs font-black bg-[#FF9F43] text-slate-950">
+                        ₹{expressFee}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-snug">
+                      Immediate parcel dispatch from AgriMart Hub @ LPU.
+                      <span className="block text-[11px] text-slate-500 mt-1 font-medium">
+                        {distanceKm <= 5.0
+                          ? `₹50 extra (within 5 km radius • you: ${distanceKm} km)`
+                          : distanceKm <= 7.5
+                          ? `₹100 extra (5.1–7.5 km radius • you: ${distanceKm} km)`
+                          : `₹150 extra (7.6–10 km radius • you: ${distanceKm} km)`}
+                      </span>
+                    </p>
                   </button>
-                ))}
+                ) : (
+                  <div className="p-4 rounded-2xl border-2 border-slate-200 bg-slate-50/80 text-left relative flex flex-col justify-between opacity-75">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-slate-200 text-slate-400 flex items-center justify-center font-black text-sm">
+                          ⚡
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            Express Delivery
+                          </span>
+                          <h4 className="text-sm font-extrabold text-slate-500">Under 10 km Only</h4>
+                        </div>
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-200 text-slate-500">
+                        Unavailable
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 leading-snug">
+                      Express delivery is limited to 10 km of LPU Hub. Address is {distanceKm} km away. Standard delivery auto-applied.
+                    </p>
+                  </div>
+                )}
+
+                {/* Standard Delivery Option */}
+                <button
+                  type="button"
+                  id="delivery-type-standard-btn"
+                  onClick={() => setDeliveryType('standard')}
+                  className={`p-4 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between ${
+                    activeDeliveryType === 'standard'
+                      ? 'border-[#142B4A] bg-[#142B4A]/5 ring-2 ring-[#142B4A]/20 shadow-sm'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-slate-100 text-[#142B4A] flex items-center justify-center font-black text-sm">
+                        🚚
+                      </div>
+                      <div>
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                          Evening 8 PM Vehicle
+                        </span>
+                        <h4 className="text-sm font-extrabold text-[#142B4A]">Standard Delivery</h4>
+                      </div>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-black ${
+                      itemTotal >= 1000 && standardDistanceSurcharge === 0
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-slate-100 text-slate-700'
+                    }`}>
+                      {itemTotal >= 1000 && standardDistanceSurcharge === 0 ? 'FREE' : `₹${standardFee}`}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-600 leading-snug space-y-1">
+                    <p>
+                      {distanceKm > 15.0
+                        ? `₹${standardDistanceSurcharge} distance surcharge applied (>15 km from LPU hub • ${distanceKm} km).`
+                        : (itemTotal >= 1000 ? '🎉 FREE delivery unlocked (Order ≥ ₹1,000)' : '₹20 fee on orders under ₹1,000 (Free on ₹1,000+)')}
+                    </p>
+                    <div className="p-1.5 bg-amber-50 rounded-lg text-[11px] text-amber-900 font-semibold flex items-center gap-1">
+                      <span>🚚</span>
+                      <span>Dispatches daily at 8:00 PM. Order after 8 PM delivered tomorrow after 8 PM.</span>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
 
@@ -619,9 +1039,165 @@ export default function CartPage() {
             </div>
           </div>
 
-          {/* Order Bill Summary */}
-          <div>
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm sticky top-24 space-y-5">
+          {/* Order Bill Summary & Coupons */}
+          <div className="space-y-4 sticky top-24">
+            {/* Coupons & Offers Section */}
+            <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                    <Percent className="w-4 h-4 text-[#FF9F43]" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#142B4A]">Coupons &amp; Offers</h3>
+                    <p className="text-[11px] text-slate-500">Apply promo code or price band discounts</p>
+                  </div>
+                </div>
+                {activeCoupons.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowCouponsList(!showCouponsList)}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-800 transition"
+                  >
+                    {showCouponsList ? 'Hide Offers' : `View All (${activeCoupons.length})`}
+                  </button>
+                )}
+              </div>
+
+              {/* Coupon Input Box */}
+              {!appliedCoupon ? (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Tag className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={couponCodeInput}
+                        onChange={(e) => {
+                          setCouponCodeInput(e.target.value.toUpperCase());
+                          setCouponError('');
+                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
+                        placeholder="Enter coupon code (e.g. KISAN200)"
+                        className="w-full pl-9 pr-3 py-2 text-xs font-mono font-bold uppercase border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#142B4A]"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleApplyCoupon()}
+                      className="px-4 py-2 bg-[#142B4A] hover:bg-[#1D3E6B] text-white font-bold text-xs rounded-xl transition shadow-xs"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponError && (
+                    <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-1.5 animate-fadeIn">
+                      <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                      <span className="leading-snug">{couponError}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Applied Coupon Pill */
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <Check className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-black text-xs text-emerald-950">{appliedCoupon.code}</span>
+                        <span className="text-[10px] font-bold bg-emerald-200/70 text-emerald-800 px-1.5 py-0.2 rounded">
+                          {appliedCoupon.discountPercentage}% OFF
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-emerald-700 font-semibold">
+                        Saved {formatPrice(couponDiscountAmount)} on this order
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="text-xs font-bold text-rose-600 hover:text-rose-800 underline px-1"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+
+              {/* Available Coupons Dropdown / List */}
+              <AnimatePresence>
+                {showCouponsList && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="pt-2 space-y-2 border-t border-slate-100 overflow-hidden"
+                  >
+                    {activeCoupons.map((coupon) => {
+                      const isEligible = itemTotal >= (coupon.minOrderValue || 0);
+                      const isCurrentlyApplied = appliedCoupon?.code === coupon.code;
+                      const diff = (coupon.minOrderValue || 0) - itemTotal;
+
+                      return (
+                        <div
+                          key={coupon.id}
+                          className={`p-3 rounded-2xl border transition-all ${
+                            isCurrentlyApplied
+                              ? 'border-emerald-500 bg-emerald-50/50'
+                              : isEligible
+                              ? 'border-slate-200 bg-slate-50/50 hover:border-slate-300'
+                              : 'border-slate-200/60 bg-slate-50/20 opacity-80'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-xs px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[#142B4A]">
+                                  {coupon.code}
+                                </span>
+                                <span className="text-xs font-extrabold text-emerald-700">
+                                  {coupon.discountPercentage}% OFF
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-500 mt-1 leading-snug">
+                                {coupon.description || `Valid on orders above ₹${(coupon.minOrderValue || 0).toLocaleString('en-IN')}`}
+                              </p>
+                              <div className="mt-1 flex items-center gap-1.5 text-[10px] text-slate-400 font-semibold">
+                                <IndianRupee className="w-3 h-3 text-slate-400" />
+                                <span>Price Band: Order &ge; ₹{(coupon.minOrderValue || 0).toLocaleString('en-IN')}</span>
+                              </div>
+                            </div>
+
+                            {isCurrentlyApplied ? (
+                              <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 shrink-0">
+                                <Check className="w-3.5 h-3.5" /> Applied
+                              </span>
+                            ) : isEligible ? (
+                              <button
+                                type="button"
+                                onClick={() => handleApplyCoupon(coupon.code)}
+                                className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition shrink-0"
+                              >
+                                Apply
+                              </button>
+                            ) : (
+                              <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md shrink-0">
+                                Add ₹{diff.toLocaleString('en-IN')} more
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Bill Details Card */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
               <h2 className="text-lg font-extrabold text-[#142B4A] pb-3 border-b border-slate-100">
                 Bill Details
               </h2>
@@ -639,16 +1215,30 @@ export default function CartPage() {
                   </div>
                 )}
 
+                {/* Applied Coupon Discount Line */}
+                {appliedCoupon && couponDiscountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-700 font-bold bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
+                    <span className="flex items-center gap-1.5">
+                      <Tag className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Coupon Discount ({appliedCoupon.code})</span>
+                      <span className="text-[10px] bg-emerald-200 text-emerald-800 px-1.5 py-0.2 rounded font-black">
+                        {appliedCoupon.discountPercentage}% OFF
+                      </span>
+                    </span>
+                    <span>− {formatPrice(couponDiscountAmount)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-slate-600">
                   <span className="flex items-center gap-1.5">
-                    Delivery Partner Fee
+                    Delivery Fee ({activeDeliveryType === 'express' ? `Express • ${distanceKm} km` : (distanceKm > 15.0 ? `Standard • ${distanceKm} km (+₹${standardDistanceSurcharge})` : 'Standard Route')})
                     {deliveryFee === 0 && (
                       <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
                         FREE
                       </span>
                     )}
                   </span>
-                  <span className={deliveryFee === 0 ? 'text-emerald-600 font-bold' : 'text-slate-800'}>
+                  <span className={deliveryFee === 0 ? 'text-emerald-600 font-bold' : 'text-slate-800 font-bold'}>
                     {deliveryFee === 0 ? 'FREE' : formatPrice(deliveryFee)}
                   </span>
                 </div>
@@ -667,10 +1257,10 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {savings > 0 && (
+              {(savings + couponDiscountAmount) > 0 && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-xs text-emerald-800 font-bold">
                   <Sparkles className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  Yay! You saved {formatPrice(savings)} on this farm input order.
+                  Yay! You saved {formatPrice(savings + couponDiscountAmount)} on this certified farm input order.
                 </div>
               )}
 
@@ -683,7 +1273,7 @@ export default function CartPage() {
                       <span>Delivery Unavailable at Selected Location</span>
                     </div>
                     <p className="text-[11px] text-rose-700 leading-snug">
-                      AgriMart farm delivery is only available within 10 km of our Phagwara Dark Pod. You currently have selected <strong>{userLocation?.name || 'Outside Area'}</strong>.
+                      AgriMart delivery is available up to 30 km from AgriMart Hub @ LPU. You currently have selected <strong>{userLocation?.name || 'Outside Area'}</strong> ({distanceKm} km away).
                     </p>
                   </div>
 
@@ -692,7 +1282,7 @@ export default function CartPage() {
                     className="w-full py-4 bg-[#142B4A] hover:bg-[#1B385D] text-white font-black rounded-2xl transition shadow-lg flex items-center justify-center gap-2 text-sm"
                   >
                     <MapPin className="w-4 h-4 text-[#FF9F43]" />
-                    Change to Phagwara Address
+                    Change to Serviceable Address (&le;30 km)
                   </button>
                 </div>
               ) : (
@@ -713,7 +1303,7 @@ export default function CartPage() {
                 <span>•</span>
                 <span>💵 Cash on Delivery Available</span>
                 <span>•</span>
-                <span>⚡ 10-15 Min Phagwara Pod</span>
+                <span>⚡ Express &amp; Standard Dispatch</span>
               </div>
             </div>
           </div>
@@ -748,7 +1338,11 @@ export default function CartPage() {
                   </div>
                   <div>
                     <h3 className="font-extrabold text-lg">Delivery &amp; Payment</h3>
-                    <p className="text-xs text-slate-300">Delivering in 12-15 mins from Phagwara Hub</p>
+                    <p className="text-xs text-slate-300">
+                      {activeDeliveryType === 'express'
+                        ? `⚡ Express Parcel Dispatch (${distanceKm} km radius from LPU Hub)`
+                        : '🚚 Standard Farm Vehicle (Daily 8:00 PM Dispatch)'}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -759,7 +1353,20 @@ export default function CartPage() {
                 </button>
               </div>
 
-              <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+              <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto no-scrollbar">
+                {/* Saved Address Status Indicator */}
+                {hasSavedAddress && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs text-emerald-900 animate-fadeIn">
+                    <div className="flex items-center gap-2 font-bold">
+                      <BookmarkCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Saved Delivery Address Loaded</span>
+                    </div>
+                    <span className="text-[10px] text-emerald-800 font-bold bg-emerald-200/60 px-2 py-0.5 rounded-full">
+                      Saved in Profile
+                    </span>
+                  </div>
+                )}
+
                 {/* Payment Method Selector */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-2">
@@ -767,9 +1374,11 @@ export default function CartPage() {
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {/* Cash on Delivery (COD) */}
-                    <div
+                    <button
+                      type="button"
+                      id="pay-method-cod-btn"
                       onClick={() => setPaymentMethod('cod')}
-                      className={`p-3 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-2.5 ${
+                      className={`p-3 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-2.5 text-left ${
                         paymentMethod === 'cod'
                           ? 'border-[#142B4A] bg-[#142B4A]/5 shadow-sm'
                           : 'border-slate-200 hover:border-slate-300 bg-white'
@@ -777,6 +1386,7 @@ export default function CartPage() {
                     >
                       <input
                         type="radio"
+                        id="radio-cod"
                         name="payMethod"
                         checked={paymentMethod === 'cod'}
                         onChange={() => setPaymentMethod('cod')}
@@ -793,12 +1403,14 @@ export default function CartPage() {
                           Pay cash or UPI on doorstep. No advance payment.
                         </span>
                       </div>
-                    </div>
+                    </button>
 
                     {/* Online Payment */}
-                    <div
+                    <button
+                      type="button"
+                      id="pay-method-online-btn"
                       onClick={() => setPaymentMethod('online')}
-                      className={`p-3 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-2.5 ${
+                      className={`p-3 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-2.5 text-left ${
                         paymentMethod === 'online'
                           ? 'border-[#142B4A] bg-[#142B4A]/5 shadow-sm'
                           : 'border-slate-200 hover:border-slate-300 bg-white'
@@ -806,6 +1418,7 @@ export default function CartPage() {
                     >
                       <input
                         type="radio"
+                        id="radio-online"
                         name="payMethod"
                         checked={paymentMethod === 'online'}
                         onChange={() => setPaymentMethod('online')}
@@ -822,7 +1435,7 @@ export default function CartPage() {
                           Pay instantly via UPI QR, Cards, or NetBanking.
                         </span>
                       </div>
-                    </div>
+                    </button>
                   </div>
                 </div>
 
@@ -915,8 +1528,22 @@ export default function CartPage() {
                   </div>
                 </div>
 
+                {appliedCoupon && couponDiscountAmount > 0 && (
+                  <div className="p-3 bg-emerald-50 rounded-xl text-xs text-emerald-800 font-bold flex items-center justify-between border border-emerald-200">
+                    <span className="flex items-center gap-1.5">
+                      <Tag className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Coupon {appliedCoupon.code} Applied</span>
+                    </span>
+                    <span className="text-emerald-700">− {formatPrice(couponDiscountAmount)} ({appliedCoupon.discountPercentage}% OFF)</span>
+                  </div>
+                )}
+
                 <div className="p-3 bg-amber-50 rounded-xl text-xs text-amber-800 font-medium">
-                  ⚡ Gupta Mart Express Pod delivers to <strong>{shippingAddress.addressLine1 || 'Phagwara'}, {shippingAddress.pincode}</strong> within 12-15 minutes.
+                  {activeDeliveryType === 'express' ? (
+                    <>⚡ <strong>Express Parcel Dispatch:</strong> Immediate dispatch scheduled from AgriMart Hub @ LPU to <strong>{shippingAddress.addressLine1 || 'Phagwara'}, {shippingAddress.pincode}</strong> ({distanceKm} km radius).</>
+                  ) : (
+                    <>🚚 <strong>Standard Delivery:</strong> Dispatched via evening 8:00 PM farm vehicle from AgriMart Hub @ LPU to <strong>{shippingAddress.addressLine1 || 'Phagwara'}, {shippingAddress.pincode}</strong> ({distanceKm} km away{distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} distance surcharge` : ''}).</>
+                  )}
                 </div>
               </div>
 
@@ -931,6 +1558,7 @@ export default function CartPage() {
                 </motion.button>
                 <motion.button
                   type="button"
+                  id="pay-submit-btn"
                   whileTap={buttonTap}
                   onClick={handleProceedToPayment}
                   disabled={paymentLoading}
@@ -947,6 +1575,33 @@ export default function CartPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* AgriMart Certified Razorpay Test Sandbox Modal */}
+      <RazorpaySandboxModal
+        isOpen={sandboxModalOpen}
+        onClose={() => {
+          setSandboxModalOpen(false);
+          setPaymentLoading(false);
+        }}
+        amount={sandboxOrderData?.amount || Math.round(grandTotal * 100)}
+        orderId={sandboxOrderData?.orderId}
+        customerName={shippingAddress.fullName || 'Kisan Farmer'}
+        customerPhone={shippingAddress.phone || '9876543210'}
+        customerEmail={auth.currentUser?.email || 'farmer@agrimart.farm'}
+        onSuccess={handlePaymentSuccess}
+        onFailure={handlePaymentFailure}
+        currentKey={sandboxOrderData?.key}
+        initialView={sandboxOrderData?.initialView || 'gateway'}
+        onOpenLiveRazorpay={(customKey) => {
+          setSandboxModalOpen(false);
+          openLiveRazorpayPopup(
+            sandboxOrderData?.orderId,
+            sandboxOrderData?.amount,
+            sandboxOrderData?.currency,
+            customKey || sandboxOrderData?.key
+          );
+        }}
+      />
 
       <Footer />
       <AnimatePresence>

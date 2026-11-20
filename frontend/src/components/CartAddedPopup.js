@@ -1,10 +1,10 @@
 'use client';
-import { useEffect } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ShoppingBag, X } from 'lucide-react';
 import { toastVariants, iconTap } from '../utils/motion';
 
-export default function CartAddedPopup({ productName, onClose, stacked = false }) {
+const CartAddedPopup = forwardRef(function CartAddedPopup({ productName, onClose, stacked = false }, ref) {
   useEffect(() => {
     const timer = setTimeout(onClose, 2400);
     return () => clearTimeout(timer);
@@ -12,6 +12,7 @@ export default function CartAddedPopup({ productName, onClose, stacked = false }
 
   return (
     <motion.div
+      ref={ref}
       layout
       variants={toastVariants}
       initial="initial"
@@ -58,4 +59,6 @@ export default function CartAddedPopup({ productName, onClose, stacked = false }
       </div>
     </motion.div>
   );
-}
+});
+
+export default CartAddedPopup;

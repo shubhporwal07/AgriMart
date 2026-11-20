@@ -11,9 +11,9 @@ export default function AdminAddProductModal({
   onSaved = null,
 }) {
   const [loading, setLoading] = useState(false);
-  const { addProduct, editProduct: updateProduct } = useProducts();
+  const { addProduct, editProduct: updateProduct, categories: contextCategories, addCategory } = useProducts();
 
-  const agriCategories = [
+  const defaultCategories = [
     'Vegetable Seeds',
     'Grain & Field Crop Seeds',
     'Organic Manure & Compost',
@@ -23,6 +23,13 @@ export default function AdminAddProductModal({
     'Farm Sprayers & Agri Tools',
     'Soil Health & Testing Kits',
   ];
+
+  const agriCategories = contextCategories && contextCategories.length > 0 ? contextCategories : defaultCategories;
+
+  const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [creatingCategory, setCreatingCategory] = useState(false);
+  const [categoryNotice, setCategoryNotice] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -41,7 +48,7 @@ export default function AdminAddProductModal({
     shelfLife: '18 months from packaging date. Viability tested.',
     storageInstructions: 'Store in dry seed warehouse at <18°C. Protect from moisture & insects.',
     fssaiLicence: 'Seed Lic: DL-AGRI-10020043 / FCO: FCO-PB-4401',
-    manufacturerDetails: 'Certified & Packed by Gupta AgriMart Logistics, Central Kisan Hub #01, Phagwara, Kapurthala - 144401.',
+    manufacturerDetails: 'Certified & Packed by AgriMart Kisan Logistics, Central Kisan Hub #01, Phagwara, Kapurthala - 144401.',
     description: '',
     highlights: '',
     germination: '85% Min.',
@@ -76,7 +83,7 @@ export default function AdminAddProductModal({
         shelfLife: editProduct.shelfLife || '18 months from packaging date.',
         storageInstructions: editProduct.storageInstructions || 'Store in dry seed warehouse at <18°C.',
         fssaiLicence: editProduct.fssaiLicence || 'Seed Lic: DL-AGRI-10020043',
-        manufacturerDetails: editProduct.manufacturerDetails || 'Gupta AgriMart Kisan Hub #01, Phagwara.',
+        manufacturerDetails: editProduct.manufacturerDetails || 'AgriMart Kisan Hub #01, Phagwara.',
         description: editProduct.description || '',
         highlights: Array.isArray(editProduct.highlights) ? editProduct.highlights.join('\n') : (editProduct.highlights || ''),
         germination: editProduct.nutritionalFacts?.['Germination Rate'] || editProduct.nutritionalFacts?.Energy || '85% Min.',
@@ -106,7 +113,7 @@ export default function AdminAddProductModal({
         shelfLife: '18 months from packaging date. Viability tested.',
         storageInstructions: 'Store in dry seed warehouse at <18°C. Protect from moisture & insects.',
         fssaiLicence: 'Seed Lic: DL-AGRI-10020043 / FCO: FCO-PB-4401',
-        manufacturerDetails: 'Certified & Packed by Gupta AgriMart Logistics, Central Kisan Hub #01, Phagwara, Kapurthala - 144401.',
+        manufacturerDetails: 'Certified & Packed by AgriMart Kisan Logistics, Central Kisan Hub #01, Phagwara, Kapurthala - 144401.',
         description: '',
         highlights: 'High germination rate (>85% lab tested)\nSeed Act 1966 & FCO 1985 certified\nFast farm gate direct dispatch',
         germination: '85% Min.',
@@ -129,6 +136,31 @@ export default function AdminAddProductModal({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
+  };
+
+  const handleQuickAddCategory = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const name = newCategoryName.trim();
+    if (!name) {
+      setCategoryNotice('Please enter a category name');
+      return;
+    }
+    setCreatingCategory(true);
+    setCategoryNotice('');
+    try {
+      if (addCategory) {
+        await addCategory(name);
+      }
+      setFormData((prev) => ({ ...prev, category: name }));
+      setNewCategoryName('');
+      setShowNewCategoryModal(false);
+      setCategoryNotice(`Category "${name}" created and selected!`);
+      setTimeout(() => setCategoryNotice(''), 4000);
+    } catch (err) {
+      setCategoryNotice(err.message || 'Failed to create category');
+    } finally {
+      setCreatingCategory(false);
+    }
   };
 
   const handleImageChange = (e) => {
@@ -235,7 +267,7 @@ export default function AdminAddProductModal({
         initial="initial"
         animate="animate"
         exit="exit"
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto no-scrollbar"
         onClick={onClose}
       >
         <motion.div
@@ -270,7 +302,7 @@ export default function AdminAddProductModal({
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(92vh-80px)] space-y-6">
+          <form onSubmit={handleSubmit} className="p-6 overflow-y-auto no-scrollbar max-h-[calc(92vh-80px)] space-y-6">
             <AnimatePresence>
               {error && (
                 <motion.div
@@ -328,21 +360,100 @@ export default function AdminAddProductModal({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Agri Category *
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-700">
+                      Agri Category *
+                    </label>
+                    <button
+                      type="button"
+                      id="admin-create-category-btn"
+                      onClick={() => setShowNewCategoryModal(!showNewCategoryModal)}
+                      className="text-[11px] text-[#142B4A] hover:text-[#E27B12] font-black flex items-center gap-1 transition-colors"
+                      title="Add a new custom agricultural category"
+                    >
+                      <span className="material-symbols-outlined text-[15px]">add_circle</span>
+                      <span>+ New Category</span>
+                    </button>
+                  </div>
+
                   <select
                     name="category"
+                    id="admin-category-select"
                     value={formData.category}
-                    onChange={handleInputChange}
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#142B4A] bg-white"
+                    onChange={(e) => {
+                      if (e.target.value === '__create_new__') {
+                        setShowNewCategoryModal(true);
+                      } else {
+                        handleInputChange(e);
+                      }
+                    }}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#142B4A] bg-white font-medium"
                   >
                     {agriCategories.map((cat) => (
                       <option key={cat} value={cat}>
                         {cat}
                       </option>
                     ))}
+                    <option value="__create_new__" className="font-bold text-[#E27B12]">
+                      ✨ + Create New Category...
+                    </option>
                   </select>
+
+                  {/* Inline Quick Category Creator */}
+                  <AnimatePresence>
+                    {showNewCategoryModal && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-2.5 p-3 rounded-2xl bg-amber-50/80 border border-amber-200 overflow-hidden"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-black text-amber-900 mb-2">
+                          <span className="material-symbols-outlined text-[16px] text-[#E27B12]">category</span>
+                          <span>Create New Agri Category</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            id="new-category-name-input"
+                            value={newCategoryName}
+                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleQuickAddCategory(e);
+                              }
+                            }}
+                            placeholder="e.g. Hydroponics & Nutrients, Greenhouse Tools"
+                            className="flex-1 text-xs px-3 py-2 bg-white rounded-xl border border-amber-300 focus:outline-none focus:ring-2 focus:ring-[#142B4A]"
+                          />
+                          <button
+                            type="button"
+                            id="submit-new-category-btn"
+                            onClick={handleQuickAddCategory}
+                            disabled={creatingCategory || !newCategoryName.trim()}
+                            className="px-3.5 py-2 bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs font-bold rounded-xl transition disabled:opacity-50 whitespace-nowrap shadow-sm"
+                          >
+                            {creatingCategory ? 'Adding...' : 'Create & Select'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setShowNewCategoryModal(false)}
+                            className="px-2.5 py-2 text-xs text-slate-500 hover:text-slate-800 font-semibold"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {categoryNotice && (
+                    <p className="text-[11px] text-emerald-600 font-bold mt-1.5 flex items-center gap-1 animate-fadeIn">
+                      <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                      <span>{categoryNotice}</span>
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -361,17 +472,69 @@ export default function AdminAddProductModal({
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Pack Size / Weight *
+                    Pack Size / Weight / Volume *
                   </label>
                   <input
                     type="text"
                     name="unit"
                     value={formData.unit}
                     onChange={handleInputChange}
-                    placeholder="e.g. 10g Pouch (~3,000 seeds), 25 kg Bag, 1 Litre"
+                    placeholder="e.g. 1 kg Pack, 25 kg Bag, 1 Litre Bottle"
                     required
                     className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#142B4A]"
                   />
+                  {/* Quick Unit Presets (Weight: kg / g & Volume: Litres / ml) */}
+                  <div className="mt-2 space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Weight (kg):</span>
+                      {[
+                        '500 g Pouch',
+                        '1 kg Pack',
+                        '2 kg Pack',
+                        '5 kg Bag',
+                        '10 kg Bag',
+                        '25 kg Bag',
+                        '50 kg Bag',
+                      ].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, unit: preset }))}
+                          className={`text-[10px] px-2 py-0.5 rounded-md border font-semibold transition ${
+                            formData.unit === preset
+                              ? 'bg-[#142B4A] text-white border-[#142B4A]'
+                              : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Liquid (Litre):</span>
+                      {[
+                        '100 ml Bottle',
+                        '250 ml Bottle',
+                        '500 ml Bottle',
+                        '1 Litre Bottle',
+                        '2 Litres Can',
+                        '5 Litres Can',
+                      ].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, unit: preset }))}
+                          className={`text-[10px] px-2 py-0.5 rounded-md border font-semibold transition ${
+                            formData.unit === preset
+                              ? 'bg-[#E27B12] text-white border-[#E27B12]'
+                              : 'bg-amber-50/70 text-amber-900 border-amber-200 hover:bg-amber-100'
+                          }`}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

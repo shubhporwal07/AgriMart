@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
@@ -17,12 +17,33 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const checkAdminSession = useCallback(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const raw = localStorage.getItem('adminSession');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.isAdmin) {
+          setUser((prev) => prev || {
+            uid: 'admin-console',
+            email: parsed.adminId || 'admin@agrimart.farm',
+            displayName: 'AgriMart Admin',
+          });
+          setUserRole('admin');
+          return true;
+        }
+      }
+    } catch {
+      localStorage.removeItem('adminSession');
+    }
+    return false;
+  }, []);
+
   useEffect(() => {
     if (DEMO_MODE) {
-      // Demo mode: skip real authentication
       setUser({ 
         uid: 'demo-user', 
-        email: 'demo@guptamart.com',
+        email: 'demo@agrimart.farm',
         displayName: 'Demo Admin'
       });
       setUserRole('admin');
@@ -30,13 +51,15 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    // Check if an admin session is currently active
+    const hasAdmin = checkAdminSession();
+
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChanged(
       auth,
       async (currentUser) => {
-        setUser(currentUser);
-        
         if (currentUser) {
+          setUser(currentUser);
           setUserRole('user');
           setLoading(false);
 
@@ -46,17 +69,21 @@ export function AuthProvider({ children }) {
             const userDocSnap = await getDoc(userDocRef);
             
             if (userDocSnap.exists()) {
-              setUserRole(userDocSnap.data().role || 'user');
+              const role = userDocSnap.data().role || 'user';
+              setUserRole(role);
             } else {
-              // Default role if no user document exists
               setUserRole('user');
             }
           } catch (err) {
             console.error('Error fetching user role:', err);
-            setUserRole('user'); // Default role on error
+            setUserRole('user');
           }
         } else {
-          setUserRole(null);
+          // If no Firebase user, check if admin session is present in localStorage
+          if (!checkAdminSession()) {
+            setUser(null);
+            setUserRole(null);
+          }
           setLoading(false);
         }
       },
@@ -66,16 +93,29 @@ export function AuthProvider({ children }) {
       }
     );
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
+    // Listen to local storage changes for cross-tab or intra-app login/logout
+    const handleStorage = () => {
+      checkAdminSession();
+    };
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('agrimart-auth-change', handleStorage);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('agrimart-auth-change', handleStorage);
+    };
+  }, [checkAdminSession]);
 
   // Logout function
   const logout = async () => {
     try {
       setLoading(true);
-      await signOut(auth);
+      await signOut(auth).catch(() => {});
       localStorage.removeItem('adminSession');
+      localStorage.removeItem('agrimart_user_email');
+      localStorage.removeItem('userEmail');
+      window.dispatchEvent(new Event('storage'));
       setUser(null);
       setUserRole(null);
     } catch (error) {
@@ -91,7 +131,7 @@ export function AuthProvider({ children }) {
     loading,
     error,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user || userRole === 'admin',
     isAdmin: userRole === 'admin',
   };
 

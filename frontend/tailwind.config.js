@@ -6,8 +6,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#142B4A",
-        "primary-container": "#1B385D",
+        primary: "#0B1B30",
+        "primary-container": "#152B48",
         "on-primary": "#FFFFFF",
         "on-primary-container": "#94B3FD",
         "primary-fixed": "#D5E3FF",
@@ -21,9 +21,9 @@ export default {
         tertiary: "#FF9F43",
         "tertiary-container": "#E68A2E",
         "on-tertiary": "#FFFFFF",
-        background: "#F7F9FC",
+        background: "#FAF5EB",
         "on-background": "#191C1E",
-        surface: "#F7F9FC",
+        surface: "#FAF5EB",
         "on-surface": "#263449",
         "on-surface-variant": "#5A6B82",
         "surface-container-lowest": "#FFFFFF",

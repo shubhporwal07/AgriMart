@@ -61,16 +61,37 @@ export function AdminRoute({ children }) {
   return children;
 }
 
-// Public Route - if authenticated, redirect to dashboard
+// Public Route - if authenticated, redirect to destination or dashboard
 export function PublicRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
+      let redirect = searchParams?.get('redirect');
+      let step = searchParams?.get('step');
+      if (!redirect && typeof window !== 'undefined' && sessionStorage.getItem('agrimart_pending_checkout') === 'true') {
+        redirect = '/cart';
+        step = 'address';
+      }
+      if (redirect) {
+        try {
+          const decoded = decodeURIComponent(redirect);
+          if (decoded.startsWith('/') && !decoded.startsWith('//')) {
+            const dest = step && !decoded.includes('step=')
+              ? `${decoded}${decoded.includes('?') ? '&' : '?'}step=${encodeURIComponent(step)}`
+              : decoded;
+            router.replace(dest);
+            return;
+          }
+        } catch {
+          // ignore
+        }
+      }
       router.replace('/dashboard');
     }
-  }, [loading, isAuthenticated, router]);
+  }, [loading, isAuthenticated, router, searchParams]);
 
   if (loading || isAuthenticated) {
     return <LoadingScreen />;

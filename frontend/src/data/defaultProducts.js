@@ -1,5 +1,5 @@
 /**
- * AgriMart / Gupta AgriMart - Certified Seeds & Fertilizers Catalog
+ * AgriMart - Certified Seeds & Fertilizers Catalog
  * Based on the Artisanal Navy & Citrus design system and AgriMart farm input standards.
  * Features ICAR/NSC certifications, FCO compliance, germination ratings, and dosage guides.
  */
@@ -45,7 +45,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/hybrid-tomato-seeds.png',
     imageDatas: [
       '/images/products/hybrid-tomato-seeds.png',
-      'https://lh3.googleusercontent.com/aida/AEtjO1X1xM-VDokqF1m7CT7BKXNAbBm6P0tT0uOd6yXkDU25fMCd8TGDFuwc89-0pc7xWyg2VNEmsS4WkvlTqaMK4ITu258c4LgMRTiqh7VNVWVE_LqbETgA-KfZGZbFues8y1TvvtWste-uyNbncLAZJmVc-78zfFt4bA7tHO3WHfsCVT2nmsQHt0_eklmMdG_w7YPDI3RJZ7X_PITe_06uxxJOQXxAZoVqGPLrgJdXp_k94AHdR0YFzejUOZc',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -84,16 +84,16 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Recommended Soil': 'Well-drained sandy loam or clay loam',
       'Seed Rate / Acre': '80–100 grams',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida/AEtjO1Xj5WXrxwcqVM_hmyTEhRURtpNbe084_SpmEEZvUSr_oc0C5Wp88S6i5kQ518e9p48uuLmIv8RRDL9bNGvP_MwBjg_HMPXj2KMHq9rQbWzvL7fQ99SdvByLifzXuWLoAK6XY-LBNQ667ZTfElJYO_EVAnt8_IE33BII6g63Y7Yrv2rmbRV2lyptwEzYpXPJ11Wd_ajW5oUrKG7RlRqqAKM0G2D1dvabn01IjhPvkxgQnpPGw2L4NqcwgTg',
+    imageUrl: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida/AEtjO1Xj5WXrxwcqVM_hmyTEhRURtpNbe084_SpmEEZvUSr_oc0C5Wp88S6i5kQ518e9p48uuLmIv8RRDL9bNGvP_MwBjg_HMPXj2KMHq9rQbWzvL7fQ99SdvByLifzXuWLoAK6XY-LBNQ667ZTfElJYO_EVAnt8_IE33BII6g63Y7Yrv2rmbRV2lyptwEzYpXPJ11Wd_ajW5oUrKG7RlRqqAKM0G2D1dvabn01IjhPvkxgQnpPGw2L4NqcwgTg',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
     id: 'agri-pure-vermicompost-25kg',
     name: 'Pure Organic Vermicompost 25kg',
     category: 'Organic Manure & Compost',
-    brand: 'Gupta Krishi Organic',
+    brand: 'AgriMart Organic Krishi',
     unit: '25 kg HDPE Farm Bag',
     price: 340,
     mrp: 500,
@@ -129,7 +129,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/vermicompost-25kg.png',
     imageDatas: [
       '/images/products/vermicompost-25kg.png',
-      'https://lh3.googleusercontent.com/aida/AEtjO1Vy2s5scIhN5DJ-3idck8fvAhY-UnhFuTESH2jhsSooR_oTA3TDZI2E2XN_gF1r4kM4JwR-f-y2ng_0qcRNsyfiPZD8VU2CHCOGyiivnsSY0x0kKkGDdxQHAid2OQ7ZB6jam2jMZwaf59wHKCDHzQN73evi1RtadDOb2yRfMP6gLInt0YHgJ1gRDYi3lgFYN88aBxERZR6Tx2A2HYsXiVCloGlpKZgE7wW3dg3jNtSQJMB8kGrbOn4BdQ',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -173,7 +173,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/npk-19-19-19-foliar.png',
     imageDatas: [
       '/images/products/npk-19-19-19-foliar.png',
-      'https://lh3.googleusercontent.com/aida/AEtjO1VSYEG0-tSPMk0K2GLeHFxRnTPg29IOJVdd_ucUlkz7E6o56_1TO-8FCVdpeMtXT0Mvzl7TJMaKnSg-X3MSyj0gAvxrpSa8NSiXCeHJxWw4SvNDIMvH7zgyuaKoHbL7nD3HqU2aKwdvxUx9xIGI_dgJSL1E9pzh-y0ALVwe0UbbEB22Fgp3_aMaqAka6Z2kpKq_ZYsnFbUTcInsJWDBXJwCXJgV__pcdakyTMT3z7rEEO6N3pTNcTAziNk',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -214,7 +214,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/neem-oil-500ml.png',
     imageDatas: [
       '/images/products/neem-oil-500ml.png',
-      'https://lh3.googleusercontent.com/aida/AEtjO1WoMlIHJf0eM5vNCDkodX7dzA09aiNQmK1oVJzsMY6JbAVdvLcY-3hCCiuYS-hN6gv4vgPzhyQFZ8s5vsOsPglXdpReaDuVhQ5WWC_b6mQUDB9eLPVCGKMlqxWknHq0ND-8gcVjS-nWcMAUxRl0SfK-f8EzG_Pxtoib1eL68K1oewIw7CoMF_X4QZuJOMQYOJtaP9Za00ERikZrfDP07mTJGm3zuxOeXqXb8sX5UvdJz3yKyOfycxBz0Q',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -256,7 +256,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/dap-fertilizer-5kg.png',
     imageDatas: [
       '/images/products/dap-fertilizer-5kg.png',
-      'https://lh3.googleusercontent.com/aida/AEtjO1W8c-KEHBjmCYpe79STH_7UgzW_-m6yCHWHw5pv0rz1KY4OBRJZmHScy8aHEkT2SqfTUKzUxa8TY-gISSCYCRXQrTu8x524E5210NVil5mv6qrp5GFvWspYfBLrgWS2jGD3S3aiRdllZN-5sQthFd_ipPaVi8a5VercHVMRz8b12oCTgLY3HEBhmde5fF5BqNcsHBrHO_Og8GQvHr6pQNOUMuuYUtNo1TvUPvPCOdIBp1YE2dSsu2zpg3U',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -298,7 +298,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/hybrid-cotton-seeds.png',
     imageDatas: [
       '/images/products/hybrid-cotton-seeds.png',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBZ1PcHF8x98EXUGaxJn22Vf0CjsH48XLkx4l4zwkIlWlHsoqyV5sd90kaFxFrfV1FGjEeLVl6dFKO0emGq5oeDUyczYvsuCqmzmn34C04fxtlaVPhFmotso-fpk2PjANdknefHRHTtPBxuXwQXMJHIHexwG4sVPOYvAqmqR6ETtMQSypubxWL3_gZqX-0o2nbWEVBK0q-iZFgolk1cQ-JLAOfQ8W_hbz_MDWONZhaOYRO-vR5w09xa',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -383,7 +383,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/bio-enzyme-1l.png',
     imageDatas: [
       '/images/products/bio-enzyme-1l.png',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCp9eHvFq16npgCtVUbZ8XRMlDXk5LPhA6tjq7BWPM4ls2LfsTRcWAMzySnZ2Np0Dsd6AdnqKY0nfIXJ69y2Wd9RyozfDh8vu2dRt88kPVcC5vEpPxSlVIsO8EpWPMV4LlwO78fJNCw9mx2umZtzFhJxZ2hGJ2VlAnH_dff-rMN08zKzNZ0teFRhWkxdm1hrkMLoQt8wVxEupjQ40KunPcDTk4NMJju68c4OtILMzdSo9XmS-JEGfEb',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -422,9 +422,9 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Seed Rate / Acre': '40 kg per acre (Broadcasting) / 35 kg (Line Sowing)',
       'Average Grain Yield': '22–25 Quintals / Acre',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOjtXEn4zpVIyBL_sCok_2CHTLgndAla7ilr82rQmi_RPU4yKtHK2gGE6-qoO9Zy2GANXP7PBzYhtDYQMNWN9zqSBBUaeYBlNeMOTjlFuR5Wj410eAnaR_pPPcCiC3Oj6pukD0741FFXcncSy-E1Av8UTK0fLMB9mDnzPMuOKvGTB0icLc7Q9G_hp0_x42eRtfxqGg84qq3m8UTEQWlW71j18-9ZuT8Q8b2XC82ihw-VH48q8ZEVGO',
+    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBOjtXEn4zpVIyBL_sCok_2CHTLgndAla7ilr82rQmi_RPU4yKtHK2gGE6-qoO9Zy2GANXP7PBzYhtDYQMNWN9zqSBBUaeYBlNeMOTjlFuR5Wj410eAnaR_pPPcCiC3Oj6pukD0741FFXcncSy-E1Av8UTK0fLMB9mDnzPMuOKvGTB0icLc7Q9G_hp0_x42eRtfxqGg84qq3m8UTEQWlW71j18-9ZuT8Q8b2XC82ihw-VH48q8ZEVGO',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -462,16 +462,16 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Application Timing': 'Basal dressing or at first vegetative irrigation',
       'Dose / Acre': '4 kg per acre mixed with organic manure or soil',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCLaWOfmT2-VdLLFLZwmzVtmDBooIushj1fuZvKoxC0TJPGBxgzv7cA-MNFpNWGKoGCCeWp5dRziV175opJGbBxIiYKigOnzVGxj36S61Uk-lxqCYplQy0BXyIgmJ3BruBRfNQiwpj-OZqasvveZ4Yr7yUX-LqqatnOTJDHx8Bvs6V6qObs83jzPQI31HBNnXkEZ8swfZgnYLfqJ5AZUs_MgNiK5o3k7nEfRREBNN2rgUvcbph1LKJU',
+    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCLaWOfmT2-VdLLFLZwmzVtmDBooIushj1fuZvKoxC0TJPGBxgzv7cA-MNFpNWGKoGCCeWp5dRziV175opJGbBxIiYKigOnzVGxj36S61Uk-lxqCYplQy0BXyIgmJ3BruBRfNQiwpj-OZqasvveZ4Yr7yUX-LqqatnOTJDHx8Bvs6V6qObs83jzPQI31HBNnXkEZ8swfZgnYLfqJ5AZUs_MgNiK5o3k7nEfRREBNN2rgUvcbph1LKJU',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
     id: 'agri-steamed-bone-meal',
     name: 'Steamed Bone Meal Organic Phosphorus 5kg',
     category: 'Organic Manure & Compost',
-    brand: 'Gupta Krishi Organic',
+    brand: 'AgriMart Organic Krishi',
     unit: '5 kg Eco Bag',
     price: 310,
     mrp: 420,
@@ -502,9 +502,9 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Sterilization Standard': 'Autoclaved at 134°C (Pathogen Free)',
       'Recommended Dose': '50 kg / acre or 50g per pot / vegetable bed',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBMp17OB-HJz0nyQxUITy_d29i39UBq4-_mNOUgJhFvSB1V1TWoHfVuWE9vzyTd-fakYvYGhBRjyYyj5ALQ7QayCRB9PHx49VANze4qFViSTWj-vSFNw40vlBKddI26IqUk5tInwv_Pk8oSFHzMgssXt4smUvs-uGeDgHkVBlw9NTPJkre7phhejl_N24twr_j7fImajwNPY5-jGs_fTV1g9bBuGGaI5EYoaMNo-s0BBw6c0pgYA78K',
+    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBMp17OB-HJz0nyQxUITy_d29i39UBq4-_mNOUgJhFvSB1V1TWoHfVuWE9vzyTd-fakYvYGhBRjyYyj5ALQ7QayCRB9PHx49VANze4qFViSTWj-vSFNw40vlBKddI26IqUk5tInwv_Pk8oSFHzMgssXt4smUvs-uGeDgHkVBlw9NTPJkre7phhejl_N24twr_j7fImajwNPY5-jGs_fTV1g9bBuGGaI5EYoaMNo-s0BBw6c0pgYA78K',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -542,9 +542,9 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Seed Treatment Dose': '5g – 10g per kg seed',
       'Soil Application': '1 kg mixed with 100 kg FYM / acre',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDi9laVrqByI9DtaXX8avcdsberzTqo5XFSO8PJJbFtMV9ZRAT5VIyBUN5q6cPiaZYJj7ymSesnp33PyujqYcXiYor0PQZh1VS9KPOx5kbHuFSfXASXS2zK1J-NqXw-CsqggFHoou2VNWz5GHKnE-AVaoPjt-Gh040w_zTwDf00yLeRL8ltKtShnQ-3r9a_YYcsg6xE_dGcPb5oDiwqiuDgib4FkyJLGLbNFQBsFd97COAhQg23AsHJ',
+    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDi9laVrqByI9DtaXX8avcdsberzTqo5XFSO8PJJbFtMV9ZRAT5VIyBUN5q6cPiaZYJj7ymSesnp33PyujqYcXiYor0PQZh1VS9KPOx5kbHuFSfXASXS2zK1J-NqXw-CsqggFHoou2VNWz5GHKnE-AVaoPjt-Gh040w_zTwDf00yLeRL8ltKtShnQ-3r9a_YYcsg6xE_dGcPb5oDiwqiuDgib4FkyJLGLbNFQBsFd97COAhQg23AsHJ',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -581,9 +581,9 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Languages Included': 'Hindi, Punjabi, English & Marathi Guide',
       'Test Capacity': '50 complete soil analyses',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBK-SXt9vP9pSiR9axCLOXsAFz3xn-_aYbRh4L1cU4naRgC-LPNDKgthiAbnuSoJcF6hyjPpAavpoNIOyYRS5oV6GKmblvfaeB_6NDJTbOA_vZe58Ib0AMGkpOCsKuuAFQPnuxGcmA61qrxxIr-96nQv5UDWo7GIK5VE23M_yMf7pU-5hU2Nt_7DwEQTybIrFf3FWalrQuSiYTeOg-R8WAuM2q9nRde7av4v9c4ms8TcDJ5gMUWIV5h',
+    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBK-SXt9vP9pSiR9axCLOXsAFz3xn-_aYbRh4L1cU4naRgC-LPNDKgthiAbnuSoJcF6hyjPpAavpoNIOyYRS5oV6GKmblvfaeB_6NDJTbOA_vZe58Ib0AMGkpOCsKuuAFQPnuxGcmA61qrxxIr-96nQv5UDWo7GIK5VE23M_yMf7pU-5hU2Nt_7DwEQTybIrFf3FWalrQuSiYTeOg-R8WAuM2q9nRde7av4v9c4ms8TcDJ5gMUWIV5h',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -622,9 +622,9 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Charger': 'Auto-cutoff 1.7A Smart Charger included',
       'Warranty': '1 Year Full Machine Warranty',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdLgBElsluhMtJ02gspW2Ldj2TiuiqY1a2OXhVoMB5Yc2E32r6G1duFNdebbjN_ghfqw8_r74iD9fioHrYGHtJacaA0FQ9bowb3OZdUV-lhyW2WMwMzz_CeQQjHLvj0JGQYgL8C-1QQBc7r-3Iw1Dn2K0odrBTDnX3gafwQeHaiRWrIB7Am5DO-qXC0_CbkyXeEFUl_JMT3EPh-MVjLxevy7NK_wzSDgggVZ6O4-yVtbQt_wSIxEmW',
+    imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAdLgBElsluhMtJ02gspW2Ldj2TiuiqY1a2OXhVoMB5Yc2E32r6G1duFNdebbjN_ghfqw8_r74iD9fioHrYGHtJacaA0FQ9bowb3OZdUV-lhyW2WMwMzz_CeQQjHLvj0JGQYgL8C-1QQBc7r-3Iw1Dn2K0odrBTDnX3gafwQeHaiRWrIB7Am5DO-qXC0_CbkyXeEFUl_JMT3EPh-MVjLxevy7NK_wzSDgggVZ6O4-yVtbQt_wSIxEmW',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -661,16 +661,16 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Germination Standard': 'Minimum 92% across all packs',
       'Target Acreage': '1 Acre Intensive Vegetable Cultivation',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida/AEtjO1WJFWo1syzEULlX4Tc3FuI-bDU_hiIWHm5K9CrNRI1NM4UCSzfTPoiImgYr5_GXGbQ_ORc2hfkSiaRLk7_sCWDqrXuhBhgaChnZiXlUlOgstchVupe-lNt4MwGEmvMcM77cgky8XPoP3Ec-CMOmZHu9uqmfuWhqO1qGY_4TPQCQcigDlx-b7LxhdpQ5yUBl9DN-sv5qs-lLJ12Ey0nfEFvEq4TyHpgllSEqu3p1e59PjiLgVDQULC2PNDo',
+    imageUrl: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida/AEtjO1WJFWo1syzEULlX4Tc3FuI-bDU_hiIWHm5K9CrNRI1NM4UCSzfTPoiImgYr5_GXGbQ_ORc2hfkSiaRLk7_sCWDqrXuhBhgaChnZiXlUlOgstchVupe-lNt4MwGEmvMcM77cgky8XPoP3Ec-CMOmZHu9uqmfuWhqO1qGY_4TPQCQcigDlx-b7LxhdpQ5yUBl9DN-sv5qs-lLJ12Ey0nfEFvEq4TyHpgllSEqu3p1e59PjiLgVDQULC2PNDo',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
     id: 'agri-soil-booster-combo',
     name: 'Organic Soil Booster Combo (20kg + 1L)',
     category: 'Organic Manure & Compost',
-    brand: 'Gupta Krishi Organic',
+    brand: 'AgriMart Organic Krishi',
     unit: '20kg Vermicompost + 1L Humic Extract',
     price: 790,
     mrp: 1010,
@@ -700,10 +700,701 @@ export const DEFAULT_AGRI_PRODUCTS = [
       'Soil Suitability': 'Ideal for sandy, clay, or salt-affected farmland',
       'Dosage': 'Apply vermicompost at sowing; drench humic liquid at first irrigation',
     },
-    imageUrl: 'https://lh3.googleusercontent.com/aida/AEtjO1W8CJzuxUiUG8CGznqprVoPmajgZKaBFnRrVTqrUfOAf2g87nYttcc60NzobmhLL5XpCf-kd2bDOuF--0_ALOnyva_5dY8TGDwF1h2yB1zz43Oyk2EdzMJ0PzfNvfdSmHqTjOz1H17ewO_dM0zo_HTH0AUaANKjxCHuvQfTbooB8eieiKPNMP4WQJRS3sCTYESURNhe2Qy4Sa573KTrJd8O0YmEvwHBhgsjMGDGv4qvQsKVq6yt-1TJx-g',
+    imageUrl: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://lh3.googleusercontent.com/aida/AEtjO1W8CJzuxUiUG8CGznqprVoPmajgZKaBFnRrVTqrUfOAf2g87nYttcc60NzobmhLL5XpCf-kd2bDOuF--0_ALOnyva_5dY8TGDwF1h2yB1zz43Oyk2EdzMJ0PzfNvfdSmHqTjOz1H17ewO_dM0zo_HTH0AUaANKjxCHuvQfTbooB8eieiKPNMP4WQJRS3sCTYESURNhe2Qy4Sa573KTrJd8O0YmEvwHBhgsjMGDGv4qvQsKVq6yt-1TJx-g',
+      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
+  },
+  {
+    "id": "agri-hybrid-okra-radhika",
+    "name": "Hybrid Lady Finger / Okra Seeds (Radhika)",
+    "category": "Vegetable Seeds",
+    "brand": "Mahyco Seeds",
+    "unit": "500 g Pouch (High Yield)",
+    "price": 240,
+    "mrp": 320,
+    "discount": "25% OFF",
+    "rating": 4.8,
+    "reviewCount": 1420,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 120,
+    "isOrganic": false,
+    "dietaryTags": [
+      "YVMV Resistant",
+      "ICAR Certified",
+      "92%+ Germination"
+    ],
+    "shelfLife": "18 months from packaging date. Keep in cool, airtight container.",
+    "storageInstructions": "Store in dry place away from heat and direct sunlight.",
+    "origin": "Jalna Seed Research Hub, Maharashtra",
+    "fssaiLicence": "Seed Lic: AGRI/SEED/MH-40192",
+    "manufacturerDetails": "Maharashtra Hybrid Seeds Co. Pvt. Ltd. (Mahyco)",
+    "description": "Premier hybrid okra known for intense green, tender, 5-ridged pods with short internodes and high branching. Extremely tolerant to Yellow Vein Mosaic Virus (YVMV) and Enation Leaf Curl Virus (ELCV).",
+    "highlights": [
+      "First picking starts 45–48 days after sowing",
+      "Heavy flush with 22–26 pickings over season",
+      "High market acceptance with slender, tender pods",
+      "Suitable for both summer and rainy season sowing"
+    ],
+    "nutritionalFacts": {
+      "Germination Rate": "92% Min (Lab Certified)",
+      "Physical Purity": "98% Min",
+      "Genetic Purity": "99% Min",
+      "Moisture Content": "Max 8.0%",
+      "Seed Treatment": "Imidacloprid treated for early sucking pest control"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-hybrid-cucumber-malini",
+    "name": "F1 Hybrid Cucumber Seeds (Malini)",
+    "category": "Vegetable Seeds",
+    "brand": "Seminis (Bayer)",
+    "unit": "500 g Pouch (Crisp Green)",
+    "price": 310,
+    "mrp": 390,
+    "discount": "20% OFF",
+    "rating": 4.9,
+    "reviewCount": 980,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 85,
+    "isOrganic": false,
+    "dietaryTags": [
+      "Prolific Gynoecious",
+      "Uniform Cylindrical",
+      "ICAR Tested"
+    ],
+    "shelfLife": "18 months. Store in airtight conditions below 22°C.",
+    "storageInstructions": "Keep in moisture-proof packaging until sowing.",
+    "origin": "Bayer CropScience Research, Bengaluru",
+    "fssaiLicence": "Seed Lic: AGRI/SEED/KA-20914",
+    "manufacturerDetails": "Seminis Vegetable Seeds / Bayer CropScience India Ltd.",
+    "description": "Leading gynoecious hybrid cucumber with high female flower ratio. Yields uniform, 18–20 cm crisp green fruits without bitterness. Vigorous vines with multi-fruit setting per node.",
+    "highlights": [
+      "High yield potential: 18–22 metric tons per acre",
+      "First harvest within 40–45 days of sowing",
+      "Excellent shipping durability and crisp shelf life",
+      "Strong tolerance to Downy and Powdery Mildew"
+    ],
+    "nutritionalFacts": {
+      "Germination Rate": "94% Min (Lab Tested)",
+      "Physical Purity": "99% Min",
+      "Moisture Content": "Max 7.0%",
+      "Seed Rate / Acre": "400–500 grams"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1604977042946-1eecc30f269e?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1604977042946-1eecc30f269e?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-pure-cow-dung-manure",
+    "name": "Pure Desi Cow Dung Compost (Gobar Khad)",
+    "category": "Organic Manure & Compost",
+    "brand": "AgriMart Organic",
+    "unit": "10 kg Bag (Decomposed)",
+    "price": 280,
+    "mrp": 360,
+    "discount": "22% OFF",
+    "rating": 4.9,
+    "reviewCount": 2150,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 300,
+    "isOrganic": true,
+    "dietaryTags": [
+      "100% Organic",
+      "Weed-Free",
+      "FCO Compliant"
+    ],
+    "shelfLife": "24 months. Store in shaded farm sheds away from rain.",
+    "storageInstructions": "Keep sack dry and elevated off the floor.",
+    "origin": "Kapurthala Organic Dairy Cluster, Punjab",
+    "fssaiLicence": "FCO Lic: FCO/CR/ORG-2023/1102",
+    "manufacturerDetails": "Processed and bagged by AgriMart Kisan Hub @ LPU.",
+    "description": "Fully aged, weed-seed-free, 100% natural desi cow dung manure. Aerobically composted over 120 days with beneficial microbial culture to optimize C:N ratio and organic carbon content.",
+    "highlights": [
+      "Rich in natural soil humic substances and organic matter",
+      "Improves field soil aeration and water retention by 45%",
+      "No foul odor, non-burning, ready for direct root application",
+      "Free from chemical residues, weed seeds, and root pathogens"
+    ],
+    "nutritionalFacts": {
+      "Total Organic Carbon": "16.5% Min (FCO Standard)",
+      "Total Nitrogen (N)": "0.8% - 1.2%",
+      "Total Phosphate (P2O5)": "0.6% - 0.9%",
+      "Total Potash (K2O)": "0.7% - 1.1%",
+      "C:N Ratio": "< 20:1 (Fully Decomposed)"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-pure-neem-cake-5kg",
+    "name": "Cold-Pressed Neem Cake Organic Fertilizer (Khali)",
+    "category": "Organic Manure & Compost",
+    "brand": "AgriMart Organic",
+    "unit": "5 kg Bag (Nematode Shield)",
+    "price": 340,
+    "mrp": 420,
+    "discount": "19% OFF",
+    "rating": 4.8,
+    "reviewCount": 1680,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 175,
+    "isOrganic": true,
+    "dietaryTags": [
+      "Natural Nematicide",
+      "Slow Release N",
+      "100% Pure"
+    ],
+    "shelfLife": "24 months. Store in dry ventilated warehouse.",
+    "storageInstructions": "Keep in original moisture-proof bag.",
+    "origin": "Neem Agri Processing Cluster, Gujarat",
+    "fssaiLicence": "FCO Lic: FCO/CR/ORG-2022/882",
+    "manufacturerDetails": "AgriMart Organic Soil Nutrition Network.",
+    "description": "Pure residue from cold-pressed neem seeds containing high active Azadirachtin and salannin. Serves dual function as an organic nutrient source and natural root-knot nematode repellent.",
+    "highlights": [
+      "Inhibits soil nitrification, reducing nitrogen leaching by 30%",
+      "Suppresses root grubs, termites, and root-knot nematodes",
+      "Slow-release organic nutrition lasting 75–90 days in soil",
+      "Safe for earthworms and soil biodiversity"
+    ],
+    "nutritionalFacts": {
+      "Total Nitrogen (N)": "4.0% - 5.2%",
+      "Phosphorus (P2O5)": "1.0% - 1.4%",
+      "Potassium (K2O)": "1.4% - 1.8%",
+      "Azadirachtin Content": "Min 1000 ppm"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-npk-00-52-34-mkp",
+    "name": "NPK 00:52:34 Mono Potassium Phosphate (MKP)",
+    "category": "NPK & Water Soluble",
+    "brand": "Mahadhan Agri",
+    "unit": "1 kg Pack (100% Soluble)",
+    "price": 265,
+    "mrp": 340,
+    "discount": "22% OFF",
+    "rating": 4.9,
+    "reviewCount": 1890,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 210,
+    "isOrganic": false,
+    "dietaryTags": [
+      "100% Water Soluble",
+      "FCO Compliant",
+      "Flowering Booster"
+    ],
+    "shelfLife": "36 months from packaging date in dry sealed condition.",
+    "storageInstructions": "Store in dry moisture-free conditions.",
+    "origin": "Deepak Fertilisers & Petrochemicals, Taloja",
+    "fssaiLicence": "FCO Lic: FCO/WS/2021/419",
+    "manufacturerDetails": "Mahadhan Agritech Ltd. / Distributed by AgriMart.",
+    "description": "High-purity crystalline Mono Potassium Phosphate completely free of nitrogen. Ideal for pre-flowering and fruit development stages to trigger prolific flower setting and curb unwanted vegetative flush.",
+    "highlights": [
+      "52% soluble Phosphate and 34% Potash for rapid root uptake",
+      "Zero Nitrogen formula prevents lodging and excessive vegetative growth",
+      "Low salt index, highly safe for foliar and drip fertigation",
+      "Boosts fruit size, sugar Brix index, and uniform ripening"
+    ],
+    "nutritionalFacts": {
+      "Water Soluble Phosphate (P2O5)": "52.0% Min",
+      "Water Soluble Potash (K2O)": "34.0% Min",
+      "Moisture Content": "Max 0.5%",
+      "Application Stage": "Pre-flowering to early fruit set"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-potash-mop-5kg",
+    "name": "Granular Muriate of Potash (MOP 0-0-60)",
+    "category": "NPK & Water Soluble",
+    "brand": "IFFCO Certified",
+    "unit": "5 kg Bag (Grain Weight Booster)",
+    "price": 295,
+    "mrp": 375,
+    "discount": "21% OFF",
+    "rating": 4.8,
+    "reviewCount": 1340,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 160,
+    "isOrganic": false,
+    "dietaryTags": [
+      "60% K2O Content",
+      "Grain Filling",
+      "FCO Certified"
+    ],
+    "shelfLife": "36 months. Store in dry warehouse.",
+    "storageInstructions": "Protect from moisture to avoid caking.",
+    "origin": "IFFCO Fertilizer Hub, Kandla",
+    "fssaiLicence": "FCO Lic: FCO/MOP/2022/104",
+    "manufacturerDetails": "Indian Farmers Fertiliser Cooperative Limited (IFFCO).",
+    "description": "High-grade red granular MOP with 60% Potash (K2O). Essential for grain filling, enzyme activation, drought resistance, and stalk strength across wheat, paddy, sugarcane, and potato crops.",
+    "highlights": [
+      "Increases 1,000-grain test weight and starch accumulation",
+      "Enhances crop resistance to lodging and dry-spell stress",
+      "Reduces fungal disease incidence and promotes cell turgor",
+      "FCO 1985 certified for direct farm basal and top-dressing"
+    ],
+    "nutritionalFacts": {
+      "Water Soluble Potash (as K2O)": "60.0% Min",
+      "Moisture Content": "Max 0.5%",
+      "Form": "Free-flowing red granules"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-pseudomonas-liquid-1l",
+    "name": "Pseudomonas Fluorescens Bio-Fungicide (Liquid)",
+    "category": "Bio-Pesticides & Fungicides",
+    "brand": "AgriMart Bio-Care",
+    "unit": "1 Litre Bottle (Liquid Shield)",
+    "price": 380,
+    "mrp": 480,
+    "discount": "21% OFF",
+    "rating": 4.9,
+    "reviewCount": 1120,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 140,
+    "isOrganic": true,
+    "dietaryTags": [
+      "CIB-RC Approved",
+      "Systemic Bio-Bactericide",
+      "100% Organic"
+    ],
+    "shelfLife": "12 months from packing. Store below 25°C in shade.",
+    "storageInstructions": "Store in cool place. Do not expose to direct sun.",
+    "origin": "Punjab Agricultural Biotech Laboratory, Ludhiana",
+    "fssaiLicence": "CIB Lic: CIR-BIO/PB-2022/904",
+    "manufacturerDetails": "AgriMart Kisan Biotech Logistics, Central Kisan Hub @ LPU.",
+    "description": "High-potency biological bactericide and plant growth-promoting rhizobacteria (PGPR). Produces phenazine and 2,4-DAPG antibiotics that eradicate bacterial blight, sheath blight, and root rot.",
+    "highlights": [
+      "Induces Systemic Acquired Resistance (SAR) across whole crop canopy",
+      "Secretes iron-chelating siderophores that starve fungal spores",
+      "Zero harvest interval (PHI) and no chemical residue toxicity",
+      "Suitable for seed treatment, drip drenching, and foliar spray"
+    ],
+    "nutritionalFacts": {
+      "Viable Cell Count": "1 x 10^8 CFU / ml Min (Govt. Standard)",
+      "Contaminating Microbes": "Nil at 10^5 dilution",
+      "Target Pathogens": "Bacterial Leaf Blight, Sheath Blight, Damping Off",
+      "Dosage": "5 ml / Litre of water (Foliar) or 1 Litre / Acre (Drip)"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-beauveria-bassiana-1kg",
+    "name": "Beauveria Bassiana Bio-Insecticide Powder",
+    "category": "Bio-Pesticides & Fungicides",
+    "brand": "AgriMart Bio-Care",
+    "unit": "1 kg Pack (Caterpillar & Borer Shield)",
+    "price": 350,
+    "mrp": 440,
+    "discount": "20% OFF",
+    "rating": 4.8,
+    "reviewCount": 950,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 110,
+    "isOrganic": true,
+    "dietaryTags": [
+      "Entomopathogenic",
+      "100% Eco-Friendly",
+      "Safe for Bees"
+    ],
+    "shelfLife": "12 months from packaging date. Store in cool shaded warehouse.",
+    "storageInstructions": "Keep in moisture-proof pack away from chemical fungicides.",
+    "origin": "Kisan Bio Solutions Lab, Coimbatore",
+    "fssaiLicence": "CIB Lic: CIR-BIO/TN-2023/118",
+    "manufacturerDetails": "AgriMart Bio Solutions Direct Hub.",
+    "description": "Entomopathogenic fungal bio-insecticide containing dormant spores of Beauveria bassiana. Spores germinate on insect cuticle, penetrate the body, and eliminate borers, whiteflies, aphids, and caterpillars.",
+    "highlights": [
+      "Effective against resistant Helicoverpa, Spodoptera, and diamondback moth",
+      "Safe for honeybees, ladybird beetles, and beneficial parasitoids",
+      "Ideal for IPM and certified residue-free organic export farming",
+      "Works through contact and secondary spore spread in insect colonies"
+    ],
+    "nutritionalFacts": {
+      "Spore Count": "1 x 10^8 CFU / gram Min",
+      "Moisture Content": "Max 8.0%",
+      "Dosage": "4–5 grams / Litre water. Apply during evening hours for best fungal growth."
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-pusa-basmati-1121",
+    "name": "Pusa Basmati 1121 Certified Paddy Seeds",
+    "category": "Grain & Crop Seeds",
+    "brand": "IARI / NSC Certified",
+    "unit": "5 kg Bag (Extra Long Grain)",
+    "price": 680,
+    "mrp": 850,
+    "discount": "20% OFF",
+    "rating": 4.9,
+    "reviewCount": 3100,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 180,
+    "isOrganic": false,
+    "dietaryTags": [
+      "8.4mm Raw Grain Length",
+      "ICAR Certified",
+      "95%+ Germination"
+    ],
+    "shelfLife": "12 months. Store in dry rat-proof seed store.",
+    "storageInstructions": "Elevate on wooden pallets away from moisture.",
+    "origin": "ICAR-IARI Research Station, New Delhi",
+    "fssaiLicence": "Seed Lic: NSC/PADDY/DL-2023/401",
+    "manufacturerDetails": "Certified & Packed under National Seeds Corporation (NSC) protocols.",
+    "description": "World-renowned extra-long grain basmati paddy variety bred by IARI. Renowned for raw grain length of 8.4mm which elongates up to 21mm upon cooking with quintessential aroma and non-sticky texture.",
+    "highlights": [
+      "Average yield of 19–24 quintals per acre under good agronomic practice",
+      "Strong crop canopy with 135–140 days maturity duration",
+      "Premium mandi market price realization for northern Indian farmers",
+      "Govt NSC certified blue tag lot tested for 98% genetic purity"
+    ],
+    "nutritionalFacts": {
+      "Germination Rate": "95% Min (Lab Certified)",
+      "Physical Purity": "98% Min",
+      "Genetic Purity": "99% Min",
+      "Maturity Period": "135–140 Days",
+      "Seed Rate / Acre": "5–6 kg (Transplanted Nursery)"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-hybrid-mustard-pioneer",
+    "name": "Pioneer 45S46 Hybrid Mustard (Sarson) Seeds",
+    "category": "Grain & Crop Seeds",
+    "brand": "Corteva Pioneer",
+    "unit": "1 kg Pack (High Oil 42%)",
+    "price": 850,
+    "mrp": 1050,
+    "discount": "19% OFF",
+    "rating": 4.9,
+    "reviewCount": 2240,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 140,
+    "isOrganic": false,
+    "dietaryTags": [
+      "42% Oil Content",
+      "Shattering Tolerant",
+      "ICAR Recognized"
+    ],
+    "shelfLife": "18 months. Store in cool airtight seed vault.",
+    "storageInstructions": "Protect from humidity and seed beetles.",
+    "origin": "Corteva AgriScience Seed Research, Hyderabad",
+    "fssaiLicence": "Seed Lic: AGRI/SEED/TS-3091",
+    "manufacturerDetails": "Pioneer Overseas Corporation / Corteva Agriscience India.",
+    "description": "High-yielding hybrid yellow/brown mustard seed with exceptional 41.5%–42.5% oil recovery. Features robust branching, uniform siliqua pod setting, and exceptional resistance to pod shattering at maturity.",
+    "highlights": [
+      "Yield potential: 12–15 quintals per acre under irrigated conditions",
+      "Maturity: 120–125 days with synchronous pod maturity",
+      "High resistance to white rust, Alternaria blight, and frost damage",
+      "Treated with metalaxyl for early seedling protection"
+    ],
+    "nutritionalFacts": {
+      "Germination Rate": "92% Min (Certified)",
+      "Oil Content": "41.5% - 42.5%",
+      "Seed Rate / Acre": "1.2 - 1.5 kg",
+      "Recommended Spacing": "45 cm x 15 cm"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-potassium-humate-flakes-1kg",
+    "name": "Potassium Humate 98% Super Humic Acid Flakes",
+    "category": "Micronutrients & Growth",
+    "brand": "AgriMart Agro-Tech",
+    "unit": "1 kg Pack (98% Shiny Flakes)",
+    "price": 320,
+    "mrp": 420,
+    "discount": "24% OFF",
+    "rating": 4.9,
+    "reviewCount": 2890,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 250,
+    "isOrganic": true,
+    "dietaryTags": [
+      "100% Water Soluble",
+      "Root Architecture",
+      "FCO Compliant"
+    ],
+    "shelfLife": "36 months from packaging date in dry sealed packet.",
+    "storageInstructions": "Store in dry place. Reseal ziplock immediately after use.",
+    "origin": "Natural Leonardite Processing, Rajasthan",
+    "fssaiLicence": "FCO Lic: FCO/CR/ORG-2023/512",
+    "manufacturerDetails": "AgriMart Agritech Solutions Pvt. Ltd.",
+    "description": "Ultra-pure 98% water-soluble shiny humate flakes extracted from premium young active leonardite. Triggers rapid lateral root formation, releases locked phosphate in alkaline soils, and improves fertilizer efficiency by 30%.",
+    "highlights": [
+      "100% cold water soluble with zero nozzle-clogging residue",
+      "Contains 65% Humic Acid, 15% Fulvic Acid, and 12% Potassium (K2O)",
+      "Stimulates beneficial rhizosphere microbes and white root flush",
+      "Buffers soil salinity and prevents chemical fertilizer salt shock"
+    ],
+    "nutritionalFacts": {
+      "Active Potassium Humate": "98.0% Min",
+      "Humic Acid Fraction": "65.0% Min",
+      "Fulvic Acid Fraction": "15.0% Min",
+      "Potassium (K2O)": "10.0% - 12.0%",
+      "Dosage": "500g - 1kg per acre via drip or 1.5g per Litre foliar"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1589923188651-268a9765e432?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1589923188651-268a9765e432?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-seaweed-extract-1l",
+    "name": "Cold-Water Seaweed Extract Bio-Stimulant Tonic",
+    "category": "Micronutrients & Growth",
+    "brand": "AgriMart Agro-Tech",
+    "unit": "1 Litre Bottle (Stress Shield)",
+    "price": 490,
+    "mrp": 650,
+    "discount": "25% OFF",
+    "rating": 4.8,
+    "reviewCount": 1780,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 160,
+    "isOrganic": true,
+    "dietaryTags": [
+      "Ascophyllum Nodosum",
+      "Frost & Heat Shield",
+      "100% Bio"
+    ],
+    "shelfLife": "24 months. Store in shade below 30°C.",
+    "storageInstructions": "Keep bottle tightly sealed in farm tool shed.",
+    "origin": "Marine Bioproducts Extraction Hub, Gujarat Coast",
+    "fssaiLicence": "FCO Lic: FCO/CR/BIO-2022/741",
+    "manufacturerDetails": "AgriMart Kisan Biotech Logistics, Central Kisan Hub @ LPU.",
+    "description": "Cold-extracted liquid bio-stimulant concentrate derived from brown marine algae (Ascophyllum nodosum). Packed with natural auxins, cytokinins, betaines, and 60+ trace minerals that shield crops from heat, drought, and frost stress.",
+    "highlights": [
+      "Enhances chlorophyll synthesis and photosynthetic efficiency by 35%",
+      "Prevents premature flower drop and fruit shedding under weather extremes",
+      "Stimulates endogenous plant hormones without toxic synthetic residues",
+      "Compatible with all water-soluble fertilizers and pest control sprays"
+    ],
+    "nutritionalFacts": {
+      "Organic Matter (Seaweed)": "20.0% Min",
+      "Alginic Acid Content": "4.5% Min",
+      "Natural Cytokinins & Auxins": "350 ppm Min",
+      "Dosage": "2.0–2.5 ml / Litre of water (Foliar) or 500 ml / Acre (Drip)"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1582515073490-39981397c445?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1582515073490-39981397c445?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-digital-4in1-soil-meter",
+    "name": "Digital 4-in-1 Soil pH, Moisture & Sunlight Probe Meter",
+    "category": "Soil Health Kits",
+    "brand": "Kisan Lab Pro",
+    "unit": "1 Unit (Multi-Parameter)",
+    "price": 699,
+    "mrp": 999,
+    "discount": "30% OFF",
+    "rating": 4.8,
+    "reviewCount": 1450,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 95,
+    "isOrganic": false,
+    "dietaryTags": [
+      "No Battery Needed for pH",
+      "Heavy-Duty 200mm Probe",
+      "Instant Reading"
+    ],
+    "shelfLife": "5 years operational life. Wipe probe clean with dry cloth after field use.",
+    "storageInstructions": "Store in protective case in dry tool chest.",
+    "origin": "Precision Agro Instruments Hub, Pune",
+    "fssaiLicence": "BIS Standard: IS-AGRI-MEASURE-2021",
+    "manufacturerDetails": "Kisan Precision Instruments Ltd. Distributed direct by AgriMart.",
+    "description": "Multi-parameter on-field digital soil diagnostic probe. Delivers instant readouts of soil pH (acidity/alkalinity 3.5 to 9.0), root moisture level (1 to 10 scale), ambient sunlight intensity, and soil temperature without expensive chemical consumables.",
+    "highlights": [
+      "200mm long dual-sensor probe reaches directly to root zone",
+      "Clear backlit LCD display readable in bright afternoon farm sunlight",
+      "Helps farmers optimize irrigation cycles and fertilizer uptake timing",
+      "Rugged ABS impact-resistant casing built for wet agricultural fields"
+    ],
+    "nutritionalFacts": {
+      "pH Measurement Range": "3.5 to 9.0 pH (0.5 resolution)",
+      "Moisture Range": "1 to 10 (Dry to Wet)",
+      "Probe Length": "200 mm Aluminum-Copper Dual Sensors",
+      "Warranty": "1 Year Full Replacement Guarantee by AgriMart"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-digital-ec-salinity-meter",
+    "name": "Waterproof Soil EC & Salinity Field Tester",
+    "category": "Soil Health Kits",
+    "brand": "AgriMart Lab Tech",
+    "unit": "1 Unit (Waterproof IP67)",
+    "price": 980,
+    "mrp": 1350,
+    "discount": "27% OFF",
+    "rating": 4.9,
+    "reviewCount": 820,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 70,
+    "isOrganic": false,
+    "dietaryTags": [
+      "Direct Soil EC",
+      "Salinity Alert",
+      "IP67 Waterproof"
+    ],
+    "shelfLife": "5 years with replaceable electrode sensor.",
+    "storageInstructions": "Keep in provided protective foam carry kit.",
+    "origin": "Instrumentation Research Park, Hyderabad",
+    "fssaiLicence": "Standard: CE / ISO 9001:2015",
+    "manufacturerDetails": "Manufactured by AgriMart Precision Lab Systems.",
+    "description": "High-accuracy direct soil Electrical Conductivity (EC) and salinity tester. Enables farmers to detect chemical fertilizer over-application, salt accumulation, and groundwater suitability right at the root zone.",
+    "highlights": [
+      "Automatic Temperature Compensation (ATC) from 0°C to 50°C",
+      "Immediate warning on high soil salinity before leaf tip burn occurs",
+      "Essential for polyhouse, drip fertigation, and tube-well water testing",
+      "IP67 fully waterproof casing with 1-point buffer calibration"
+    ],
+    "nutritionalFacts": {
+      "EC Range": "0.00 to 19.99 mS/cm",
+      "Resolution": "0.01 mS/cm",
+      "Accuracy": "±2% Full Scale",
+      "Battery Life": "Over 300 hours continuous field measurement"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-dual-knapsack-sprayer-16l",
+    "name": "2-in-1 Battery & Manual Knapsack Sprayer (16 Litres)",
+    "category": "Farm Tools & Sprayers",
+    "brand": "Kisan Shakti",
+    "unit": "16 Litre Tank (Dual Motor)",
+    "price": 2450,
+    "mrp": 3200,
+    "discount": "23% OFF",
+    "rating": 4.9,
+    "reviewCount": 3410,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 110,
+    "isOrganic": false,
+    "dietaryTags": [
+      "12V 12Ah Heavy Battery",
+      "Dual Motor 8 Bar",
+      "Stainless Lance"
+    ],
+    "shelfLife": "Designed for 7+ years of rigorous seasonal farm spraying.",
+    "storageInstructions": "Rinse tank with clean water after spraying. Recharge battery monthly.",
+    "origin": "Agro Machinery Hub, Ludhiana, Punjab",
+    "fssaiLicence": "ISO 9001:2015 & BIS Compliant",
+    "manufacturerDetails": "Kisan Shakti Agro Equipments Ltd. Direct Hub Warranty.",
+    "description": "Heavy-duty 16 Litre agricultural knapsack sprayer with dual operational modes: powerful 12V 12Ah electric battery pump and backup manual hand lever so spraying never stops in distant fields.",
+    "highlights": [
+      "Covers up to 25–30 tank sprays on a single full battery charge",
+      "Includes 4 multi-pattern brass nozzles (single, double, fan, shower)",
+      "Ergonomic padded shoulder straps with spine-support back cushion",
+      "Telescopic stainless steel lance extendable up to 100 cm for fruit trees"
+    ],
+    "nutritionalFacts": {
+      "Tank Capacity": "16 Litres Virgin UV-Stabilized Polypropylene",
+      "Battery Specification": "12 Volt 12 Ampere-Hour Heavy Duty Lead-Acid",
+      "Pump Pressure": "0.6 - 0.8 MPa (80–110 PSI)",
+      "Flow Rate": "3.1 to 3.8 Litres / Minute",
+      "Warranty": "1 Year Motor & Battery Warranty by AgriMart"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=600&q=80"
+    ]
+  },
+  {
+    "id": "agri-brass-hose-gun-kit",
+    "name": "Heavy-Duty Brass Agricultural Spray Gun & 15m Hose Kit",
+    "category": "Farm Tools & Sprayers",
+    "brand": "AgriMart Pro-Tools",
+    "unit": "1 Kit (15m Braided Hose + Brass Gun)",
+    "price": 890,
+    "mrp": 1200,
+    "discount": "26% OFF",
+    "rating": 4.8,
+    "reviewCount": 1560,
+    "deliveryTime": "⚡ Fast Farm Dispatch",
+    "inStock": true,
+    "stockCount": 130,
+    "isOrganic": false,
+    "dietaryTags": [
+      "Solid Forged Brass",
+      "High Pressure 40 Bar",
+      "15m 3-Ply Hose"
+    ],
+    "shelfLife": "Durable construction with 5+ years operational lifespan.",
+    "storageInstructions": "Drain water and coil hose away from direct sun.",
+    "origin": "Brass & Hose Manufacturing Cluster, Jalandhar, Punjab",
+    "fssaiLicence": "Standard: IS-AGRI-TOOL-PB-2022",
+    "manufacturerDetails": "AgriMart Farm Machinery Network, Central Kisan Hub @ LPU.",
+    "description": "Professional farm spray accessory kit featuring a solid forged brass trigger spray gun paired with a 15-meter 3-ply reinforced braided agricultural hose. Handles high hydraulic pressures up to 40 Bar from power sprayers and HTP pumps.",
+    "highlights": [
+      "Solid brass nozzle rotates seamlessly from ultra-fine mist to 35-foot jet stream",
+      "Anti-burst 3-ply braided hose resistant to pesticide and chemical abrasion",
+      "Ergonomic trigger lock for fatigue-free continuous orchard spraying",
+      "Universal quick-connect 1/2-inch and 8.5mm brass couplers included"
+    ],
+    "nutritionalFacts": {
+      "Hose Length": "15 Meters (3-Ply Polyester Reinforced)",
+      "Bursting Pressure": "40 kg/cm² (570 PSI)",
+      "Gun Material": "100% Solid Forged Brass & Stainless Steel Internal Needle",
+      "Spray Distance": "Up to 35 Feet (High Jet Mode)"
+    },
+    "imageUrl": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80",
+    "imageDatas": [
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=600&q=80"
+    ]
   },
 ];
 

@@ -17,16 +17,16 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-[#EDF2F7] text-[#263449] mt-12 pt-12 pb-6 border-t border-[#CBD5E1]/50">
+    <footer className="w-full bg-[#F5EEDB] text-[#263449] mt-12 pt-12 pb-28 sm:pb-32 border-t border-[#E5DFD3]/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-[#CBD5E1]/40">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-[#E5DFD3]">
           {/* Brand Info */}
           <div className="flex flex-col items-start gap-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#142B4A] flex items-center justify-center text-[#FF9F43] shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-[#0B1B30] flex items-center justify-center text-[#FF9F43] shadow-sm">
                 <span className="material-symbols-outlined text-[24px]">potted_plant</span>
               </div>
-              <span className="font-headline text-2xl text-[#142B4A] font-extrabold">
+              <span className="font-headline text-2xl text-[#0B1B30] font-extrabold">
                 Agri<span className="text-[#FF9F43]">Mart</span>
               </span>
             </Link>
@@ -90,6 +90,9 @@ export default function Footer() {
               Customer & Village Care
             </h4>
             <ul className="flex flex-col gap-2.5 text-sm text-[#5A6B82]">
+              <li className="hover:text-[#142B4A] transition-colors">
+                <Link href="/wishlist">My Wishlist & Saved Inputs</Link>
+              </li>
               <li className="hover:text-[#142B4A] transition-colors">
                 <Link href="/orders">Track Dispatch & Logistics</Link>
               </li>
@@ -190,14 +193,14 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-4 flex flex-col md:flex-row items-center justify-between gap-2 text-[#5A6B82] text-xs">
+        <div className="pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[#5A6B82] text-xs">
           <p>© 2025 AgriMart Agritech Solutions Pvt Ltd. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-[16px] text-[#142B4A]">verified</span>
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 sm:gap-6">
+            <span className="flex items-center gap-1.5 font-medium">
+              <span className="material-symbols-outlined text-[16px] text-emerald-700">verified</span>
               Seed License No: AGRI/SEED/DL-8841
             </span>
-            <span>FCO Registration: FCO/CR/2021/409</span>
+            <span className="font-medium text-slate-700">FCO Registration: FCO/CR/2021/409</span>
           </div>
         </div>
       </div>

@@ -12,6 +12,7 @@ import SidebarFilters from '../components/SidebarFilters';
 import ProductGrid from '../components/ProductGrid';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 import AdminAddProductModal from '../components/AdminAddProductModal';
+import ConfirmDialog from '../components/ConfirmDialog';
 import Footer from '../components/Footer';
 import {
   accordionVariants,
@@ -45,6 +46,7 @@ export default function DashboardPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
@@ -67,16 +69,28 @@ export default function DashboardPage() {
     setShowAddModal(true);
   };
 
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteProduct = (prodOrId) => {
+    if (!prodOrId) return;
+    const prod =
+      typeof prodOrId === 'object'
+        ? prodOrId
+        : products.find((p) => p.id === prodOrId) || { id: prodOrId, name: 'this product' };
+    setProductToDelete(prod);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (!productToDelete) return;
     try {
-      await deleteProduct(id);
+      await deleteProduct(productToDelete.id);
     } catch (err) {
       console.error('Delete error:', err);
+    } finally {
+      setProductToDelete(null);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#263449] font-sans antialiased">
+    <div className="min-h-screen bg-[#FAF5EB] text-[#263449] font-sans antialiased">
       <Navbar />
 
       {/* Blinkit-style unserviceable banner when user location is > 10 km from Phagwara hub */}
@@ -308,7 +322,7 @@ export default function DashboardPage() {
             >
               <Link
                 href="/cart"
-                className="flex items-center gap-3 bg-[#142B4A] hover:bg-[#1B385D] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-[1.03] active:scale-[0.97] group transition-all duration-150 border border-white/20"
+                className="flex items-center gap-3 bg-[#0B1B30] hover:bg-[#152B48] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-[1.03] active:scale-[0.97] group transition-all duration-150 border border-white/20"
               >
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[22px] text-[#FF9F43]">shopping_bag</span>
@@ -353,6 +367,18 @@ export default function DashboardPage() {
           setShowAddModal(false);
           setEditingProduct(null);
         }}
+      />
+
+      {/* Admin Product Deletion Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!productToDelete}
+        title="Delete Product?"
+        message={`Are you sure you want to remove "${productToDelete?.name}" from AgriMart? This action cannot be undone.`}
+        confirmText="Delete Product"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={confirmDeleteProduct}
+        onCancel={() => setProductToDelete(null)}
       />
 
       <Footer />

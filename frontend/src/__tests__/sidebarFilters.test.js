@@ -31,7 +31,7 @@ describe('SidebarFilters Component Integration', () => {
 
     expect(screen.getByText('Filters')).toBeInTheDocument();
     expect(screen.getByText('In Stock Only')).toBeInTheDocument();
-    expect(screen.getByText('Aisles & Categories')).toBeInTheDocument();
+    expect(screen.getByText(/Categories/i)).toBeInTheDocument();
   });
 
   it('triggers updateFilter when toggling an agri category checkbox', () => {

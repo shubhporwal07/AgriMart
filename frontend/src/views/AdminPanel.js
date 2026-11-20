@@ -7,10 +7,12 @@ import {
   Edit,
   Globe,
   IndianRupee,
+  LayoutGrid,
   LogOut,
   Mail,
   MessageSquare,
   Package,
+  Percent,
   Plus,
   Search,
   ShoppingBag,
@@ -20,6 +22,8 @@ import {
 } from 'lucide-react';
 import AdminAddProductModal from '../components/AdminAddProductModal';
 import AnnouncementManager from '../components/AnnouncementManager';
+import AdminCouponManager from '../components/AdminCouponManager';
+import AdminHomeShowcaseManager from '../components/AdminHomeShowcaseManager';
 import Toast from '../components/Toast';
 import { TableSkeleton } from '../components/SkeletonLoader';
 import { useProducts } from '../contexts/ProductContext';
@@ -30,8 +34,10 @@ import { collection, getDocs } from 'firebase/firestore';
 const INR = '\u20B9';
 
 const tabs = [
-  { key: 'products', icon: ShoppingBag, label: 'Products', title: 'Products', description: 'Manage your farm-fresh grocery inventory and stock with ease.' },
+  { key: 'products', icon: ShoppingBag, label: 'Products', title: 'Products', description: 'Manage your certified farm-fresh inventory and stock with ease.' },
+  { key: 'home-showcase', icon: LayoutGrid, label: 'Home Screen', title: 'Home Screen Showcase', description: 'Curate which products appear in the hero banner deals and flash deals on the home screen.' },
   { key: 'orders', icon: Package, label: 'Orders', title: 'Orders', description: 'Track customer orders and fulfillment status.' },
+  { key: 'coupons', icon: Percent, label: 'Discounts', title: 'Discounts & Coupons', description: 'Create and manage percentage discount coupons with price band minimum order rules.' },
   { key: 'categories', icon: Tag, label: 'Categories', title: 'Categories', description: 'See each category and its product count.' },
   { key: 'customers', icon: Users, label: 'Customers', title: 'Customers', description: 'View registered and ordering customers.' },
   { key: 'feedback', icon: MessageSquare, label: 'Feedback', title: 'Feedback', description: 'Review customer messages and product feedback.' },
@@ -41,7 +47,9 @@ const tabs = [
 
 const sidebarItems = [
   { key: 'products', icon: Box, label: 'Products' },
+  { key: 'home-showcase', icon: LayoutGrid, label: 'Home Screen' },
   { key: 'orders', icon: ShoppingBag, label: 'Orders' },
+  { key: 'coupons', icon: Percent, label: 'Discounts' },
   { key: 'categories', icon: Tag, label: 'Categories' },
   { key: 'customers', icon: Users, label: 'Customers' },
   { key: 'feedback', icon: MessageSquare, label: 'Feedback' },
@@ -88,7 +96,21 @@ function DataShell({ children }) {
 export default function AdminPanel({ onLogout }) {
   const [activeTab, setActiveTab] = useState('products');
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const { products, loading: productsLoading, error, deleteProduct, editProduct: updateProduct } = useProducts();
+  const {
+    products,
+    loading: productsLoading,
+    error,
+    deleteProduct,
+    editProduct: updateProduct,
+    categories,
+    customCategories,
+    addCategory,
+    deleteCategory,
+  } = useProducts();
+  const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [newCatDescription, setNewCatDescription] = useState('');
+  const [savingCategory, setSavingCategory] = useState(false);
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [feedback, setFeedback] = useState([]);
@@ -104,6 +126,7 @@ export default function AdminPanel({ onLogout }) {
   const [productPage, setProductPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [feedbackDeleteTarget, setFeedbackDeleteTarget] = useState(null);
+  const [categoryDeleteTarget, setCategoryDeleteTarget] = useState(null);
   const productPageSize = 10;
 
   useEffect(() => {
@@ -346,15 +369,21 @@ export default function AdminPanel({ onLogout }) {
 
   const categoryStats = useMemo(() => {
     const map = new Map();
-    products.forEach(product => {
+    // Pre-populate with all defined categories (defaults + custom)
+    (categories || []).forEach(catName => {
+      const isCustom = (customCategories || []).some(c => (typeof c === 'string' ? c : c?.name) === catName);
+      map.set(catName, { name: catName, count: 0, totalValue: 0, isCustom });
+    });
+    // Add product counts and inventory values
+    (products || []).forEach(product => {
       const category = product.category || 'Uncategorized';
-      const current = map.get(category) || { name: category, count: 0, totalValue: 0 };
+      const current = map.get(category) || { name: category, count: 0, totalValue: 0, isCustom: false };
       current.count += 1;
       current.totalValue += product.price || 0;
       map.set(category, current);
     });
     return Array.from(map.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-  }, [products]);
+  }, [products, categories, customCategories]);
 
   const filteredCategories = useMemo(() => {
     if (!q) return categoryStats;
@@ -483,6 +512,47 @@ export default function AdminPanel({ onLogout }) {
     );
   };
 
+  const handleCreateCategory = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const name = newCatName.trim();
+    if (!name) {
+      showToast('Please enter a category name', 'error');
+      return;
+    }
+    setSavingCategory(true);
+    try {
+      if (addCategory) {
+        await addCategory(name, { description: newCatDescription.trim() });
+      }
+      showToast(`Category "${name}" created successfully!`, 'success');
+      setNewCatName('');
+      setNewCatDescription('');
+      setShowCreateCategoryModal(false);
+    } catch (err) {
+      showToast(err.message || 'Failed to create category', 'error');
+    } finally {
+      setSavingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = (categoryName) => {
+    setCategoryDeleteTarget(categoryName);
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!categoryDeleteTarget) return;
+    const targetName = categoryDeleteTarget;
+    setCategoryDeleteTarget(null);
+    try {
+      if (deleteCategory) {
+        await deleteCategory(targetName);
+      }
+      showToast(`Category "${targetName}" removed successfully`, 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to remove category', 'error');
+    }
+  };
+
   const renderProducts = () => (
     <>
       {productsLoading ? (
@@ -513,7 +583,7 @@ export default function AdminPanel({ onLogout }) {
                         className={`h-full w-full object-cover ${product.inStock === false ? 'opacity-55' : ''}`}
                       />
                     ) : (
-                      <div className={`flex h-full w-full items-center justify-center text-[#142B4A] ${product.inStock === false ? 'opacity-40' : ''}`}>
+                      <div className={`flex h-full w-full items-center justify-center text-[#0B1B30] ${product.inStock === false ? 'opacity-40' : ''}`}>
                         <ShoppingBag size={54} strokeWidth={1.5} />
                       </div>
                     )}
@@ -738,43 +808,91 @@ export default function AdminPanel({ onLogout }) {
   );
 
   const renderCategories = () => (
-    <DataShell>
-      <table className="w-full min-w-[520px] text-sm">
-        <thead className="border-b border-stone-200 bg-stone-50/80">
-          <tr>
-            <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-stone-700">Category</th>
-            <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-stone-700">Products Added</th>
-            <th className="px-5 py-4 text-right text-xs font-bold uppercase tracking-wide text-stone-700">Inventory Value</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-stone-100">
-          {filteredCategories.length === 0 ? (
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 className="font-headline font-black text-lg text-slate-900">
+            Agricultural Categories
+          </h3>
+          <p className="text-xs text-slate-500">
+            Manage product categories, track inventory volume, and expand your catalog reach.
+          </p>
+        </div>
+        <button
+          type="button"
+          id="admin-panel-add-category-btn"
+          onClick={() => setShowCreateCategoryModal(true)}
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#0B1B30] hover:bg-[#152B48] text-white rounded-xl text-xs font-bold transition shadow-sm"
+        >
+          <Plus size={16} />
+          <span>+ Add New Category</span>
+        </button>
+      </div>
+
+      <DataShell>
+        <table className="w-full min-w-[560px] text-sm">
+          <thead className="border-b border-stone-200 bg-stone-50/80">
             <tr>
-              <td colSpan="3" className="px-5 py-8 text-center text-sm text-stone-500">
-                {q ? 'No categories match your search.' : 'No categories found.'}
-              </td>
+              <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-stone-700">Category</th>
+              <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-stone-700">Type</th>
+              <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-stone-700">Products Added</th>
+              <th className="px-5 py-4 text-right text-xs font-bold uppercase tracking-wide text-stone-700">Inventory Value</th>
+              <th className="px-5 py-4 text-right text-xs font-bold uppercase tracking-wide text-stone-700">Action</th>
             </tr>
-          ) : (
-            filteredCategories.map(category => (
-              <tr key={category.name} className="hover:bg-stone-50/80">
-                <td className="px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
-                      <Tag size={18} />
-                    </span>
-                    <span className="font-bold text-slate-950">{category.name}</span>
-                  </div>
+          </thead>
+          <tbody className="divide-y divide-stone-100">
+            {filteredCategories.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="px-5 py-8 text-center text-sm text-stone-500">
+                  {q ? 'No categories match your search.' : 'No categories found.'}
                 </td>
-                <td className="px-5 py-4 font-semibold text-stone-700">
-                  {category.count} product{category.count !== 1 ? 's' : ''}
-                </td>
-                <td className="px-5 py-4 text-right font-bold text-amber-700">{formatMoney(category.totalValue)}</td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </DataShell>
+            ) : (
+              filteredCategories.map(category => (
+                <tr key={category.name} className="hover:bg-stone-50/80">
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700 font-bold">
+                        <Tag size={18} />
+                      </span>
+                      <div>
+                        <span className="font-bold text-slate-950 block">{category.name}</span>
+                        <span className="text-[11px] text-slate-400 font-mono">
+                          slug: {category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-4">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${category.isCustom ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}`}>
+                      {category.isCustom ? 'Custom' : 'System Default'}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 font-semibold text-stone-700">
+                    {category.count} product{category.count !== 1 ? 's' : ''}
+                  </td>
+                  <td className="px-5 py-4 text-right font-bold text-amber-700">{formatMoney(category.totalValue)}</td>
+                  <td className="px-5 py-4 text-right">
+                    {category.isCustom ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCategory(category.name)}
+                        className="rounded-md border border-red-100 bg-red-50 p-1.5 text-red-600 hover:bg-red-100 transition"
+                        title="Delete custom category"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    ) : (
+                      <span className="text-[11px] text-slate-400 font-medium italic">Protected</span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </DataShell>
+    </>
   );
 
   const renderCustomers = () => (
@@ -869,7 +987,9 @@ export default function AdminPanel({ onLogout }) {
 
   const renderActiveTable = () => {
     if (activeTab === 'products') return renderProducts();
+    if (activeTab === 'home-showcase') return <AdminHomeShowcaseManager showToast={showToast} />;
     if (activeTab === 'orders') return renderOrders();
+    if (activeTab === 'coupons') return <AdminCouponManager showToast={showToast} />;
     if (activeTab === 'categories') return renderCategories();
     if (activeTab === 'customers') return renderCustomers();
     if (activeTab === 'feedback') return renderFeedback();
@@ -882,7 +1002,7 @@ export default function AdminPanel({ onLogout }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
-      className="min-h-screen bg-[#F7F9FC] text-[#263449]"
+      className="min-h-screen bg-[#FAF5EB] text-[#263449]"
     >
       <AnimatePresence>
         {toast.show && (
@@ -896,12 +1016,12 @@ export default function AdminPanel({ onLogout }) {
       </AnimatePresence>
 
       <div className="min-h-screen lg:pl-72">
-        <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col border-r border-[#CBD5E1]/20 bg-[#142B4A] px-6 py-7 text-white shadow-2xl lg:flex">
+        <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col border-r border-[#CBD5E1]/20 bg-[#0B1B30] px-6 py-7 text-white shadow-2xl lg:flex">
           <div className="mb-8 flex items-center gap-3">
-            <img src="/images/logo.png" alt="Gupta Mart logo" className="h-11 w-11 rounded-xl object-contain bg-white p-1" />
+            <img src="/images/logo.png" alt="AgriMart logo" className="h-11 w-11 rounded-xl object-contain bg-white p-1" />
             <div>
-              <p className="font-headline text-lg font-extrabold leading-tight text-white">GUPTA MART</p>
-              <p className="text-xs font-bold uppercase tracking-wide text-[#FF9F43]">Grocery Console</p>
+              <p className="font-headline text-lg font-extrabold leading-tight text-white">AGRIMART</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#FF9F43]">Kisan Hub Console</p>
             </div>
           </div>
 
@@ -1000,6 +1120,17 @@ export default function AdminPanel({ onLogout }) {
                   Add Grocery Item
                 </motion.button>
               )}
+              {activeTab === 'categories' && (
+                <motion.button
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowCreateCategoryModal(true)}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#0B1B30] px-5 text-sm font-bold text-white shadow-sm shadow-[#0B1B30]/20 hover:bg-[#152B48]"
+                >
+                  <Plus size={18} />
+                  Add New Category
+                </motion.button>
+              )}
             </div>
 
             {renderActiveTable()}
@@ -1088,6 +1219,101 @@ export default function AdminPanel({ onLogout }) {
         }}
       />
 
+      {/* Create New Category Modal */}
+      <AnimatePresence>
+        {showCreateCategoryModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs overflow-y-auto no-scrollbar"
+            onClick={() => setShowCreateCategoryModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 15 }}
+              className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-100 space-y-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-[#0B1B30] text-[#FF9F43] flex items-center justify-center shadow-sm">
+                    <Tag size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-headline font-black text-lg text-slate-900 leading-tight">
+                      Add New Category
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Create an agricultural category for seeds, nutrients, or tools
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateCategoryModal(false)}
+                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateCategory} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                    Category Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="admin-panel-cat-name-input"
+                    value={newCatName}
+                    onChange={(e) => setNewCatName(e.target.value)}
+                    placeholder="e.g. Hydroponics & Nutrients, Greenhouse Equipment"
+                    required
+                    className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B1B30] font-medium"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Auto-generated slug: <span className="font-mono text-slate-600">{newCatName ? newCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'category-slug'}</span>
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                    Description (Optional)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={newCatDescription}
+                    onChange={(e) => setNewCatDescription(e.target.value)}
+                    placeholder="Brief description of products in this category..."
+                    className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0B1B30]"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateCategoryModal(false)}
+                    className="flex-1 py-3 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    id="admin-panel-cat-submit-btn"
+                    disabled={savingCategory || !newCatName.trim()}
+                    className="flex-1 py-3 text-xs font-black text-white bg-[#0B1B30] hover:bg-[#152B48] rounded-xl transition shadow-md disabled:opacity-50"
+                  >
+                    {savingCategory ? 'Creating...' : 'Create Category'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {deleteTarget && (
           <motion.div
@@ -1126,6 +1352,53 @@ export default function AdminPanel({ onLogout }) {
                   className="flex-1 rounded-lg bg-red-600 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-red-600/20 hover:bg-red-700"
                 >
                   Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {categoryDeleteTarget && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+            onClick={() => setCategoryDeleteTarget(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 18, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.96 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full max-w-md rounded-xl border border-stone-200 bg-white p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-500 shadow-xs">
+                <Trash2 size={26} />
+              </div>
+              <div className="mt-4 text-center">
+                <h2 className="font-sans text-xl font-bold text-slate-950">Delete category?</h2>
+                <p className="mt-2 text-sm leading-relaxed text-stone-600">
+                  Are you sure you want to delete category <span className="font-bold text-slate-900">&quot;{categoryDeleteTarget}&quot;</span>? This will remove the custom category from the store.
+                </p>
+              </div>
+              <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => setCategoryDeleteTarget(null)}
+                  className="flex-1 rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm font-bold text-stone-700 hover:bg-stone-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDeleteCategory}
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-3 text-sm font-bold text-white shadow-sm shadow-red-600/20 hover:bg-red-700 transition"
+                >
+                  Delete Category
                 </button>
               </div>
             </motion.div>

@@ -68,10 +68,10 @@ export default function ProductCard({
     updateCartQuantity(product.id, qty - 1);
   };
 
-  const handleDelete = async (e) => {
+  const handleDelete = (e) => {
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete ${product.name}?`)) {
-      await onDelete(product.id);
+    if (onDelete) {
+      onDelete(product);
     }
   };
 
@@ -90,8 +90,9 @@ export default function ProductCard({
         : '');
 
   const displayImage =
-    (Array.isArray(product.imageDatas) && product.imageDatas[0]) ||
-    product.imageData ||
+    (product.imageUrl && !product.imageUrl.includes('lh3.googleusercontent.com') && product.imageUrl) ||
+    (Array.isArray(product.imageDatas) && product.imageDatas[0] && !product.imageDatas[0].includes('lh3.googleusercontent.com') && product.imageDatas[0]) ||
+    (product.imageData && !product.imageData.includes('lh3.googleusercontent.com') && product.imageData) ||
     product.imageUrl ||
     '/images/products/hybrid-tomato-seeds.png';
 
@@ -155,8 +156,10 @@ export default function ProductCard({
                 addToWishlist(product);
               }
             }}
-            className={`transition-colors duration-150 p-1 rounded-full hover:bg-slate-50 ${
-              isWishlisted ? 'text-rose-500' : 'text-slate-400 hover:text-rose-400'
+            className={`transition-all duration-150 p-1.5 rounded-full shadow-xs border ${
+              isWishlisted
+                ? 'bg-rose-50 border-rose-200 text-rose-500 hover:bg-rose-100'
+                : 'bg-white/90 border-slate-200/80 text-slate-400 hover:text-rose-500 hover:bg-white'
             }`}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             title={isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}
@@ -224,8 +227,9 @@ export default function ProductCard({
           <span className="font-bold text-[#263449]">{product.rating || '4.8'}</span>
           <span className="text-[#74777E] text-[11px]">({product.reviewCount || '120'})</span>
         </div>
-        <span className="text-[11px] font-medium text-[#5A6B82] bg-slate-100 px-1.5 py-0.2 rounded truncate max-w-[120px]">
-          {product.packSize || product.unit || product.weight || '1 unit'}
+        <span className="text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-2 py-0.5 rounded-md truncate max-w-[130px] flex items-center gap-1">
+          <span>{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
+          <span>{product.packSize || product.unit || product.weight || '1 unit'}</span>
         </span>
       </div>
 

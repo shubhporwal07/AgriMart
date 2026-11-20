@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +13,16 @@ import { floatingBarVariants, sectionRevealProps, buttonTap, iconTap } from '../
 
 export default function LandingPage() {
   const router = useRouter();
-  const { products, cartCount, cartTotal, addToCart } = useProducts();
+  const {
+    products,
+    cartCount,
+    cartTotal,
+    addToCart,
+    isInWishlist,
+    addToWishlist,
+    removeFromWishlist,
+    homeShowcase,
+  } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Live countdown timer state for today's kisan sowing deals
@@ -48,8 +57,28 @@ export default function LandingPage() {
     { name: 'Soil Health Kits', icon: 'biotech', count: 'Testing & pH Kits', slug: 'soil-kits', bg: 'bg-[#EBF3FF]', text: 'text-[#142B4A]' },
   ];
 
-  // Flash deals products (first 6 items)
-  const flashProducts = products.slice(0, 6);
+  // Dynamic Hero Deal Products (strictly 2 slots configured by admin via Home Showcase Manager)
+  const heroDealProducts = useMemo(() => {
+    const ids = homeShowcase?.heroDeals || ['agri-kisan-starter-kit', 'agri-soil-booster-combo'];
+    const matched = ids.map((id) => products.find((p) => p.id === id)).filter(Boolean);
+    if (matched.length >= 2) return matched.slice(0, 2);
+    // Fallback if some product not found
+    const fallbackKits = products.filter(
+      (p) => p.id === 'agri-kisan-starter-kit' || p.id === 'agri-soil-booster-combo'
+    );
+    const combined = [...matched, ...fallbackKits.filter((f) => !matched.some((m) => m.id === f.id)), ...products];
+    return combined.slice(0, 2);
+  }, [homeShowcase?.heroDeals, products]);
+
+  // Flash deals products (curated by admin or first 6 items)
+  const flashProducts = useMemo(() => {
+    const ids = homeShowcase?.flashDeals;
+    if (Array.isArray(ids) && ids.length > 0) {
+      const matched = ids.map((id) => products.find((p) => p.id === id)).filter(Boolean);
+      if (matched.length > 0) return matched.slice(0, 6);
+    }
+    return products.slice(0, 6);
+  }, [homeShowcase?.flashDeals, products]);
 
   // Soil Nutrition Corner products (organic and soil items)
   const soilProducts = products
@@ -57,7 +86,7 @@ export default function LandingPage() {
     .slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#263449] font-sans antialiased">
+    <div className="min-h-screen bg-[#FAF5EB] text-[#263449] font-sans antialiased">
       <Navbar />
 
       {/* Serviceability / hub notice */}
@@ -68,13 +97,13 @@ export default function LandingPage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             {/* Left Hero Banner (8 Cols) */}
-            <div className="lg:col-span-8 relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#10233D] via-[#142B4A] to-[#1B385D] shadow-xl flex flex-col justify-between p-6 sm:p-10 text-white min-h-[460px]">
+            <div className="lg:col-span-8 relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#081526] via-[#0B1B30] to-[#132A4A] shadow-xl flex flex-col justify-between p-6 sm:p-10 text-white min-h-[460px]">
               {/* Background Ambient Image with Gradient Scrim */}
               <div
                 className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30 transform hover:scale-105 transition-transform duration-700 ease-out"
                 style={{
                   backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBahlrUreOlUzjIg7_ygEmDwzARf19wN-sTtxyU4ylIVqcJ02TkzVKgp2yQzg2v1C9JCGRjcSQl3w1FIq23w4qjLssR_Uxw2x1pb93-ASCub4EDQWq3ZVurSvjR5Ubf97ekgOYQL3TowagehbiDXg8A9tRumbjXiAfi7ckImnXUwrhyvWR9MyYbHqqLZETDqOBwrNq5P2VDZ451nSORGwvmSd2HmpS9daeIf_ZNs3SW_8qX7qVaVY60')",
+                    "url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80')",
                 }}
               />
               <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-blue-400/15 blur-3xl pointer-events-none" />
@@ -149,113 +178,109 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Promotional Deal Cards (4 Cols Stacked) */}
+            {/* Right Promotional Deal Cards (2 Configurable Slots Managed in Admin Panel) */}
             <div className="lg:col-span-4 flex flex-col justify-between gap-4">
-              {/* Promo Card 1: Kisan Sowing Starter Kit */}
-              <div className="relative rounded-3xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all p-5 flex-1 flex flex-col justify-between group border border-[#CBD5E1]/40">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className="bg-[#FF9F43] text-[#142B4A] font-headline text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider font-extrabold shadow-sm">
-                    30% SEASON DISCOUNT
-                  </span>
-                  <span className="font-mono text-xs text-[#A74E00] font-bold flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[15px]">local_fire_department</span>
-                    High Demand
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 my-auto">
-                  <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-[#EDF2F7] shrink-0">
-                    <img
-                      src="https://lh3.googleusercontent.com/aida/AEtjO1WJFWo1syzEULlX4Tc3FuI-bDU_hiIWHm5K9CrNRI1NM4UCSzfTPoiImgYr5_GXGbQ_ORc2hfkSiaRLk7_sCWDqrXuhBhgaChnZiXlUlOgstchVupe-lNt4MwGEmvMcM77cgky8XPoP3Ec-CMOmZHu9uqmfuWhqO1qGY_4TPQCQcigDlx-b7LxhdpQ5yUBl9DN-sv5qs-lLJ12Ey0nfEFvEq4TyHpgllSEqu3p1e59PjiLgVDQULC2PNDo"
-                      alt="Kisan Sowing Starter Kit"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-bold text-[#5A6B82] uppercase tracking-wider">
-                      All-in-One Sowing Kit
-                    </span>
-                    <h3 className="font-headline text-base font-bold text-[#142B4A] leading-tight mt-0.5">
-                      Kisan Sowing Starter Kit
-                    </h3>
-                    <p className="text-xs text-[#5A6B82] mt-1 line-clamp-1">
-                      5 hybrid seed packs + bio-fungicide + seed primer
-                    </p>
-                    <div className="flex items-baseline gap-2 mt-2">
-                      <span className="font-price text-lg font-extrabold text-[#142B4A]">₹649</span>
-                      <span className="text-xs text-slate-400 line-through">₹920</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    const kit = products.find((p) => p.id === 'agri-kisan-starter-kit') || {
-                      id: 'agri-kisan-starter-kit',
-                      name: 'Kisan Sowing Starter Kit (Combo)',
-                      price: 649,
-                      unit: '5 Hybrid Seed Packs + Bio-Booster',
-                      imageUrl: 'https://lh3.googleusercontent.com/aida/AEtjO1WJFWo1syzEULlX4Tc3FuI-bDU_hiIWHm5K9CrNRI1NM4UCSzfTPoiImgYr5_GXGbQ_ORc2hfkSiaRLk7_sCWDqrXuhBhgaChnZiXlUlOgstchVupe-lNt4MwGEmvMcM77cgky8XPoP3Ec-CMOmZHu9uqmfuWhqO1qGY_4TPQCQcigDlx-b7LxhdpQ5yUBl9DN-sv5qs-lLJ12Ey0nfEFvEq4TyHpgllSEqu3p1e59PjiLgVDQULC2PNDo',
-                    };
-                    addToCart(kit, 1);
-                  }}
-                  className="w-full mt-3 bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-                >
-                  <span className="material-symbols-outlined text-[17px]">add_shopping_cart</span>
-                  <span>Quick Order Kit</span>
-                </button>
-              </div>
+              {heroDealProducts.slice(0, 2).map((item, index) => {
+                const isFirst = index === 0;
+                const badgeText = item.dietaryTags?.[0] || (isFirst ? '30% SEASON DISCOUNT' : 'SAVE ₹220');
+                const subTag = item.dietaryTags?.[1] || (isFirst ? 'High Demand' : '100% Organic');
+                const bgClass = isFirst ? 'bg-white' : 'bg-[#EDF2F7]';
+                const displayImg =
+                  (item.imageUrl && !item.imageUrl.includes('lh3.googleusercontent.com') && item.imageUrl) ||
+                  (Array.isArray(item.imageDatas) && item.imageDatas[0] && !item.imageDatas[0].includes('lh3.googleusercontent.com') && item.imageDatas[0]) ||
+                  (isFirst ? '/images/products/hybrid-tomato-seeds.png' : '/images/products/vermicompost-25kg.png');
 
-              {/* Promo Card 2: Organic Soil Booster Combo */}
-              <div className="relative rounded-3xl overflow-hidden bg-[#EDF2F7] shadow-md hover:shadow-xl transition-all p-5 flex-1 flex flex-col justify-between group border border-[#CBD5E1]/40">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className="bg-[#142B4A] text-white font-headline text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider font-extrabold">
-                    Save ₹220
-                  </span>
-                  <span className="text-xs text-[#142B4A] font-bold flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[15px]">eco</span>
-                    100% Organic
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 my-auto">
-                  <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white shrink-0">
-                    <img
-                      src="https://lh3.googleusercontent.com/aida/AEtjO1W8CJzuxUiUG8CGznqprVoPmajgZKaBFnRrVTqrUfOAf2g87nYttcc60NzobmhLL5XpCf-kd2bDOuF--0_ALOnyva_5dY8TGDwF1h2yB1zz43Oyk2EdzMJ0PzfNvfdSmHqTjOz1H17ewO_dM0zo_HTH0AUaANKjxCHuvQfTbooB8eieiKPNMP4WQJRS3sCTYESURNhe2Qy4Sa573KTrJd8O0YmEvwHBhgsjMGDGv4qvQsKVq6yt-1TJx-g"
-                      alt="Organic Soil Booster Combo"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-bold text-[#5A6B82] uppercase tracking-wider">
-                      Soil Regeneration
-                    </span>
-                    <h3 className="font-headline text-base font-bold text-[#142B4A] leading-tight mt-0.5">
-                      Organic Soil Booster Combo
-                    </h3>
-                    <p className="text-xs text-[#5A6B82] mt-1 line-clamp-1">
-                      20kg Vermicompost + 1L Humic Fulvic Extract
-                    </p>
-                    <div className="flex items-baseline gap-2 mt-2">
-                      <span className="font-price text-lg font-extrabold text-[#142B4A]">₹790</span>
-                      <span className="text-xs text-slate-400 line-through">₹1,010</span>
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => setSelectedProduct(item)}
+                    className={`relative rounded-3xl overflow-hidden ${bgClass} shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all p-5 flex-1 flex flex-col justify-between group border border-[#CBD5E1]/40 cursor-pointer`}
+                    title={`Click to view details for ${item.name}`}
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <span className={`${isFirst ? 'bg-[#FF9F43] text-[#142B4A]' : 'bg-[#142B4A] text-white'} font-headline text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider font-extrabold shadow-sm`}>
+                        {badgeText}
+                      </span>
+                      <span className="font-mono text-xs text-[#A74E00] font-bold flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[15px]">{isFirst ? 'local_fire_department' : 'eco'}</span>
+                        {subTag}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-4 my-auto">
+                      <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white shrink-0 border border-slate-200/60 shadow-xs">
+                        <img
+                          src={displayImg}
+                          alt={item.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = isFirst ? '/images/products/hybrid-tomato-seeds.png' : '/images/products/vermicompost-25kg.png';
+                          }}
+                        />
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-[11px] font-bold text-[#5A6B82] uppercase tracking-wider truncate">
+                          {item.category || (isFirst ? 'All-in-One Sowing Kit' : 'Soil Regeneration')}
+                        </span>
+                        <h3 className="font-headline text-base font-bold text-[#142B4A] leading-tight mt-0.5 line-clamp-2 group-hover:text-[#E27B12] transition-colors">
+                          {item.name}
+                        </h3>
+                        <p className="text-xs text-[#5A6B82] mt-1 line-clamp-1">
+                          {item.unit || item.description || 'Certified farm input'}
+                        </p>
+                        <div className="flex items-baseline gap-2 mt-2">
+                          <span className="font-price text-lg font-extrabold text-[#142B4A]">₹{item.price}</span>
+                          {item.mrp && item.mrp > item.price && (
+                            <span className="text-xs text-slate-400 line-through">₹{item.mrp}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-3">
+                      <motion.button
+                        type="button"
+                        whileTap={iconTap}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isInWishlist(item.id)) {
+                            removeFromWishlist(item.id);
+                          } else {
+                            addToWishlist(item);
+                          }
+                        }}
+                        className={`p-2 rounded-xl border transition-colors duration-150 shrink-0 ${
+                          isInWishlist(item.id)
+                            ? 'bg-rose-50 border-rose-300 text-rose-500'
+                            : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500'
+                        }`}
+                        title={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                        aria-label="Wishlist item"
+                      >
+                        <span
+                          className="material-symbols-outlined text-[18px] block"
+                          style={isInWishlist(item.id) ? { fontVariationSettings: "'FILL' 1" } : {}}
+                        >
+                          favorite
+                        </span>
+                      </motion.button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(item, 1);
+                        }}
+                        className={`flex-1 ${isFirst ? 'bg-[#142B4A] hover:bg-[#1B385D] text-white' : 'bg-white hover:bg-[#142B4A] hover:text-white text-[#142B4A] border border-[#142B4A]/30'} text-xs py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm`}
+                      >
+                        <span className="material-symbols-outlined text-[17px]">add_shopping_cart</span>
+                        <span>Quick Order {isFirst ? 'Kit' : 'Combo'}</span>
+                      </button>
                     </div>
                   </div>
-                </div>
-                <button
-                  onClick={() => {
-                    const combo = products.find((p) => p.id === 'agri-soil-booster-combo') || {
-                      id: 'agri-soil-booster-combo',
-                      name: 'Organic Soil Booster Combo (20kg + 1L)',
-                      price: 790,
-                      unit: '20kg Vermicompost + 1L Humic Extract',
-                      imageUrl: 'https://lh3.googleusercontent.com/aida/AEtjO1W8CJzuxUiUG8CGznqprVoPmajgZKaBFnRrVTqrUfOAf2g87nYttcc60NzobmhLL5XpCf-kd2bDOuF--0_ALOnyva_5dY8TGDwF1h2yB1zz43Oyk2EdzMJ0PzfNvfdSmHqTjOz1H17ewO_dM0zo_HTH0AUaANKjxCHuvQfTbooB8eieiKPNMP4WQJRS3sCTYESURNhe2Qy4Sa573KTrJd8O0YmEvwHBhgsjMGDGv4qvQsKVq6yt-1TJx-g',
-                    };
-                    addToCart(combo, 1);
-                  }}
-                  className="w-full mt-3 bg-white hover:bg-[#142B4A] hover:text-white text-[#142B4A] border border-[#142B4A]/30 text-xs py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm"
-                >
-                  <span className="material-symbols-outlined text-[17px]">add_shopping_cart</span>
-                  <span>Quick Order Combo</span>
-                </button>
-              </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -380,7 +405,7 @@ export default function LandingPage() {
 
         {/* SECTION 4: CURATED SOIL NUTRITION CORNER */}
         <motion.section {...sectionRevealProps} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
-          <div className="rounded-3xl bg-gradient-to-br from-[#142B4A] via-[#10233D] to-[#0B1728] text-white p-6 sm:p-10 relative overflow-hidden shadow-2xl border border-white/10">
+          <div className="rounded-3xl bg-gradient-to-br from-[#0B1B30] via-[#081526] to-[#050E1A] text-white p-6 sm:p-10 relative overflow-hidden shadow-2xl border border-white/10">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#94B3FD_1px,transparent_1px)] [background-size:16px_16px]" />
             <div className="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-[#FF9F43]/10 blur-3xl pointer-events-none" />
 
@@ -437,18 +462,47 @@ export default function LandingPage() {
                     <span className="font-price text-base font-extrabold text-[#142B4A]">
                       ₹{item.price}
                     </span>
-                    <motion.button
-                      type="button"
-                      whileTap={iconTap}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCart(item, 1);
-                      }}
-                      className="bg-[#142B4A] hover:bg-[#1B385D] text-white p-2 rounded-xl transition-colors duration-150 shadow-sm"
-                      title="Add to Farm Cart"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">add</span>
-                    </motion.button>
+                    <div className="flex items-center gap-1.5">
+                      <motion.button
+                        type="button"
+                        whileTap={iconTap}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isInWishlist(item.id)) {
+                            removeFromWishlist(item.id);
+                          } else {
+                            addToWishlist(item);
+                          }
+                        }}
+                        className={`p-1.5 rounded-xl border transition-colors duration-150 ${
+                          isInWishlist(item.id)
+                            ? 'bg-rose-50 border-rose-300 text-rose-500'
+                            : 'bg-slate-50 border-slate-200 text-slate-400 hover:text-rose-500'
+                        }`}
+                        title={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                        aria-label={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                      >
+                        <span
+                          className="material-symbols-outlined text-[18px] block"
+                          style={isInWishlist(item.id) ? { fontVariationSettings: "'FILL' 1" } : {}}
+                        >
+                          favorite
+                        </span>
+                      </motion.button>
+                      <motion.button
+                        type="button"
+                        whileTap={iconTap}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(item, 1);
+                        }}
+                        className="bg-[#142B4A] hover:bg-[#1B385D] text-white p-1.5 rounded-xl transition-colors duration-150 shadow-sm"
+                        title="Add to Farm Cart"
+                        aria-label="Add to Farm Cart"
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">add</span>
+                      </motion.button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -591,7 +645,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
                   <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrj4VqFPE9f7u-VPiSDdYoVEXhKaJG1917r88WWFg7UT97pUc-f2r_vStfZJ9jO9cFogc5DWYUz7NACyNV1CaGmntd23HcntUkq9pOVdSFfvZtsWyNNovrWlFoI-UzE6TKwil8mkMB656yhE-KgfTF260mpj_KSWyf7hxzS0YNrLtgJCxTkW3hYpCdziCNku1MCk_MJK_Vfc927nDAQWv2kbhXxEUI09RS7SpReisKXZcxGn1JHpgr"
+                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80"
                     alt="Rajinder Singh Cheema"
                     className="w-full h-full object-cover"
                   />
@@ -625,7 +679,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
                   <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMaWUyXY-reHQIqewftjiG-DhmtYOOz4KT1uukLe-JCPHrxt1MM5Dq-GKMHBhjL-RYMrIGcWYlLfCKJNAQTKzIhfCykrxLNwjLyI3JkybJPFqc2-nKy0eAUYwLcik-NSsT7O9yIMC7rQUm5mGrCjnC79BbZZV5Xqw08M1xbBvzrg7QYca08BZPZNSkIYwCsT-I0JXrSbhLI4BknT1DkoxWXuQd9ZoLOlBG9FEoqYUC9yXNc9_5umH4"
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
                     alt="Venkatesh Gowda"
                     className="w-full h-full object-cover"
                   />
@@ -659,7 +713,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
                   <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTNQZ4A8TohHYZPYDgyntaf83ruWxCWo1rcJMrj7jdqHRjiq4tQmZKjK-FfBJqyL2_EixaB2WyYX7-0a9vbUBnFdqyFV3eVNXhMKEu1TYkqUUbpBYdd3g8nLcX6UodsRs09hIgksujQ6I6IBy_bd9Q2WIYqQ-1PN1m9aSy4rOYa-S55xHMD2hUgkHxA-_9vTPK7TMq_wTnC3XYpgFLGg-50gGkp8QOn-aBqdrd1YXOPDQyCrAc9TEp"
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80"
                     alt="Sunita Devi"
                     className="w-full h-full object-cover"
                   />
@@ -691,7 +745,7 @@ export default function LandingPage() {
             >
               <Link
                 href="/cart"
-                className="flex items-center gap-3 bg-[#142B4A] hover:bg-[#1B385D] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-[1.03] active:scale-[0.97] group transition-all duration-150 border border-white/20"
+                className="flex items-center gap-3 bg-[#0B1B30] hover:bg-[#152B48] text-white px-5 py-3 rounded-full shadow-2xl cursor-pointer transform hover:scale-[1.03] active:scale-[0.97] group transition-all duration-150 border border-white/20"
               >
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[24px] text-[#FF9F43]">agriculture</span>

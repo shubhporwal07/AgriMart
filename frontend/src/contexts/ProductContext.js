@@ -5,11 +5,22 @@ import { realtimeDb } from '../config/firebase';
 import { DEFAULT_GROCERY_PRODUCTS } from '../data/defaultProducts';
 
 const ProductContext = createContext(null);
-const PRODUCTS_CACHE_KEY = 'agrimart_seeds_products_v5';
+const PRODUCTS_CACHE_KEY = 'agrimart_seeds_products_v6';
 const CART_STORAGE_KEY = 'agrimart_cart_v2';
-const LOCAL_PRODUCTS_KEY = 'agrimart_seeds_local_v5';
+const LOCAL_PRODUCTS_KEY = 'agrimart_seeds_local_v6';
 const WISHLIST_STORAGE_KEY = 'agrimart_wishlist_v1';
 const DB_TIMEOUT_MS = 25000;
+
+export const DEFAULT_AGRI_CATEGORIES = [
+  'Vegetable Seeds',
+  'Grain & Field Crop Seeds',
+  'Organic Manure & Compost',
+  'NPK & Water Soluble Fertilizers',
+  'Micronutrients & Plant Growth',
+  'Bio-Pesticides & Fungicides',
+  'Farm Sprayers & Agri Tools',
+  'Soil Health & Testing Kits',
+];
 
 // Compress image helper
 const compressImage = (file) => new Promise((resolve, reject) => {
@@ -299,6 +310,267 @@ export function ProductProvider({ children }) {
     if (!storageHydrated) return;
     writeWishlistStorage(wishlistItems);
   }, [wishlistItems, storageHydrated]);
+
+  // Dynamic Categories Management
+  const [customCategories, setCustomCategories] = useState([]);
+
+  // Compute union of all categories (defaults + custom + any from products)
+  const categories = useMemo(() => {
+    const set = new Set(DEFAULT_AGRI_CATEGORIES);
+    customCategories.forEach((c) => {
+      const name = typeof c === 'string' ? c : c?.name;
+      if (name && name.trim()) set.add(name.trim());
+    });
+    products.forEach((p) => {
+      if (p.category && p.category.trim()) set.add(p.category.trim());
+    });
+    return Array.from(set);
+  }, [customCategories, products]);
+
+  // Load custom categories from localStorage and Firebase RTDB
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('agrimart_custom_categories_v1');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) setCustomCategories(parsed);
+        }
+      } catch (err) {
+        console.warn('Local categories read error:', err);
+      }
+    }
+
+    try {
+      const catsRef = rtdbRef(realtimeDb, 'categories');
+      const unsubscribe = onValue(catsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          const list = Object.keys(val).map((k) => ({ ...val[k], id: k }));
+          setCustomCategories(list);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('agrimart_custom_categories_v1', JSON.stringify(list));
+          }
+        }
+      });
+      return () => unsubscribe();
+    } catch (err) {
+      console.warn('Firebase RTDB categories subscription error:', err);
+    }
+  }, []);
+
+  const addCategory = async (categoryName, extra = {}) => {
+    const name = (categoryName || '').trim();
+    if (!name) throw new Error('Category name cannot be empty');
+    if (categories.some((c) => c.toLowerCase() === name.toLowerCase())) {
+      return name;
+    }
+
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const newCat = {
+      id: `cat_${Date.now()}`,
+      name,
+      slug,
+      description: extra.description || `${name} certified agricultural inputs`,
+      icon: extra.icon || 'agriculture',
+      createdAt: new Date().toISOString(),
+    };
+
+    const next = [...customCategories, newCat];
+    setCustomCategories(next);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agrimart_custom_categories_v1', JSON.stringify(next));
+    }
+
+    try {
+      const catRef = rtdbRef(realtimeDb, `categories/${newCat.id}`);
+      await set(catRef, newCat);
+    } catch (err) {
+      console.warn('Realtime Database category sync warning:', err.message);
+    }
+
+    return name;
+  };
+
+  const deleteCategory = async (categoryName) => {
+    const targetName = (categoryName || '').trim();
+    const next = customCategories.filter(
+      (c) => (typeof c === 'string' ? c : c.name).toLowerCase() !== targetName.toLowerCase()
+    );
+    setCustomCategories(next);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agrimart_custom_categories_v1', JSON.stringify(next));
+    }
+
+    try {
+      const catToDelete = customCategories.find(
+        (c) => (typeof c === 'string' ? c : c.name).toLowerCase() === targetName.toLowerCase()
+      );
+      if (catToDelete?.id) {
+        const catRef = rtdbRef(realtimeDb, `categories/${catToDelete.id}`);
+        await remove(catRef);
+      }
+    } catch (err) {
+      console.warn('Realtime Database category removal warning:', err.message);
+    }
+  };
+
+  // Home Screen Showcase Curation (Hero Deals limit: 2, Flash Deals limit: 6)
+  const HOME_SHOWCASE_LIMITS = {
+    heroDeals: 2,
+    flashDeals: 6,
+  };
+
+  const DEFAULT_HOME_SHOWCASE = {
+    heroDeals: ['agri-kisan-starter-kit', 'agri-soil-booster-combo'],
+    flashDeals: [
+      'agri-hybrid-tomato-seeds',
+      'agri-teja-chilli-seeds',
+      'agri-pure-vermicompost-25kg',
+      'agri-npk-19-19-19',
+      'agri-cold-pressed-neem-oil',
+      'agri-dap-granular-fertilizer',
+    ],
+  };
+
+  const [homeShowcase, setHomeShowcase] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('agrimart_home_showcase_v1');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === 'object') {
+            return {
+              heroDeals: Array.isArray(parsed.heroDeals) ? parsed.heroDeals.slice(0, 2) : DEFAULT_HOME_SHOWCASE.heroDeals,
+              flashDeals: Array.isArray(parsed.flashDeals) ? parsed.flashDeals.slice(0, 6) : DEFAULT_HOME_SHOWCASE.flashDeals,
+            };
+          }
+        }
+      } catch (err) {
+        console.warn('Error reading local home showcase:', err);
+      }
+    }
+    return DEFAULT_HOME_SHOWCASE;
+  });
+
+  // Subscribe to site_settings/home_showcase in Firebase RTDB
+  useEffect(() => {
+    try {
+      const showcaseRef = rtdbRef(realtimeDb, 'site_settings/home_showcase');
+      const unsubscribe = onValue(showcaseRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          if (val && typeof val === 'object') {
+            const updated = {
+              heroDeals: Array.isArray(val.heroDeals) ? val.heroDeals.slice(0, 2) : DEFAULT_HOME_SHOWCASE.heroDeals,
+              flashDeals: Array.isArray(val.flashDeals) ? val.flashDeals.slice(0, 6) : DEFAULT_HOME_SHOWCASE.flashDeals,
+            };
+            setHomeShowcase(updated);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('agrimart_home_showcase_v1', JSON.stringify(updated));
+            }
+          }
+        }
+      });
+      return () => unsubscribe();
+    } catch (err) {
+      console.warn('Home showcase RTDB error:', err);
+    }
+  }, []);
+
+  const addToHomeShowcase = async (section, productId) => {
+    const validSections = ['heroDeals', 'flashDeals'];
+    if (!validSections.includes(section)) {
+      throw new Error(`Invalid section "${section}". Must be "heroDeals" or "flashDeals".`);
+    }
+    const limit = HOME_SHOWCASE_LIMITS[section] || 2;
+    const currentList = Array.isArray(homeShowcase[section]) ? homeShowcase[section] : [];
+
+    if (currentList.includes(productId)) {
+      throw new Error('This product is already featured in this home screen section.');
+    }
+
+    if (currentList.length >= limit) {
+      const sectionName = section === 'heroDeals' ? 'Hero Promotional Deals (max 2)' : 'Today\'s Flash Deals (max 6)';
+      throw new Error(`Limit reached! The ${sectionName} section cannot exceed ${limit} products. Please remove an existing item first to make room.`);
+    }
+
+    const nextList = [...currentList, productId];
+    const nextShowcase = {
+      ...homeShowcase,
+      [section]: nextList,
+    };
+
+    setHomeShowcase(nextShowcase);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agrimart_home_showcase_v1', JSON.stringify(nextShowcase));
+    }
+
+    try {
+      const showcaseRef = rtdbRef(realtimeDb, 'site_settings/home_showcase');
+      await set(showcaseRef, nextShowcase);
+    } catch (err) {
+      console.warn('Realtime Database home showcase sync warning:', err.message);
+    }
+
+    return { success: true };
+  };
+
+  const removeFromHomeShowcase = async (section, productId) => {
+    const currentList = Array.isArray(homeShowcase[section]) ? homeShowcase[section] : [];
+    const nextList = currentList.filter((id) => id !== productId);
+
+    const nextShowcase = {
+      ...homeShowcase,
+      [section]: nextList,
+    };
+
+    setHomeShowcase(nextShowcase);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agrimart_home_showcase_v1', JSON.stringify(nextShowcase));
+    }
+
+    try {
+      const showcaseRef = rtdbRef(realtimeDb, 'site_settings/home_showcase');
+      await set(showcaseRef, nextShowcase);
+    } catch (err) {
+      console.warn('Realtime Database home showcase sync warning:', err.message);
+    }
+
+    return { success: true };
+  };
+
+  const updateHomeShowcase = async (newConfig) => {
+    if (!newConfig || typeof newConfig !== 'object') {
+      throw new Error('Invalid home showcase configuration.');
+    }
+
+    const hero = Array.isArray(newConfig.heroDeals) ? newConfig.heroDeals : homeShowcase.heroDeals;
+    const flash = Array.isArray(newConfig.flashDeals) ? newConfig.flashDeals : homeShowcase.flashDeals;
+
+    if (hero.length > HOME_SHOWCASE_LIMITS.heroDeals) {
+      throw new Error(`Hero Deals section limit exceeded! Maximum ${HOME_SHOWCASE_LIMITS.heroDeals} items allowed.`);
+    }
+    if (flash.length > HOME_SHOWCASE_LIMITS.flashDeals) {
+      throw new Error(`Flash Deals section limit exceeded! Maximum ${HOME_SHOWCASE_LIMITS.flashDeals} items allowed.`);
+    }
+
+    const nextShowcase = { heroDeals: hero, flashDeals: flash };
+    setHomeShowcase(nextShowcase);
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agrimart_home_showcase_v1', JSON.stringify(nextShowcase));
+    }
+
+    try {
+      const showcaseRef = rtdbRef(realtimeDb, 'site_settings/home_showcase');
+      await set(showcaseRef, nextShowcase);
+    } catch (err) {
+      console.warn('Realtime Database home showcase sync warning:', err.message);
+    }
+
+    return { success: true };
+  };
 
   const withTimeout = (promise, timeoutMs, timeoutMessage) => {
     return Promise.race([
@@ -772,6 +1044,7 @@ export function ProductProvider({ children }) {
     setCurrentPage,
     totalPages,
     itemsPerPage,
+    storageHydrated,
     wishlistItems,
     wishlistCount,
     wishlistNotice,
@@ -792,6 +1065,15 @@ export function ProductProvider({ children }) {
     addProduct,
     editProduct,
     deleteProduct,
+    categories,
+    customCategories,
+    addCategory,
+    deleteCategory,
+    homeShowcase,
+    homeLimits: HOME_SHOWCASE_LIMITS,
+    addToHomeShowcase,
+    removeFromHomeShowcase,
+    updateHomeShowcase,
   };
 
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;

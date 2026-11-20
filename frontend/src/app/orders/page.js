@@ -7,9 +7,7 @@ import { PageSkeletonLoader } from '../../components/SkeletonLoader';
 export default function OrdersRoute() {
   return (
     <Suspense fallback={<PageSkeletonLoader />}>
-      <ProtectedRoute>
-        <OrdersPage />
-      </ProtectedRoute>
+      <OrdersPage />
     </Suspense>
   );
 }

@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#F7F9FC] flex flex-col justify-between">
+    <div className="min-h-screen bg-[#FAF5EB] flex flex-col justify-between">
       <Navbar />
       <div className="max-w-md mx-auto text-center px-4 py-20">
         <div className="w-20 h-20 bg-[#FFE8D6] text-[#E27B12] rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-sm">
