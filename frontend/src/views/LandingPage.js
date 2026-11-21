@@ -134,15 +134,16 @@ export default function LandingPage() {
 
                 {/* CTAs */}
                 <div className="flex flex-wrap items-center gap-3 mt-6">
-                  <button
-                    onClick={() => router.push('/dashboard?category=vegetable-seeds')}
+                  <Link
+                    href="/dashboard?category=vegetable-seeds"
+                    prefetch={true}
                     className="bg-[#FF9F43] text-[#142B4A] hover:bg-[#ffb067] text-sm px-6 py-3 rounded-full transition-all flex items-center gap-1.5 shadow-lg font-headline font-extrabold transform active:scale-95 group"
                   >
                     <span>Shop High-Yield Seeds</span>
                     <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
                       arrow_forward
                     </span>
-                  </button>
+                  </Link>
                   <a
                     href="#flash-deals"
                     className="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white text-sm px-5 py-3 rounded-full transition-all border border-white/15 font-semibold"

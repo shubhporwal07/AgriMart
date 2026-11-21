@@ -33,7 +33,14 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Proactively prefetch common routes so user clicks navigate instantly
+    const commonRoutes = ['/dashboard', '/cart', '/orders', '/wishlist', '/login', '/about-us'];
+    commonRoutes.forEach((route) => {
+      try {
+        router.prefetch(route);
+      } catch {}
+    });
+  }, [router]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -162,7 +169,7 @@ export default function Navbar() {
         <div className="h-20 max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           {/* Brand Logo & Name */}
           <div className="flex items-center gap-4 shrink-0">
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <Link href="/" prefetch={true} className="flex items-center gap-2.5 group">
               <div className="w-9 h-9 rounded-xl bg-[#0B1B30] flex items-center justify-center text-[#FF9F43] shadow-sm transition-transform duration-150 ease-out group-hover:scale-[1.04]">
                 <span className="material-symbols-outlined text-[24px]">potted_plant</span>
               </div>
@@ -293,6 +300,7 @@ export default function Navbar() {
             {/* Wishlist / Favorites */}
             <Link
               href="/wishlist"
+              prefetch={true}
               className="flex relative items-center justify-center p-2 text-[#5A6B82] hover:text-rose-500 transition-colors duration-150 rounded-xl hover:bg-slate-100/80 active:scale-[0.95]"
               title="My Wishlist"
               aria-label="My Wishlist"
@@ -350,6 +358,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   href="/login"
+                  prefetch={true}
                   className="flex items-center gap-1.5 text-xs font-bold text-[#0B1B30] hover:bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all duration-150 active:scale-[0.97]"
                 >
                   <span className="material-symbols-outlined text-[18px]">account_circle</span>
@@ -376,6 +385,7 @@ export default function Navbar() {
                     </div>
                     <Link
                       href="/orders"
+                      prefetch={true}
                       className="flex items-center gap-2 px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
                     >
                       <span className="material-symbols-outlined text-[16px]">local_shipping</span>
@@ -383,6 +393,7 @@ export default function Navbar() {
                     </Link>
                     <Link
                       href="/wishlist"
+                      prefetch={true}
                       className="flex items-center gap-2 px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
                     >
                       <span className="material-symbols-outlined text-[16px]">favorite</span>
@@ -391,6 +402,7 @@ export default function Navbar() {
                     {isAdmin && (
                       <Link
                         href="/admin/panel"
+                        prefetch={true}
                         className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 transition-colors duration-150"
                       >
                         <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
@@ -412,6 +424,7 @@ export default function Navbar() {
             {/* Cart Pill */}
             <Link
               href="/cart"
+              prefetch={true}
               className="flex items-center gap-2.5 bg-[#0B1B30] hover:bg-[#152B48] text-white px-3.5 py-2 rounded-xl transition-all duration-150 active:scale-[0.97] shadow-[0_2px_8px_rgba(11,27,48,0.22)]"
             >
               <div className="relative flex items-center">
@@ -520,6 +533,7 @@ export default function Navbar() {
             <nav className="flex items-center gap-4 overflow-x-auto no-scrollbar py-1">
               <Link
                 href="/dashboard?category=all"
+                prefetch={true}
                 className="flex items-center gap-1 text-xs font-extrabold text-[#0B1B30] shrink-0 hover:text-[#E27B12] transition-colors duration-150"
               >
                 <span className="material-symbols-outlined text-[17px]">grid_view</span>
@@ -531,6 +545,7 @@ export default function Navbar() {
                 <Link
                   key={cat.slug}
                   href={`/dashboard?category=${cat.slug}`}
+                  prefetch={true}
                   className="text-xs font-semibold text-[#5A6B82] hover:text-[#0B1B30] whitespace-nowrap transition-colors duration-150"
                 >
                   {cat.label}
@@ -541,12 +556,14 @@ export default function Navbar() {
             <div className="hidden xl:flex items-center gap-2 shrink-0 pl-4">
               <Link
                 href="/dashboard?category=sowing-season-deals"
+                prefetch={true}
                 className="flex items-center gap-1 text-xs bg-[#FFE8D6] text-[#A74E00] px-3 py-1 rounded-full font-bold hover:bg-[#FFDCC2] transition-colors duration-150 active:scale-[0.97]"
               >
                 <span>🌾</span> Sowing Season Offers
               </Link>
               <Link
                 href="/dashboard?category=soil-nutrition-corner"
+                prefetch={true}
                 className="flex items-center gap-1 text-xs bg-[#E2E8F0] text-[#0B1B30] px-3 py-1 rounded-full font-bold hover:bg-slate-300 transition-colors duration-150 active:scale-[0.97]"
               >
                 <span>🧪</span> Soil Nutrition Corner

@@ -16,11 +16,11 @@ export const EASE = {
 
 // Page enter transition (used in src/app/template.js)
 export const pageTransition = {
-  initial: { opacity: 0, y: 8 },
+  initial: { opacity: 0.94, y: 3 },
   animate: {
     opacity: 1,
     y: 0,
-    transition: { duration: DURATION.normal, ease: EASE.out },
+    transition: { duration: 0.1, ease: EASE.out },
   },
 };
 

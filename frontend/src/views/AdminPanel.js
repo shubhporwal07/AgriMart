@@ -1117,7 +1117,7 @@ export default function AdminPanel({ onLogout }) {
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 text-sm font-bold text-white shadow-sm shadow-slate-950/20 hover:bg-slate-800"
                 >
                   <Plus size={18} />
-                  Add Grocery Item
+                  Add Agri Product
                 </motion.button>
               )}
               {activeTab === 'categories' && (

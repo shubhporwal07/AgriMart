@@ -8,6 +8,7 @@ import { ProductProvider, useProducts } from '../contexts/ProductContext';
 import { CouponProvider } from '../contexts/CouponContext';
 import { PageSkeletonLoader } from './SkeletonLoader';
 import CartAddedPopup from './CartAddedPopup';
+import NavigationProgressBar from './NavigationProgressBar';
 import { toastVariants, iconTap } from '../utils/motion';
 
 const WishlistToast = forwardRef(function WishlistToast({ notice, onClose }, ref) {
@@ -94,6 +95,7 @@ export default function ClientProviders({ children }) {
         <LocationProvider>
           <ProductProvider>
             <CouponProvider>
+              <NavigationProgressBar />
               <NoticeRenderer />
               <Suspense fallback={<PageSkeletonLoader />}>
                 {children}

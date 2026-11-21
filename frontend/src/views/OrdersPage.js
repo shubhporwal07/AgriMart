@@ -411,13 +411,14 @@ export default function OrdersPage() {
       <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8 md:px-8 space-y-6">
         {/* Header Navigation */}
         <div>
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-stone-600 hover:text-[#142B4A] mb-3 transition text-xs sm:text-sm font-bold"
+          <Link
+            href="/dashboard"
+            prefetch={true}
+            className="inline-flex items-center gap-2 text-stone-600 hover:text-[#142B4A] mb-3 transition text-xs sm:text-sm font-bold"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Crop Input Catalog
-          </button>
+          </Link>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#142B4A]">
@@ -529,14 +530,13 @@ export default function OrdersPage() {
                     Sign In
                   </Link>
                 )}
-                <button
-                  type="button"
-                  whileTap={buttonTap}
-                  onClick={() => router.push('/dashboard')}
+                <Link
+                  href="/dashboard"
+                  prefetch={true}
                   className="px-5 py-2.5 bg-stone-100 text-stone-700 rounded-xl text-xs font-bold hover:bg-stone-200 transition"
                 >
                   Browse Seeds &amp; Fertilizers
-                </button>
+                </Link>
               </div>
             </motion.div>
           ) : (

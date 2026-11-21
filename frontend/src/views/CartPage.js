@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Trash2, ArrowLeft, CheckCircle2, MapPin, Zap, ShieldCheck, ShoppingBag, Clock, Sparkles, Banknote, CreditCard, AlertTriangle, Truck, Tag, Percent, Check, AlertCircle, IndianRupee, BookmarkCheck, UserCheck } from 'lucide-react';
@@ -685,18 +686,20 @@ export default function CartPage() {
             )}
 
             <div className="flex flex-col gap-3">
-              <button
-                onClick={() => router.push('/orders')}
-                className="w-full py-3.5 bg-[#142B4A] text-white rounded-xl hover:bg-[#0c1c30] transition font-bold text-sm shadow-md"
+              <Link
+                href="/orders"
+                prefetch={true}
+                className="w-full text-center py-3.5 bg-[#142B4A] text-white rounded-xl hover:bg-[#0c1c30] transition font-bold text-sm shadow-md block"
               >
                 Track Live Order
-              </button>
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="w-full py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition font-bold text-sm"
+              </Link>
+              <Link
+                href="/dashboard"
+                prefetch={true}
+                className="w-full text-center py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition font-bold text-sm block"
               >
                 Back to Shopping
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -735,14 +738,14 @@ export default function CartPage() {
           <p className="text-slate-600 text-sm sm:text-base mb-8 max-w-md mx-auto">
             You haven't added any certified hybrid seeds, fertilizers, or farm inputs to your basket yet.
           </p>
-          <motion.button
-            whileTap={buttonTap}
-            onClick={() => router.push('/dashboard')}
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-bold rounded-xl transition-all duration-150 shadow-lg shadow-[#FF9F43]/20"
+          <Link
+            href="/dashboard"
+            prefetch={true}
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-bold rounded-xl transition-all duration-150 shadow-lg shadow-[#FF9F43]/20 active:scale-95"
           >
             <Zap className="w-4 h-4 fill-current" />
             Explore Certified Farm Inputs
-          </motion.button>
+          </Link>
         </motion.div>
         <Footer />
       </div>
