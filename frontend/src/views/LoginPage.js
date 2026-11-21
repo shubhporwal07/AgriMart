@@ -43,6 +43,7 @@ export default function LoginPage({ onAdminLogin }) {
   const [toast, setToast] = useState({ show: false, message: '', type: 'error' });
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isAdminRequested = Boolean(searchParams?.get('redirect')?.includes('admin'));
 
   const afterAuthPath = useCallback(() => {
     let raw = searchParams.get('redirect');
@@ -77,7 +78,9 @@ export default function LoginPage({ onAdminLogin }) {
     const isAdmin = !isSignup && isAdminIdent(trimmedEmail);
 
     if (!trimmedEmail) {
-      newErrors.email = isSignup ? 'Email is required' : 'Email or admin username is required';
+      newErrors.email = isSignup
+        ? 'Email is required'
+        : (isAdminRequested ? 'Email or admin username is required' : 'Email address is required');
     } else if (!isAdmin && !validateEmail(trimmedEmail)) {
       newErrors.email = 'Please enter a valid email address';
     }
@@ -390,10 +393,10 @@ export default function LoginPage({ onAdminLogin }) {
                 </div>
               )}
 
-              <form onSubmit={isSignup ? handleSignup : handleLogin} className="space-y-4">
+              <form noValidate onSubmit={isSignup ? handleSignup : handleLogin} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    {isSignup ? 'Email Address *' : 'Email Address or Admin Identifier *'}
+                    {isSignup ? 'Email Address *' : (isAdminRequested ? 'Email Address or Admin Identifier *' : 'Email Address *')}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -407,7 +410,7 @@ export default function LoginPage({ onAdminLogin }) {
                         setEmail(e.target.value);
                         if (errors.email) setErrors({ ...errors, email: '' });
                       }}
-                      placeholder={isSignup ? 'you@example.com' : 'you@example.com or admin'}
+                      placeholder={isSignup ? 'you@example.com' : (isAdminRequested ? 'you@example.com or admin' : 'you@example.com')}
                       className={`block w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-slate-900 bg-[#FAF5EB] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1B30] transition ${errors.email ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                       disabled={loading}
                     />
@@ -543,30 +546,6 @@ export default function LoginPage({ onAdminLogin }) {
                       </svg>
                       Continue with Google
                     </button>
-
-                    {/* Admin Credentials Quick Hint */}
-                    <div className="mt-4 p-3 bg-amber-50/70 border border-amber-200 rounded-2xl flex items-center justify-between text-xs text-slate-700">
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-lg bg-[#0B1B30] text-[#FF9F43] flex items-center justify-center font-bold text-[11px] shrink-0">
-                          ⚡
-                        </span>
-                        <div>
-                          <span className="font-bold text-slate-900 block text-[11px]">Kisan Hub Admin Access</span>
-                          <span className="text-[10px] text-slate-500 font-mono">User: <strong>admin</strong> | Pass: <strong>admin9876</strong></span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEmail('admin');
-                          setPassword('admin9876');
-                          setErrors({});
-                        }}
-                        className="text-[11px] font-bold text-[#0B1B30] hover:text-[#E27B12] bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs transition active:scale-95 shrink-0"
-                      >
-                        Auto-fill
-                      </button>
-                    </div>
                   </>
                 )}
               </form>

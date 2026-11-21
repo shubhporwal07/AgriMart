@@ -63,7 +63,7 @@ export function AdminRoute({ children }) {
 
 // Public Route - if authenticated, redirect to destination or dashboard
 export function PublicRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isAdmin, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -79,6 +79,11 @@ export function PublicRoute({ children }) {
         try {
           const decoded = decodeURIComponent(redirect);
           if (decoded.startsWith('/') && !decoded.startsWith('//')) {
+            // Prevent redirect loop if redirect points to admin panel but user is not admin
+            if (decoded.startsWith('/admin') && !isAdmin) {
+              router.replace('/dashboard');
+              return;
+            }
             const dest = step && !decoded.includes('step=')
               ? `${decoded}${decoded.includes('?') ? '&' : '?'}step=${encodeURIComponent(step)}`
               : decoded;
@@ -89,9 +94,9 @@ export function PublicRoute({ children }) {
           // ignore
         }
       }
-      router.replace('/dashboard');
+      router.replace(isAdmin ? '/admin/panel' : '/dashboard');
     }
-  }, [loading, isAuthenticated, router, searchParams]);
+  }, [loading, isAuthenticated, isAdmin, router, searchParams]);
 
   if (loading || isAuthenticated) {
     return <LoadingScreen />;

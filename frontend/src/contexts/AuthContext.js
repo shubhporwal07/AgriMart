@@ -117,8 +117,13 @@ export function AuthProvider({ children }) {
 
     // Listen to local storage changes for cross-tab or intra-app login/logout
     const handleStorage = () => {
-      if (!checkAdminSession()) {
-        checkCustomerSession();
+      const hasAdmin = checkAdminSession();
+      if (!hasAdmin) {
+        const hasCustomer = checkCustomerSession();
+        if (!hasCustomer) {
+          setUser(null);
+          setUserRole(null);
+        }
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -139,9 +144,10 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('adminSession');
       localStorage.removeItem('agrimart_user_email');
       localStorage.removeItem('userEmail');
-      window.dispatchEvent(new Event('storage'));
       setUser(null);
       setUserRole(null);
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('agrimart-auth-change'));
     } catch (error) {
       setError(error.message);
     } finally {

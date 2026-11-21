@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../contexts/AuthContext';
 import AdminPanel from '../../../views/AdminPanel';
 
 export default function AdminPanelRoute() {
   const router = useRouter();
+  const { logout } = useAuth();
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -32,10 +34,9 @@ export default function AdminPanelRoute() {
     checkAdmin();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminSession');
+  const handleLogout = async () => {
     setIsAdminLoggedIn(false);
-    window.dispatchEvent(new Event('storage'));
+    await logout();
     router.replace('/login');
   };
 

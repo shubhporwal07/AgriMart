@@ -355,9 +355,11 @@ export default function AdminPanel({ onLogout }) {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 200));
     localStorage.removeItem('adminSession');
-    onLogout();
+    if (onLogout) {
+      await onLogout();
+    }
   };
 
   const q = searchQuery.toLowerCase().trim();
