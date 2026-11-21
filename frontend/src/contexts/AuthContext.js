@@ -17,6 +17,28 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const checkCustomerSession = useCallback(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const email = localStorage.getItem('agrimart_user_email') || localStorage.getItem('userEmail');
+      if (email && typeof email === 'string' && email.includes('@')) {
+        setUser((prev) => {
+          if (prev && prev.email === email) return prev;
+          return {
+            uid: 'customer-' + email.replace(/[^a-zA-Z0-9]/g, '_'),
+            email: email.toLowerCase(),
+            displayName: email.split('@')[0],
+          };
+        });
+        setUserRole('user');
+        return true;
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  }, []);
+
   const checkAdminSession = useCallback(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -79,8 +101,8 @@ export function AuthProvider({ children }) {
             setUserRole('user');
           }
         } else {
-          // If no Firebase user, check if admin session is present in localStorage
-          if (!checkAdminSession()) {
+          // If no Firebase user, check if admin or customer session is present in localStorage
+          if (!checkAdminSession() && !checkCustomerSession()) {
             setUser(null);
             setUserRole(null);
           }
@@ -95,7 +117,9 @@ export function AuthProvider({ children }) {
 
     // Listen to local storage changes for cross-tab or intra-app login/logout
     const handleStorage = () => {
-      checkAdminSession();
+      if (!checkAdminSession()) {
+        checkCustomerSession();
+      }
     };
     window.addEventListener('storage', handleStorage);
     window.addEventListener('agrimart-auth-change', handleStorage);
@@ -105,7 +129,7 @@ export function AuthProvider({ children }) {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('agrimart-auth-change', handleStorage);
     };
-  }, [checkAdminSession]);
+  }, [checkAdminSession, checkCustomerSession]);
 
   // Logout function
   const logout = async () => {
