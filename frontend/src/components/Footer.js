@@ -111,18 +111,18 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Kisan App & Payments */}
+          {/* Kisan Advisory, Updates & Payments */}
           <div className="flex flex-col gap-4">
             <h4 className="font-headline text-base text-[#142B4A] font-extrabold">
-              Download AgriMart Kisan App
+              Kisan Advisory & Updates
             </h4>
             <div className="p-3 bg-white rounded-2xl border border-[#CBD5E1]/50 shadow-sm flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#FFE8D6] text-[#E27B12] flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-[24px]">smartphone</span>
+                <span className="material-symbols-outlined text-[24px]">support_agent</span>
               </div>
               <div>
-                <p className="text-xs font-bold text-[#142B4A]">AgriMart Kisan Mobile App</p>
-                <p className="text-[11px] text-[#5A6B82]">Mandi prices, dosage guide & quick reorder</p>
+                <p className="text-xs font-bold text-[#142B4A]">Free Kisan Advisory Desk</p>
+                <p className="text-[11px] text-[#5A6B82]">Call 1800-AGRI-MART for crop & dosage advice</p>
               </div>
             </div>
 
