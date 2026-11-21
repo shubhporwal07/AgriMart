@@ -230,7 +230,13 @@ export default function ProductCard({
           )}
         </div>
         <span className="text-[10px] sm:text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-1.5 sm:px-2 py-0.5 rounded-md max-w-[95px] sm:max-w-[130px] flex items-center gap-0.5 sm:gap-1 shrink-0 overflow-hidden">
-          <span className="shrink-0 text-[10px] sm:text-xs">{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
+          <span className="shrink-0 text-[10px] sm:text-xs">
+            {/\b(ml|l|ltr|litres?|liters?)\b/i.test(product.unit || product.packSize || '')
+              ? '🧪'
+              : (product.category || '').toLowerCase().includes('seed')
+              ? '🌱'
+              : '⚖️'}
+          </span>
           <span className="truncate">{product.packSize || product.unit || product.weight || '1 unit'}</span>
         </span>
       </div>

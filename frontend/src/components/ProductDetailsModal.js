@@ -15,6 +15,11 @@ import {
   EASE,
 } from '../utils/motion';
 
+const isLiquidUnit = (unitStr) => {
+  const s = String(unitStr || '').toLowerCase();
+  return /\b(ml|l|ltr|litres?|liters?)\b/.test(s) || s.includes('liquid') || s.includes('bottle');
+};
+
 export default function ProductDetailsModal({ product, onClose, onSelectProduct }) {
   const {
     addToCart,
@@ -248,20 +253,21 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
         animate="animate"
         exit="exit"
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-hidden flex flex-col border border-slate-100 my-auto"
+        className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-hidden flex flex-col border border-slate-100 my-auto"
       >
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#F7F9FC]">
-          <div className="flex items-center gap-2">
-            <span className="bg-[#142B4A] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+        <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-slate-100 bg-[#F7F9FC]">
+          <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+            <span className="bg-[#142B4A] text-white text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 rounded-full whitespace-nowrap shrink-0 max-w-[150px] sm:max-w-none truncate shadow-xs">
               {product.category}
             </span>
-            <span className="text-xs text-[#5A6B82] font-semibold flex items-center gap-1">
-              <span className="material-symbols-outlined text-[16px] text-[#FF9F43]">local_shipping</span>
-              ⚡ Fast Farm Dispatch
+            <span className="text-[11px] sm:text-xs text-[#5A6B82] font-semibold flex items-center gap-1 shrink min-w-0 whitespace-nowrap truncate">
+              <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#FF9F43] shrink-0">local_shipping</span>
+              <span className="hidden sm:inline truncate">⚡ Fast Farm Dispatch</span>
+              <span className="sm:hidden truncate">⚡ Dispatch</span>
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <motion.button
               type="button"
               whileTap={iconTap}
@@ -272,7 +278,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                   addToWishlist(product);
                 }
               }}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-150 shadow-sm border ${
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-colors duration-150 shadow-sm border shrink-0 ${
                 isWishlisted
                   ? 'bg-rose-50 border-rose-200 text-rose-500'
                   : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500'
@@ -281,7 +287,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
               title={isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}
             >
               <span
-                className="material-symbols-outlined text-[20px]"
+                className="material-symbols-outlined text-[18px] sm:text-[20px]"
                 style={isWishlisted ? { fontVariationSettings: "'FILL' 1" } : {}}
               >
                 favorite
@@ -291,16 +297,16 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
               type="button"
               whileTap={iconTap}
               onClick={onClose}
-              className="w-9 h-9 rounded-full bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors duration-150 shadow-sm border border-slate-200"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors duration-150 shadow-sm border border-slate-200 shrink-0"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined text-[20px]">close</span>
+              <span className="material-symbols-outlined text-[18px] sm:text-[20px]">close</span>
             </motion.button>
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto no-scrollbar max-h-[calc(92vh-80px)]">
+        <div className="p-4 sm:p-6 overflow-y-auto no-scrollbar max-h-[calc(92vh-70px)]">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             {/* Left Column: Images (5 Cols) */}
             <div className="md:col-span-5 flex flex-col gap-3">
@@ -434,26 +440,40 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
               {/* Weight / Measurement indicator & packaging standards */}
               <div className="mt-2.5 p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#142B4A] mb-1.5">
-                  <span>{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
+                  <span>{isLiquidUnit(product.unit) ? '🧪' : (product.category || '').toLowerCase().includes('seed') ? '🌱' : '⚖️'}</span>
                   <span>Pack Size Measurement:</span>
                   <span className="text-emerald-700 font-extrabold ml-auto">{product.unit}</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {(String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml')
-                    ? ['250 ml', '500 ml', '1 Litre', '5 Litres']
+                  {(isLiquidUnit(product.unit)
+                    ? ['100 ml', '250 ml', '500 ml', '1 Litre', '5 Litres']
+                    : (product.category || '').toLowerCase().includes('seed')
+                    ? ['10g Pouch', '50g Pack', '100g Pack', '250g Foil', '500g Box', '1 kg Bag']
                     : ['500 g', '1 kg', '2 kg', '5 kg', '25 kg']
-                  ).map((size) => (
-                    <span
-                      key={size}
-                      className={`text-[10px] px-2 py-0.5 rounded-md font-bold border ${
-                        String(product.unit || '').toLowerCase().includes(size.toLowerCase())
-                          ? 'bg-[#142B4A] text-white border-[#142B4A]'
-                          : 'bg-white text-slate-600 border-slate-200'
-                      }`}
-                    >
-                      {size}
-                    </span>
-                  ))}
+                  ).map((size) => {
+                    const cleanUnit = String(product.unit || '').toLowerCase();
+                    const cleanSize = size.toLowerCase();
+                    const isSelected =
+                      cleanUnit.includes(cleanSize) ||
+                      cleanUnit.includes(cleanSize.replace(/\s+/g, '')) ||
+                      (cleanSize === '5 kg' && cleanUnit.includes('5kg')) ||
+                      (cleanSize === '1 kg' && cleanUnit.includes('1kg')) ||
+                      (cleanSize === '2 kg' && cleanUnit.includes('2kg')) ||
+                      (cleanSize === '10g pouch' && cleanUnit.includes('10g'));
+
+                    return (
+                      <span
+                        key={size}
+                        className={`text-[10px] px-2 py-0.5 rounded-md font-bold border transition-colors ${
+                          isSelected
+                            ? 'bg-[#142B4A] text-white border-[#142B4A] shadow-xs'
+                            : 'bg-white text-slate-600 border-slate-200'
+                        }`}
+                      >
+                        {size}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -473,28 +493,28 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
               </div>
 
               {/* Price Block */}
-              <div className="mt-4 p-4 rounded-2xl bg-[#EDF2F7] border border-[#CBD5E1]/60 flex items-center justify-between">
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-price text-3xl font-extrabold text-[#142B4A]">
+              <div className="mt-4 p-3.5 sm:p-4 rounded-2xl bg-[#EDF2F7] border border-[#CBD5E1]/60 flex items-center justify-between gap-2 sm:gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-baseline gap-1.5 sm:gap-2">
+                    <span className="font-price text-2xl sm:text-3xl font-extrabold text-[#142B4A] leading-tight">
                       ₹{product.price}
                     </span>
                     {product.mrp && product.mrp > product.price && (
-                      <span className="text-sm text-[#74777E] line-through">
+                      <span className="text-xs sm:text-sm text-[#74777E] line-through">
                         ₹{product.mrp}
                       </span>
                     )}
                   </div>
                   {discountVal > 0 && (
-                    <span className="text-xs font-bold text-emerald-700 block mt-0.5">
+                    <span className="text-[11px] sm:text-xs font-bold text-emerald-700 block mt-0.5 truncate">
                       You save ₹{discountVal} ({discountPercent})
                     </span>
                   )}
-                  <span className="text-[10px] text-[#5A6B82]">Inclusive of all taxes</span>
+                  <span className="text-[10px] text-[#5A6B82] block">Inclusive of all taxes</span>
                 </div>
 
                 {/* Add / Stepper + Wishlist */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                   <motion.button
                     type="button"
                     whileTap={buttonTap}
@@ -505,7 +525,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         addToWishlist(product);
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl border font-bold text-xs transition-colors duration-150 shadow-sm ${
+                    className={`flex items-center justify-center p-2.5 sm:px-3 sm:py-2.5 rounded-xl border font-bold text-xs transition-colors duration-150 shadow-sm shrink-0 ${
                       isWishlisted
                         ? 'bg-rose-50 border-rose-300 text-rose-600 hover:bg-rose-100'
                         : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-rose-600'
@@ -519,14 +539,14 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                     >
                       favorite
                     </span>
-                    <span className="hidden sm:inline">
+                    <span className="hidden sm:inline ml-1">
                       {isWishlisted ? 'Saved' : 'Wishlist'}
                     </span>
                   </motion.button>
 
                   <AnimatePresence mode="wait" initial={false}>
                     {isSoldOut ? (
-                      <span key="sold" className="bg-slate-200 text-slate-500 font-bold text-xs px-4 py-2.5 rounded-xl block">
+                      <span key="sold" className="bg-slate-200 text-slate-500 font-bold text-xs px-3 sm:px-4 py-2.5 rounded-xl block whitespace-nowrap shrink-0">
                         Sold Out
                       </span>
                     ) : qty > 0 ? (
@@ -536,18 +556,18 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.94 }}
                         transition={{ duration: 0.14 }}
-                        className="flex items-center bg-[#142B4A] text-white rounded-xl shadow-md overflow-hidden"
+                        className="flex items-center bg-[#142B4A] text-white rounded-xl shadow-md overflow-hidden shrink-0"
                       >
                         <motion.button
                           type="button"
                           whileTap={iconTap}
                           onClick={() => updateCartQuantity(product.id, qty - 1)}
-                          className="px-3.5 py-2.5 hover:bg-[#1B385D] transition-colors duration-150"
+                          className="px-2.5 sm:px-3.5 py-2 sm:py-2.5 hover:bg-[#1B385D] transition-colors duration-150"
                           aria-label="Decrease quantity"
                         >
-                          <span className="material-symbols-outlined text-[18px]">remove</span>
+                          <span className="material-symbols-outlined text-[16px] sm:text-[18px]">remove</span>
                         </motion.button>
-                        <div className="min-w-[36px] flex items-center justify-center overflow-hidden">
+                        <div className="min-w-[28px] sm:min-w-[36px] flex items-center justify-center overflow-hidden">
                           <AnimatePresence mode="popLayout" initial={false}>
                             <motion.span
                               key={qty}
@@ -555,7 +575,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                               initial="initial"
                               animate="animate"
                               exit="exit"
-                              className="px-2 font-bold text-sm inline-block"
+                              className="px-1.5 sm:px-2 font-bold text-xs sm:text-sm inline-block"
                             >
                               {qty}
                             </motion.span>
@@ -565,10 +585,10 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                           type="button"
                           whileTap={iconTap}
                           onClick={() => updateCartQuantity(product.id, qty + 1)}
-                          className="px-3.5 py-2.5 hover:bg-[#1B385D] transition-colors duration-150"
+                          className="px-2.5 sm:px-3.5 py-2 sm:py-2.5 hover:bg-[#1B385D] transition-colors duration-150"
                           aria-label="Increase quantity"
                         >
-                          <span className="material-symbols-outlined text-[18px]">add</span>
+                          <span className="material-symbols-outlined text-[16px] sm:text-[18px]">add</span>
                         </motion.button>
                       </motion.div>
                     ) : !isServiceable ? (
@@ -577,11 +597,11 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         type="button"
                         whileTap={buttonTap}
                         onClick={() => setLocationModalOpen(true)}
-                        className="bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-headline text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm transition-colors duration-150 flex items-center gap-1.5"
+                        className="bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-headline text-xs font-bold px-3 sm:px-5 py-2.5 rounded-xl shadow-sm transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0"
                         title="Outside 10 km Phagwara hub. Tap to change location."
                       >
-                        <span className="material-symbols-outlined text-[18px]">location_off</span>
-                        <span>Unavailable in Area</span>
+                        <span className="material-symbols-outlined text-[16px] sm:text-[18px]">location_off</span>
+                        <span>Unavailable</span>
                       </motion.button>
                     ) : (
                       <motion.button
@@ -593,9 +613,9 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         whileTap={buttonTap}
                         transition={{ duration: 0.14 }}
                         onClick={() => addToCart(product, 1)}
-                        className="bg-[#142B4A] hover:bg-[#1B385D] text-white font-headline text-sm font-bold px-6 py-2.5 rounded-xl shadow-md transition-colors duration-150 flex items-center gap-1.5"
+                        className="bg-[#142B4A] hover:bg-[#1B385D] active:bg-[#0B1B30] text-white font-headline text-xs sm:text-sm font-bold px-3.5 sm:px-6 py-2.5 rounded-xl shadow-md transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap shrink-0"
                       >
-                        <span className="material-symbols-outlined text-[18px]">
+                        <span className="material-symbols-outlined text-[16px] sm:text-[18px]">
                           add_shopping_cart
                         </span>
                         <span>ADD TO CART</span>
