@@ -133,21 +133,22 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md shadow-[0_1px_8px_rgba(11,27,48,0.08)] border-b border-[#E2E8F0]">
+      <header className="sticky top-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md shadow-[0_1px_8px_rgba(11,27,48,0.08)] border-b border-[#E2E8F0] overflow-hidden">
         {/* Top Kisan Notice Bar - only displayed on home page */}
         {isHomePage && (
-          <div className="bg-[#0B1B30] text-white text-[11px] font-semibold">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-8 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px] text-[#FF9F43]">local_shipping</span>
-                <span>
-                  Express Farm Delivery & Certified Inputs | Flat ₹200 OFF on orders above ₹999 | Code:{' '}
-                  <span className="font-bold tracking-wider text-[#FF9F43] bg-white/10 px-1.5 py-0.5 rounded">
+          <div className="bg-[#0B1B30] text-white text-[11px] font-semibold overflow-hidden">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 h-8 flex items-center justify-between min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 truncate">
+                <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#FF9F43] shrink-0">local_shipping</span>
+                <span className="truncate">
+                  <span className="hidden sm:inline">Express Farm Delivery & Certified Inputs | </span>
+                  Flat ₹200 OFF on orders &gt; ₹999 | Code:{' '}
+                  <span className="font-bold tracking-wider text-[#FF9F43] bg-white/10 px-1.5 py-0.5 rounded text-[10px]">
                     KISAN200
                   </span>
                 </span>
               </div>
-              <div className="hidden md:flex items-center gap-4 text-slate-200">
+              <div className="hidden md:flex items-center gap-4 text-slate-200 shrink-0">
                 <a href="tel:18002474627" className="hover:text-white transition-colors duration-150 flex items-center gap-1">
                   <span className="material-symbols-outlined text-[14px] text-[#FF9F43]">support_agent</span>
                   Kisan Helpline: 1800-AGRI-MART
@@ -166,14 +167,14 @@ export default function Navbar() {
         )}
 
         {/* Main Brand & Actions Header */}
-        <div className="h-20 max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
+        <div className="h-16 sm:h-20 max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
           {/* Brand Logo & Name */}
-          <div className="flex items-center gap-4 shrink-0">
-            <Link href="/" prefetch={true} className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-[#0B1B30] flex items-center justify-center text-[#FF9F43] shadow-sm transition-transform duration-150 ease-out group-hover:scale-[1.04]">
-                <span className="material-symbols-outlined text-[24px]">potted_plant</span>
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <Link href="/" prefetch={true} className="flex items-center gap-2 group">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#0B1B30] flex items-center justify-center text-[#FF9F43] shadow-sm transition-transform duration-150 ease-out group-hover:scale-[1.04]">
+                <span className="material-symbols-outlined text-[20px] sm:text-[24px]">potted_plant</span>
               </div>
-              <span className="font-headline text-xl sm:text-2xl text-[#0B1B30] tracking-tight font-extrabold flex items-center">
+              <span className="font-headline text-lg sm:text-2xl text-[#0B1B30] tracking-tight font-extrabold flex items-center">
                 Agri<span className="text-[#FF9F43]">Mart</span>
               </span>
             </Link>
@@ -296,17 +297,17 @@ export default function Navbar() {
           </div>
 
           {/* Right Navigation Controls */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Wishlist / Favorites */}
             <Link
               href="/wishlist"
               prefetch={true}
-              className="flex relative items-center justify-center p-2 text-[#5A6B82] hover:text-rose-500 transition-colors duration-150 rounded-xl hover:bg-slate-100/80 active:scale-[0.95]"
+              className="flex relative items-center justify-center p-1.5 sm:p-2 text-[#5A6B82] hover:text-rose-500 transition-colors duration-150 rounded-xl hover:bg-slate-100/80 active:scale-[0.95]"
               title="My Wishlist"
               aria-label="My Wishlist"
             >
               <span
-                className={`material-symbols-outlined text-[24px] transition-colors duration-150 ${
+                className={`material-symbols-outlined text-[22px] sm:text-[24px] transition-colors duration-150 ${
                   safeWishlistCount > 0 ? 'text-rose-500' : ''
                 }`}
                 style={safeWishlistCount > 0 ? { fontVariationSettings: "'FILL' 1" } : {}}
@@ -321,7 +322,7 @@ export default function Navbar() {
                     animate={{ scale: [1, 1.2, 1], opacity: 1 }}
                     exit={{ scale: 0.7, opacity: 0 }}
                     transition={{ duration: 0.2, ease: EASE.out }}
-                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm"
+                    className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm"
                   >
                     {safeWishlistCount > 99 ? '99+' : safeWishlistCount}
                   </motion.span>
@@ -335,10 +336,10 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 cursor-pointer p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-colors duration-150 active:scale-[0.97]"
+                  className="flex items-center gap-1.5 sm:gap-2 cursor-pointer p-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-colors duration-150 active:scale-[0.97]"
                   aria-expanded={userDropdownOpen}
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#0B1B30] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-xs">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0B1B30] flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-xs">
                     {user.displayName ? user.displayName[0].toUpperCase() : 'U'}
                   </div>
                   <div className="hidden md:flex flex-col text-left min-w-0">
@@ -350,7 +351,7 @@ export default function Navbar() {
                   <motion.span
                     animate={{ rotate: userDropdownOpen ? 180 : 0 }}
                     transition={{ duration: 0.18, ease: EASE.inOut }}
-                    className="inline-flex items-center justify-center shrink-0 text-slate-500"
+                    className="hidden sm:inline-flex items-center justify-center shrink-0 text-slate-500"
                   >
                     <ChevronDown className="w-4 h-4 stroke-[2.25]" />
                   </motion.span>
@@ -359,10 +360,11 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   prefetch={true}
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#0B1B30] hover:bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 transition-all duration-150 active:scale-[0.97]"
+                  className="flex items-center gap-1 sm:gap-1.5 text-xs font-bold text-[#0B1B30] hover:bg-slate-100 p-1.5 sm:px-3 sm:py-2 rounded-xl sm:border sm:border-slate-200 transition-all duration-150 active:scale-[0.97]"
+                  title="Sign In"
                 >
-                  <span className="material-symbols-outlined text-[18px]">account_circle</span>
-                  <span>Sign In</span>
+                  <span className="material-symbols-outlined text-[20px] sm:text-[18px]">account_circle</span>
+                  <span className="hidden sm:inline">Sign In</span>
                 </Link>
               )}
 
@@ -425,14 +427,14 @@ export default function Navbar() {
             <Link
               href="/cart"
               prefetch={true}
-              className="flex items-center gap-2.5 bg-[#0B1B30] hover:bg-[#152B48] text-white px-3.5 py-2 rounded-xl transition-all duration-150 active:scale-[0.97] shadow-[0_2px_8px_rgba(11,27,48,0.22)]"
+              className="flex items-center gap-1.5 sm:gap-2.5 bg-[#0B1B30] hover:bg-[#152B48] text-white px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl transition-all duration-150 active:scale-[0.97] shadow-[0_2px_8px_rgba(11,27,48,0.22)]"
             >
               <div className="relative flex items-center">
                 <motion.span
                   key={`bag-${safeCartCount}`}
                   animate={safeCartCount > 0 ? { scale: [1, 1.12, 1] } : {}}
                   transition={{ duration: 0.2, ease: EASE.out }}
-                  className="material-symbols-outlined text-[20px] text-white"
+                  className="material-symbols-outlined text-[19px] sm:text-[20px] text-white"
                 >
                   shopping_bag
                 </motion.span>
@@ -444,7 +446,7 @@ export default function Navbar() {
                       animate={{ scale: [1, 1.22, 1], opacity: 1 }}
                       exit={{ scale: 0.7, opacity: 0 }}
                       transition={{ duration: 0.22, ease: EASE.out }}
-                      className="absolute -top-2.5 -right-2.5 bg-[#FF9F43] text-[#0B1B30] font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-sm"
+                      className="absolute -top-2 -right-2 bg-[#FF9F43] text-[#0B1B30] font-bold text-[9px] sm:text-[10px] min-w-[17px] h-[17px] sm:min-w-[20px] sm:h-[20px] rounded-full flex items-center justify-center px-0.5 shadow-sm"
                     >
                       {safeCartCount}
                     </motion.span>
@@ -466,7 +468,7 @@ export default function Navbar() {
               type="button"
               whileTap={iconTap}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#0B1B30] sm:hidden rounded-lg hover:bg-slate-100 transition-colors duration-150"
+              className="p-1.5 sm:p-2 text-[#0B1B30] sm:hidden rounded-lg hover:bg-slate-100 transition-colors duration-150 shrink-0"
               aria-label="Toggle Navigation"
               aria-expanded={mobileMenuOpen}
             >
@@ -477,7 +479,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, rotate: 0, scale: 1 }}
                   exit={{ opacity: 0, rotate: 45, scale: 0.85 }}
                   transition={{ duration: 0.14, ease: EASE.out }}
-                  className="material-symbols-outlined text-[24px] block"
+                  className="material-symbols-outlined text-[22px] sm:text-[24px] block"
                 >
                   {mobileMenuOpen ? 'close' : 'menu'}
                 </motion.span>
@@ -528,9 +530,9 @@ export default function Navbar() {
         </div>
 
         {/* Aisle Category Navigation Bar */}
-        <div className="bg-[#EDF2F7] border-t border-b border-[#CBD5E1]/40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-11 flex items-center justify-between">
-            <nav className="flex items-center gap-4 overflow-x-auto no-scrollbar py-1">
+        <div className="bg-[#EDF2F7] border-t border-b border-[#CBD5E1]/40 overflow-hidden w-full">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 h-10 sm:h-11 flex items-center justify-between min-w-0 w-full overflow-hidden">
+            <nav className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-1 min-w-0 w-full">
               <Link
                 href="/dashboard?category=all"
                 prefetch={true}
@@ -546,7 +548,7 @@ export default function Navbar() {
                   key={cat.slug}
                   href={`/dashboard?category=${cat.slug}`}
                   prefetch={true}
-                  className="text-xs font-semibold text-[#5A6B82] hover:text-[#0B1B30] whitespace-nowrap transition-colors duration-150"
+                  className="text-xs font-semibold text-[#5A6B82] hover:text-[#0B1B30] whitespace-nowrap transition-colors duration-150 shrink-0"
                 >
                   {cat.label}
                 </Link>

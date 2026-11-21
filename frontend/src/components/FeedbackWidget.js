@@ -197,16 +197,16 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
               className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 my-auto relative"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#FAF5EB]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#0B1B30] text-[#FF9F43] flex items-center justify-center font-bold shadow-xs">
-                    <MessageSquare size={18} />
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 bg-[#FAF5EB]">
+                <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#0B1B30] text-[#FF9F43] flex items-center justify-center font-bold shadow-xs shrink-0">
+                    <MessageSquare size={16} />
                   </div>
-                  <div>
-                    <h2 className="font-headline font-extrabold text-base text-[#0B1B30] leading-tight">
+                  <div className="min-w-0">
+                    <h2 className="font-headline font-extrabold text-sm sm:text-base text-[#0B1B30] leading-tight truncate">
                       Share Feedback &amp; Suggestions
                     </h2>
-                    <p className="text-[11px] text-[#5A6B82] leading-tight mt-0.5">
+                    <p className="text-[10px] sm:text-[11px] text-[#5A6B82] leading-tight mt-0.5 truncate">
                       Direct to AgriMart Kisan Management Console
                     </p>
                   </div>
@@ -215,7 +215,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                   type="button"
                   whileTap={buttonTap}
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
                   aria-label="Close"
                 >
                   <X size={18} />
@@ -223,7 +223,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
               </div>
 
               {/* Body */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {!isLoggedIn ? (
                   /* User Not Logged In - Prompt to Log In */
                   <div className="text-center py-4 space-y-4">

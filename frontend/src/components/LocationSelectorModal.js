@@ -71,7 +71,7 @@ export default function LocationSelectorModal() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto no-scrollbar"
+          className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto no-scrollbar"
           onClick={() => setLocationModalOpen(false)}
         >
           <motion.div
@@ -80,7 +80,7 @@ export default function LocationSelectorModal() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto no-scrollbar my-auto relative z-10"
+            className="bg-white rounded-3xl max-w-lg w-full p-4 sm:p-7 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto no-scrollbar my-auto relative z-10"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -109,17 +109,17 @@ export default function LocationSelectorModal() {
 
             {/* Current Active Location Card */}
             <div className="my-4 p-3.5 rounded-2xl bg-[#F7F9FC] border border-slate-200 flex items-center justify-between gap-3 transition-colors duration-150">
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 min-w-0">
                 <span
-                  className={`material-symbols-outlined text-[22px] ${
+                  className={`material-symbols-outlined text-[22px] shrink-0 ${
                     location.isServiceable ? 'text-emerald-600' : 'text-rose-600'
                   }`}
                 >
                   {location.isServiceable ? 'check_circle' : 'error'}
                 </span>
-                <div className="flex flex-col">
+                <div className="flex flex-col min-w-0">
                   <span className="text-[11px] font-bold text-[#5A6B82]">Current Selected Area</span>
-                  <span className="text-xs font-extrabold text-[#142B4A] truncate max-w-[260px]">
+                  <span className="text-xs font-extrabold text-[#142B4A] truncate max-w-[160px] sm:max-w-[260px]">
                     {location.name || location.area}
                   </span>
                 </div>

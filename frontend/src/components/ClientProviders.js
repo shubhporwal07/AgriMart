@@ -66,7 +66,7 @@ function NoticeRenderer() {
   const { cartNotice, clearCartNotice, wishlistNotice, clearWishlistNotice } = useProducts();
 
   return (
-    <div className="pointer-events-none fixed bottom-6 right-6 z-[75] flex flex-col items-end gap-2.5 w-[calc(100%-2rem)] max-w-sm">
+    <div className="pointer-events-none fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[75] flex flex-col items-end gap-2.5 max-w-[calc(100vw-2rem)]">
       <AnimatePresence mode="popLayout">
         {wishlistNotice && (
           <WishlistToast

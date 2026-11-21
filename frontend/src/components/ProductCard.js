@@ -111,7 +111,7 @@ export default function ProductCard({
         layout: { duration: 0.22, ease: EASE.out },
       }}
       onClick={handleCardClick}
-      className={`group bg-white rounded-2xl p-3.5 shadow-sm hover:shadow-lg transition-shadow duration-200 ease-out flex flex-col justify-between relative border border-[#CBD5E1]/50 hover:border-[#CBD5E1] cursor-pointer ${
+      className={`group bg-white rounded-2xl p-3.5 shadow-sm hover:shadow-lg transition-shadow duration-200 ease-out flex flex-col justify-between relative border border-[#CBD5E1]/50 hover:border-[#CBD5E1] cursor-pointer min-w-0 w-full overflow-hidden ${
         isSoldOut ? 'opacity-65' : ''
       }`}
     >
@@ -229,9 +229,9 @@ export default function ProductCard({
             <span className="text-[#74777E] text-[11px]">({product.reviewCount})</span>
           )}
         </div>
-        <span className="text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-2 py-0.5 rounded-md truncate max-w-[130px] flex items-center gap-1">
-          <span>{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
-          <span>{product.packSize || product.unit || product.weight || '1 unit'}</span>
+        <span className="text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-2 py-0.5 rounded-md max-w-[130px] flex items-center gap-1 shrink-0 overflow-hidden">
+          <span className="shrink-0">{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
+          <span className="truncate">{product.packSize || product.unit || product.weight || '1 unit'}</span>
         </span>
       </div>
 

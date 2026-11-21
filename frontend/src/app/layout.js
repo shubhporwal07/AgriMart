@@ -2,6 +2,12 @@ import './globals.css';
 import ClientProviders from '../components/ClientProviders';
 import Script from 'next/script';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata = {
   title: 'AgriMart - High-Yield Seeds, Certified Fertilizers & Farm Inputs',
   description: 'Government-certified hybrid seeds, pure organic vermicompost, NPK fertilizers, bio-fungicides, and foliar crop stimulants delivered direct to your farm.',
@@ -13,7 +19,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-x-hidden">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -26,7 +32,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#FAF5EB] text-[#263449] antialiased">
+      <body className="min-h-screen bg-[#FAF5EB] text-[#263449] antialiased overflow-x-hidden w-full max-w-full">
         <ClientProviders>
           {children}
         </ClientProviders>

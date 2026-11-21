@@ -15,11 +15,18 @@
     scroll-behavior: smooth;
     margin: 0;
     padding: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
     @apply antialiased bg-[#FAF5EB] text-[#263449];
     font-family: 'Inter', sans-serif;
   }
