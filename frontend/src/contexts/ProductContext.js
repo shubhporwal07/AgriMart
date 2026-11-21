@@ -5,9 +5,9 @@ import { realtimeDb } from '../config/firebase';
 import { DEFAULT_GROCERY_PRODUCTS } from '../data/defaultProducts';
 
 const ProductContext = createContext(null);
-const PRODUCTS_CACHE_KEY = 'agrimart_seeds_products_v6';
+const PRODUCTS_CACHE_KEY = 'agrimart_seeds_products_v7';
 const CART_STORAGE_KEY = 'agrimart_cart_v2';
-const LOCAL_PRODUCTS_KEY = 'agrimart_seeds_local_v6';
+const LOCAL_PRODUCTS_KEY = 'agrimart_seeds_local_v7';
 const WISHLIST_STORAGE_KEY = 'agrimart_wishlist_v1';
 const DB_TIMEOUT_MS = 25000;
 
@@ -54,9 +54,29 @@ const normalizeProductData = (id, data = {}) => {
   const mrp = typeof data.mrp === 'number' ? data.mrp : parseFloat(data.mrp || price || 0);
   const discount = data.discount || (mrp > price ? `${Math.round(((mrp - price) / mrp) * 100)}% OFF` : '');
 
-  const imageDatas = Array.isArray(data.imageDatas) && data.imageDatas.length > 0
-    ? data.imageDatas
-    : (data.imageData ? [data.imageData] : (data.imageUrl ? [data.imageUrl] : []));
+  // Collect all image sources, filter out invalid/broken links, and deduplicate strictly
+  const rawImages = [
+    ...(Array.isArray(data.imageDatas) ? data.imageDatas : []),
+    data.imageUrl,
+    data.imageData,
+  ].filter(
+    (img) => img && typeof img === 'string' && !img.includes('lh3.googleusercontent.com') && img.trim() !== ''
+  );
+
+  const productNameLower = (data.name || '').toLowerCase();
+  const productIdLower = (id || data.id || '').toLowerCase();
+  const isChilli = productIdLower.includes('chilli') || productNameLower.includes('chilli');
+  const isWheat = productIdLower.includes('wheat') || productNameLower.includes('wheat');
+
+  const filteredImages = rawImages.filter((img) => {
+    if (img.includes('1588252303782-cb80119abd6d') && !isChilli) return false;
+    if (img.includes('1574323347407-f5e1ad6d020b') && !isWheat) return false;
+    return true;
+  });
+
+  const uniqueImageDatas = Array.from(new Set(filteredImages.length > 0 ? filteredImages : rawImages));
+  const primaryImage = uniqueImageDatas[0] || data.imageUrl || '/images/products/hybrid-tomato-seeds.png';
+  const finalImageDatas = uniqueImageDatas.length > 0 ? uniqueImageDatas : [primaryImage];
 
   return {
     id: id || data.id || `agri-${Date.now()}`,
@@ -90,8 +110,8 @@ const normalizeProductData = (id, data = {}) => {
       'Physical Purity': '98% Min',
       'Specification': 'FCO / Seed Act Compliant',
     },
-    imageUrl: imageDatas[0] || data.imageUrl || '/images/products/hybrid-tomato-seeds.png',
-    imageDatas,
+    imageUrl: primaryImage,
+    imageDatas: finalImageDatas,
     createdAt: data.createdAt || new Date().toISOString(),
     updatedAt: data.updatedAt || new Date().toISOString(),
   };

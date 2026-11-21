@@ -89,15 +89,31 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
   const qty = getItemQuantity(product.id);
   const isSoldOut = product.inStock === false;
 
-  const validImages = [
+  // Strictly collect, filter, and deduplicate images to eliminate any duplicate copies
+  const rawImages = [
     product.imageUrl,
     ...(Array.isArray(product.imageDatas) ? product.imageDatas : []),
     product.imageData,
-  ].filter((img) => img && typeof img === 'string' && !img.includes('lh3.googleusercontent.com'));
+  ].filter(
+    (img) => img && typeof img === 'string' && !img.includes('lh3.googleusercontent.com') && img.trim() !== ''
+  );
 
-  const allImages = validImages.length > 0 ? validImages : ['/images/products/hybrid-tomato-seeds.png'];
+  const productNameLower = (product.name || '').toLowerCase();
+  const productIdLower = (product.id || '').toLowerCase();
+  const isChilli = productIdLower.includes('chilli') || productNameLower.includes('chilli');
+  const isWheat = productIdLower.includes('wheat') || productNameLower.includes('wheat');
 
-  const currentImage = allImages[currentImageIndex] || allImages[0];
+  const filteredImages = rawImages.filter((img) => {
+    if (img.includes('1588252303782-cb80119abd6d') && !isChilli) return false;
+    if (img.includes('1574323347407-f5e1ad6d020b') && !isWheat) return false;
+    return true;
+  });
+
+  const uniqueImages = Array.from(new Set(filteredImages.length > 0 ? filteredImages : rawImages));
+  const allImages = uniqueImages.length > 0 ? uniqueImages : ['/images/products/hybrid-tomato-seeds.png'];
+
+  const safeImageIndex = Math.min(Math.max(0, currentImageIndex), allImages.length - 1);
+  const currentImage = allImages[safeImageIndex] || allImages[0];
 
   const discountVal =
     product.mrp && product.mrp > product.price ? product.mrp - product.price : 0;

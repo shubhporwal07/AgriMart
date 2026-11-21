@@ -45,7 +45,6 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/hybrid-tomato-seeds.png',
     imageDatas: [
       '/images/products/hybrid-tomato-seeds.png',
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -129,7 +128,6 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/vermicompost-25kg.png',
     imageDatas: [
       '/images/products/vermicompost-25kg.png',
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -173,7 +171,6 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/npk-19-19-19-foliar.png',
     imageDatas: [
       '/images/products/npk-19-19-19-foliar.png',
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -214,7 +211,6 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/neem-oil-500ml.png',
     imageDatas: [
       '/images/products/neem-oil-500ml.png',
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -256,7 +252,6 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/dap-fertilizer-5kg.png',
     imageDatas: [
       '/images/products/dap-fertilizer-5kg.png',
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -298,7 +293,6 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/hybrid-cotton-seeds.png',
     imageDatas: [
       '/images/products/hybrid-cotton-seeds.png',
-      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -383,7 +377,6 @@ export const DEFAULT_AGRI_PRODUCTS = [
     imageUrl: '/images/products/bio-enzyme-1l.png',
     imageDatas: [
       '/images/products/bio-enzyme-1l.png',
-      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -663,7 +656,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     },
     imageUrl: 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
@@ -702,7 +695,7 @@ export const DEFAULT_AGRI_PRODUCTS = [
     },
     imageUrl: 'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80',
     imageDatas: [
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=600&q=80',
     ],
   },
   {
