@@ -263,12 +263,6 @@ export default function LoginPage({ onAdminLogin }) {
               <Link href="/dashboard?category=npk-water-soluble" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">NPK Nutrients</Link>
               <Link href="/about-us" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">Why AgriMart</Link>
             </div>
-            <Link
-              href="/dashboard"
-              className="text-xs font-bold text-[#0B1B30] hover:text-[#FF9F43] flex items-center gap-1"
-            >
-              Browse Inputs <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
           </div>
         </nav>
       </header>
