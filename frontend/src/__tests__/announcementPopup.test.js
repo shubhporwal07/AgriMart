@@ -3,10 +3,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AnnouncementPopup from '../components/AnnouncementPopup';
 
 // Mock AuthContext
+let mockAuthUser = { uid: 'customer-test-123', email: 'farmer@agrimart.farm' };
+
 vi.mock('../contexts/AuthContext', () => ({
   useAuth: () => ({
-    user: { uid: 'customer-test-123', email: 'farmer@agrimart.farm' },
-    isAuthenticated: true,
+    user: mockAuthUser,
+    isAuthenticated: Boolean(mockAuthUser),
   }),
 }));
 
@@ -53,11 +55,13 @@ vi.mock('firebase/database', () => ({
 describe('AnnouncementPopup Component', () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
+    mockAuthUser = { uid: 'customer-test-123', email: 'farmer@agrimart.farm' };
     rtdbData['announcements/current'] = { ...mockAnnouncement };
     rtdbData['announcements/seen/user_customer-test-123'] = null;
   });
 
-  it('renders announcement popup with message when published and unseen', async () => {
+  it('renders announcement popup with message when published and unseen for logged-in user', async () => {
     render(<AnnouncementPopup />);
 
     await waitFor(() => {
@@ -79,5 +83,37 @@ describe('AnnouncementPopup Component', () => {
     await waitFor(() => {
       expect(screen.queryByText('Subsidized DAP available at Phagwara Hub')).toBeNull();
     });
+  });
+
+  it('does NOT render announcement when user is logged out (user is null)', async () => {
+    mockAuthUser = null;
+    render(<AnnouncementPopup />);
+
+    // Give component time to potentially mount
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(screen.queryByText('Official Announcement')).toBeNull();
+    expect(screen.queryByText('Subsidized DAP available at Phagwara Hub')).toBeNull();
+  });
+
+  it('does NOT render announcement when already seen in localStorage for once type', async () => {
+    localStorage.setItem(
+      `agrimart_seen_announcement_user_customer-test-123_${mockAnnouncement.createdAt}`,
+      'true'
+    );
+    render(<AnnouncementPopup />);
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(screen.queryByText('Official Announcement')).toBeNull();
+  });
+
+  it('does NOT render announcement when dismissed in current browser session', async () => {
+    sessionStorage.setItem(
+      `agrimart_session_seen_announcement_user_customer-test-123_${mockAnnouncement.createdAt}`,
+      'true'
+    );
+    render(<AnnouncementPopup />);
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(screen.queryByText('Official Announcement')).toBeNull();
   });
 });

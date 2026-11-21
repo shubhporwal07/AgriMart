@@ -146,6 +146,9 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('agrimart_user_name');
       localStorage.removeItem('agrimart_customer_session_v1');
       localStorage.removeItem('userEmail');
+      if (typeof window !== 'undefined') {
+        sessionStorage.clear();
+      }
       setUser(null);
       setUserRole(null);
       window.dispatchEvent(new Event('storage'));

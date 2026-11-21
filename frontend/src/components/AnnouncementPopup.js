@@ -18,18 +18,27 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
   const [sessionDismissed, setSessionDismissed] = useState(false);
 
   // Sanitize user ID to ensure valid Firebase RTDB path (no '.', '#', '$', '[', ']')
+  // Only authenticated users (or explicit userId prop) are eligible for announcements
   const safeUserId = useMemo(() => {
     const rawId = propUserId || user?.uid || user?.email;
-    if (!rawId) return 'guest_visitor';
+    if (!rawId) return null;
     return 'user_' + String(rawId).replace(/[^a-zA-Z0-9_-]/g, '_');
   }, [propUserId, user]);
 
   useEffect(() => {
-    // Reset session dismissal when user changes
+    // Reset session dismissal when user logs in
     setSessionDismissed(false);
   }, [safeUserId]);
 
   useEffect(() => {
+    // Announcements must ONLY be shown to authenticated users right after login, never to guests or on logout
+    if (!safeUserId) {
+      setAnnouncement(null);
+      setLoading(false);
+      setSessionDismissed(false);
+      return;
+    }
+
     // Do not show on admin console pages or login page
     if (pathname?.startsWith('/admin') || pathname === '/login') {
       setLoading(false);
@@ -41,6 +50,12 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
       const unsubscribe = onValue(
         currentRef,
         async (snapshot) => {
+          if (!safeUserId) {
+            setAnnouncement(null);
+            setLoading(false);
+            return;
+          }
+
           if (!snapshot.exists()) {
             setAnnouncement(null);
             setLoading(false);
@@ -56,6 +71,17 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
 
           const announcementKey = data.createdAt || 'latest';
 
+          // Check if dismissed in this browser session (applies to both once & everytime)
+          const sessionSeen =
+            typeof window !== 'undefined' &&
+            sessionStorage.getItem(`agrimart_session_seen_announcement_${safeUserId}_${announcementKey}`);
+
+          if (sessionSeen) {
+            setAnnouncement(null);
+            setLoading(false);
+            return;
+          }
+
           // Check if already dismissed in localStorage for this user
           const localSeen =
             typeof window !== 'undefined' &&
@@ -69,26 +95,24 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
             }
 
             // Check RTDB seen registry for logged-in user
-            if (user && safeUserId !== 'guest_visitor') {
-              try {
-                const seenSnap = await get(
-                  rtdbRef(realtimeDb, `announcements/seen/${safeUserId}`)
-                );
-                if (seenSnap.exists() && seenSnap.val() === data.createdAt) {
-                  setHasSeenThis(true);
-                  setLoading(false);
-                  return;
-                }
-              } catch (e) {
-                console.warn('Error reading announcement seen state from RTDB:', e);
+            try {
+              const seenSnap = await get(
+                rtdbRef(realtimeDb, `announcements/seen/${safeUserId}`)
+              );
+              if (seenSnap.exists() && seenSnap.val() === data.createdAt) {
+                setHasSeenThis(true);
+                setLoading(false);
+                return;
               }
+            } catch (e) {
+              console.warn('Error reading announcement seen state from RTDB:', e);
             }
 
             setHasSeenThis(false);
             setAnnouncement(data);
             setLoading(false);
           } else {
-            // 'everytime' type: show unless dismissed in this active session
+            // 'everytime' type: show just after login (unless already dismissed in this active session)
             setHasSeenThis(false);
             setAnnouncement(data);
             setLoading(false);
@@ -105,23 +129,30 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
       console.error('Error checking announcement:', err);
       setLoading(false);
     }
-  }, [safeUserId, pathname, user]);
+  }, [safeUserId, pathname]);
 
   const handleDismiss = async () => {
-    if (!announcement) return;
+    if (!announcement || !safeUserId) return;
     setSessionDismissed(true);
 
     const announcementKey = announcement.createdAt || 'latest';
 
     try {
       if (typeof window !== 'undefined') {
-        localStorage.setItem(
-          `agrimart_seen_announcement_${safeUserId}_${announcementKey}`,
+        sessionStorage.setItem(
+          `agrimart_session_seen_announcement_${safeUserId}_${announcementKey}`,
           'true'
         );
+
+        if (announcement.type === 'once') {
+          localStorage.setItem(
+            `agrimart_seen_announcement_${safeUserId}_${announcementKey}`,
+            'true'
+          );
+        }
       }
 
-      if (user && safeUserId !== 'guest_visitor' && announcement.type === 'once') {
+      if (announcement.type === 'once') {
         await set(
           rtdbRef(realtimeDb, `announcements/seen/${safeUserId}`),
           announcementKey
@@ -136,6 +167,7 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
   };
 
   const isVisible =
+    Boolean(safeUserId) &&
     !loading &&
     Boolean(announcement && announcement.message) &&
     !hasSeenThis &&
@@ -162,7 +194,7 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
     };
   }, [isVisible]);
 
-  if (!isVisible || !announcement) {
+  if (!safeUserId || !isVisible || !announcement) {
     return null;
   }
 

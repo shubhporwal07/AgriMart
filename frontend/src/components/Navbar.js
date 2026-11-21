@@ -335,6 +335,7 @@ export default function Navbar() {
               {user ? (
                 <button
                   type="button"
+                  aria-label="User Account Menu"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center gap-1.5 sm:gap-2 cursor-pointer p-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-colors duration-150 active:scale-[0.97]"
                   aria-expanded={userDropdownOpen}
