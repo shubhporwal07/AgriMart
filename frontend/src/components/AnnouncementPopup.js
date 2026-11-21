@@ -1,133 +1,270 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell } from 'lucide-react';
-import { ref as rtdbRef, get, set } from 'firebase/database';
+import { Bell, X, Check, Megaphone, Calendar } from 'lucide-react';
+import { ref as rtdbRef, onValue, set, get } from 'firebase/database';
 import { realtimeDb } from '../config/firebase';
-import { backdropVariants, modalVariants, buttonTap } from '../utils/motion';
+import { useAuth } from '../contexts/AuthContext';
+import { backdropVariants, modalVariants, buttonTap, iconTap } from '../utils/motion';
 
-export default function AnnouncementPopup({ userId, onDismiss }) {
+export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
+  const pathname = usePathname();
+  const { user } = useAuth();
+
   const [announcement, setAnnouncement] = useState(null);
   const [hasSeenThis, setHasSeenThis] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sessionDismissed, setSessionDismissed] = useState(false);
+
+  // Sanitize user ID to ensure valid Firebase RTDB path (no '.', '#', '$', '[', ']')
+  const safeUserId = useMemo(() => {
+    const rawId = propUserId || user?.uid || user?.email;
+    if (!rawId) return 'guest_visitor';
+    return 'user_' + String(rawId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  }, [propUserId, user]);
 
   useEffect(() => {
-    if (!userId) {
+    // Reset session dismissal when user changes
+    setSessionDismissed(false);
+  }, [safeUserId]);
+
+  useEffect(() => {
+    // Do not show on admin console pages or login page
+    if (pathname?.startsWith('/admin') || pathname === '/login') {
       setLoading(false);
       return;
     }
 
-    checkAndShowAnnouncement();
-  }, [userId]);
-
-  const checkAndShowAnnouncement = async () => {
     try {
-      const announcementSnapshot = await get(rtdbRef(realtimeDb, 'announcements/current'));
+      const currentRef = rtdbRef(realtimeDb, 'announcements/current');
+      const unsubscribe = onValue(
+        currentRef,
+        async (snapshot) => {
+          if (!snapshot.exists()) {
+            setAnnouncement(null);
+            setLoading(false);
+            return;
+          }
 
-      if (!announcementSnapshot.exists()) {
-        setLoading(false);
-        return;
-      }
+          const data = snapshot.val();
+          if (!data || !data.message) {
+            setAnnouncement(null);
+            setLoading(false);
+            return;
+          }
 
-      const currentAnnouncement = announcementSnapshot.val();
+          const announcementKey = data.createdAt || 'latest';
 
-      if (currentAnnouncement.type === 'everytime') {
-        setAnnouncement(currentAnnouncement);
-        setLoading(false);
-        return;
-      }
+          // Check if already dismissed in localStorage for this user
+          const localSeen =
+            typeof window !== 'undefined' &&
+            localStorage.getItem(`agrimart_seen_announcement_${safeUserId}_${announcementKey}`);
 
-      if (currentAnnouncement.type === 'once') {
-        const seenSnapshot = await get(
-          rtdbRef(realtimeDb, `announcements/seen/${userId}`)
-        );
+          if (data.type === 'once') {
+            if (localSeen) {
+              setHasSeenThis(true);
+              setLoading(false);
+              return;
+            }
 
-        if (seenSnapshot.exists() && seenSnapshot.val() === currentAnnouncement.createdAt) {
-          setHasSeenThis(true);
+            // Check RTDB seen registry for logged-in user
+            if (user && safeUserId !== 'guest_visitor') {
+              try {
+                const seenSnap = await get(
+                  rtdbRef(realtimeDb, `announcements/seen/${safeUserId}`)
+                );
+                if (seenSnap.exists() && seenSnap.val() === data.createdAt) {
+                  setHasSeenThis(true);
+                  setLoading(false);
+                  return;
+                }
+              } catch (e) {
+                console.warn('Error reading announcement seen state from RTDB:', e);
+              }
+            }
+
+            setHasSeenThis(false);
+            setAnnouncement(data);
+            setLoading(false);
+          } else {
+            // 'everytime' type: show unless dismissed in this active session
+            setHasSeenThis(false);
+            setAnnouncement(data);
+            setLoading(false);
+          }
+        },
+        (error) => {
+          console.error('Error subscribing to current announcement:', error);
           setLoading(false);
-          return;
         }
+      );
 
-        setAnnouncement(currentAnnouncement);
-        setLoading(false);
-        return;
-      }
-
-      setLoading(false);
+      return () => unsubscribe();
     } catch (err) {
       console.error('Error checking announcement:', err);
       setLoading(false);
     }
-  };
+  }, [safeUserId, pathname, user]);
 
   const handleDismiss = async () => {
-    if (!userId || !announcement) return;
+    if (!announcement) return;
+    setSessionDismissed(true);
+
+    const announcementKey = announcement.createdAt || 'latest';
 
     try {
-      if (announcement.type === 'once') {
-        await set(
-          rtdbRef(realtimeDb, `announcements/seen/${userId}`),
-          announcement.createdAt
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          `agrimart_seen_announcement_${safeUserId}_${announcementKey}`,
+          'true'
         );
       }
 
-      setAnnouncement(null);
-      onDismiss?.();
+      if (user && safeUserId !== 'guest_visitor' && announcement.type === 'once') {
+        await set(
+          rtdbRef(realtimeDb, `announcements/seen/${safeUserId}`),
+          announcementKey
+        );
+      }
     } catch (err) {
       console.error('Error marking announcement as seen:', err);
     }
+
+    setAnnouncement(null);
+    onDismiss?.();
   };
 
-  const isVisible = !loading && !!announcement && !hasSeenThis;
+  const isVisible =
+    !loading &&
+    Boolean(announcement && announcement.message) &&
+    !hasSeenThis &&
+    !sessionDismissed &&
+    !pathname?.startsWith('/admin') &&
+    pathname !== '/login';
+
+  useEffect(() => {
+    if (isVisible) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') handleDismiss();
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isVisible]);
+
+  if (!isVisible || !announcement) {
+    return null;
+  }
+
+  const formattedDate = announcement.createdAt
+    ? new Date(announcement.createdAt).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          key="announcement-backdrop"
           variants={backdropVariants}
           initial="initial"
           animate="animate"
           exit="exit"
-          className="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 overflow-y-auto no-scrollbar"
           onClick={handleDismiss}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="announcement-title"
         >
           <motion.div
+            key="announcement-dialog"
             variants={modalVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            className="relative bg-gradient-to-b from-white to-stone-100 rounded-3xl shadow-2xl max-w-sm w-full px-8 py-14 text-center border border-amber-500/20"
             onClick={(e) => e.stopPropagation()}
+            className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-amber-200/60 my-auto"
           >
-            {/* Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center border border-amber-400/40">
-                <Bell className="w-7 h-7 text-amber-500" />
+            {/* Top Decorative Header Accent */}
+            <div className="bg-gradient-to-r from-[#0B1B30] via-[#142B4A] to-[#0B1B30] text-white px-5 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-2xl bg-[#FF9F43] text-[#0B1B30] flex items-center justify-center font-extrabold shadow-sm shrink-0">
+                  <Megaphone className="w-5 h-5 text-[#0B1B30]" />
+                </div>
+                <div className="min-w-0">
+                  <div className="inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-full text-[10px] font-bold text-[#FF9F43] uppercase tracking-wider mb-0.5">
+                    <span>🌾</span> AgriMart Kisan Hub Notice
+                  </div>
+                  <h2 id="announcement-title" className="font-headline font-extrabold text-base text-white leading-tight truncate">
+                    Official Announcement
+                  </h2>
+                </div>
               </div>
+
+              <motion.button
+                type="button"
+                whileTap={iconTap}
+                onClick={handleDismiss}
+                className="p-1.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                aria-label="Close Announcement"
+              >
+                <X className="w-5 h-5" />
+              </motion.button>
             </div>
 
-            {/* Title */}
-            <h2 className="text-3xl font-bold text-slate-900 mb-4 font-serif">
-              Notification
-            </h2>
+            {/* Announcement Content Body */}
+            <div className="p-5 sm:p-6 space-y-4">
+              <div className="bg-gradient-to-br from-[#FFF9F0] via-[#FFF5E6] to-[#FFEDD5]/60 border border-amber-200/80 rounded-2xl p-4 sm:p-5 relative">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-amber-100 text-[#E27B12] flex items-center justify-center shrink-0 mt-0.5">
+                    <Bell className="w-4 h-4 text-[#A74E00]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 leading-relaxed whitespace-pre-line break-words">
+                      {announcement.message}
+                    </p>
+                  </div>
+                </div>
 
-            {/* Message */}
-            <p className="text-slate-600 text-base leading-relaxed mb-8 font-sans">
-              {announcement.message}
-            </p>
+                {formattedDate && (
+                  <div className="mt-3 pt-2.5 border-t border-amber-200/50 flex items-center justify-between text-[11px] text-[#5A6B82]">
+                    <span className="flex items-center gap-1 font-medium">
+                      <Calendar className="w-3.5 h-3.5 text-amber-600" />
+                      <span>{formattedDate}</span>
+                    </span>
+                    <span className="font-bold text-[#142B4A] bg-white/80 px-2 py-0.5 rounded-md border border-amber-200/40">
+                      {announcement.type === 'once' ? 'Important Notice' : 'Seasonal Advisory'}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-            {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-amber-400/40 to-transparent mb-6" />
-
-            {/* Button */}
-            <motion.button
-              type="button"
-              whileTap={buttonTap}
-              onClick={handleDismiss}
-              className="text-amber-500 font-semibold text-lg hover:text-amber-600 transition-colors duration-150 tracking-wide"
-            >
-              OK
-            </motion.button>
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <motion.button
+                  type="button"
+                  whileTap={buttonTap}
+                  onClick={handleDismiss}
+                  className="w-full sm:w-auto px-6 py-2.5 bg-[#0B1B30] hover:bg-[#152B48] text-white rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2"
+                >
+                  <Check className="w-4 h-4 text-[#FF9F43]" />
+                  <span>Acknowledge &amp; Dismiss</span>
+                </motion.button>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       )}

@@ -102,7 +102,7 @@ export default function AnnouncementManager() {
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Enter your announcement message here... (e.g., 'New collection launched! Check out our latest designs.')"
+                placeholder="Enter your announcement message here... (e.g., 'Subsidized DAP and Kharif seed batches have arrived at the Phagwara hub! Order early to avoid mandi stockouts.')"
                 rows="5"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 text-sm"
               />
