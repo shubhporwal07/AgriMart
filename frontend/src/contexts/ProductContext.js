@@ -54,12 +54,12 @@ const normalizeProductData = (id, data = {}) => {
   const mrp = typeof data.mrp === 'number' ? data.mrp : parseFloat(data.mrp || price || 0);
   const discount = data.discount || (mrp > price ? `${Math.round(((mrp - price) / mrp) * 100)}% OFF` : '');
 
-  // Collect all image sources, filter out invalid/broken links, and deduplicate strictly
-  const rawImages = [
-    ...(Array.isArray(data.imageDatas) ? data.imageDatas : []),
-    data.imageUrl,
-    data.imageData,
-  ].filter(
+  // Collect all image sources, filter out invalid/broken links, and deduplicate strictly without duplicating the first image
+  const rawImages = (
+    Array.isArray(data.imageDatas) && data.imageDatas.length > 0
+      ? data.imageDatas
+      : [data.imageUrl || data.imageData]
+  ).filter(
     (img) => img && typeof img === 'string' && !img.includes('lh3.googleusercontent.com') && img.trim() !== ''
   );
 
@@ -75,6 +75,9 @@ const normalizeProductData = (id, data = {}) => {
   });
 
   const uniqueImageDatas = Array.from(new Set(filteredImages.length > 0 ? filteredImages : rawImages));
+  if (uniqueImageDatas.length >= 2 && uniqueImageDatas[0] === uniqueImageDatas[1]) {
+    uniqueImageDatas.splice(1, 1);
+  }
   const primaryImage = uniqueImageDatas[0] || data.imageUrl || '/images/products/hybrid-tomato-seeds.png';
   const finalImageDatas = uniqueImageDatas.length > 0 ? uniqueImageDatas : [primaryImage];
 
@@ -672,13 +675,19 @@ export function ProductProvider({ children }) {
         const val = snapshot.val();
         if (val && Object.keys(val).length > 0) {
           const list = Object.entries(val).map(([id, data]) => normalizeProductData(id, data));
-          writeProductsCache(list);
-          setProducts(list);
+          const localItems = loadLocalProducts();
+          const localCustom = localItems.filter((lp) => !list.some((dp) => dp.id === lp.id));
+          const combined = [...localCustom, ...list];
+          writeProductsCache(combined);
+          setProducts(combined);
         } else {
-          // If RTDB is empty, seed default items so user sees a rich store
+          // If RTDB is empty, seed default items combined with any locally created products
+          const localItems = loadLocalProducts();
           const defaults = DEFAULT_GROCERY_PRODUCTS.map((p) => normalizeProductData(p.id, p));
-          writeProductsCache(defaults);
-          setProducts(defaults);
+          const localCustom = localItems.filter((lp) => !defaults.some((dp) => dp.id === lp.id));
+          const combined = [...localCustom, ...defaults];
+          writeProductsCache(combined);
+          setProducts(combined);
         }
         setLoading(false);
       },
@@ -838,9 +847,15 @@ export function ProductProvider({ children }) {
             imageDatas.push(await fileToDataUrl(file));
           }
         }
+      } else if (Array.isArray(productData.imageDatas) && productData.imageDatas.length > 0) {
+        imageDatas = [...productData.imageDatas];
+      } else if (productData.imageUrl || productData.imageData) {
+        imageDatas = [productData.imageUrl || productData.imageData];
       }
-      if (productData.imageUrl && !imageDatas.includes(productData.imageUrl)) {
-        imageDatas.unshift(productData.imageUrl);
+
+      imageDatas = Array.from(new Set(imageDatas.filter(Boolean)));
+      if (imageDatas.length >= 2 && imageDatas[0] === imageDatas[1]) {
+        imageDatas.splice(1, 1);
       }
 
       const normalized = normalizeProductData(productId, {
@@ -870,9 +885,15 @@ export function ProductProvider({ children }) {
             imageDatas.push(await fileToDataUrl(file));
           }
         }
+      } else if (Array.isArray(productData.imageDatas) && productData.imageDatas.length > 0) {
+        imageDatas = [...productData.imageDatas];
+      } else if (productData.imageUrl || productData.imageData) {
+        imageDatas = [productData.imageUrl || productData.imageData];
       }
-      if (productData.imageUrl && !imageDatas.includes(productData.imageUrl)) {
-        imageDatas.unshift(productData.imageUrl);
+
+      imageDatas = Array.from(new Set(imageDatas.filter(Boolean)));
+      if (imageDatas.length >= 2 && imageDatas[0] === imageDatas[1]) {
+        imageDatas.splice(1, 1);
       }
 
       const localProduct = normalizeProductData(localId, {
@@ -895,7 +916,7 @@ export function ProductProvider({ children }) {
     setError(null);
     try {
       const existing = products.find((p) => p.id === productId);
-      let imageDatas = existing?.imageDatas || [];
+      let imageDatas = [];
 
       if (Array.isArray(imageFiles) && imageFiles.length > 0) {
         for (const file of imageFiles) {
@@ -906,9 +927,17 @@ export function ProductProvider({ children }) {
             imageDatas.push(await fileToDataUrl(file));
           }
         }
+      } else if (Array.isArray(productData.imageDatas) && productData.imageDatas.length > 0) {
+        imageDatas = [...productData.imageDatas];
+      } else if (existing?.imageDatas && existing.imageDatas.length > 0) {
+        imageDatas = [...existing.imageDatas];
+      } else if (productData.imageUrl || existing?.imageUrl) {
+        imageDatas = [productData.imageUrl || existing.imageUrl];
       }
-      if (productData.imageUrl && !imageDatas.includes(productData.imageUrl)) {
-        imageDatas.unshift(productData.imageUrl);
+
+      imageDatas = Array.from(new Set(imageDatas.filter(Boolean)));
+      if (imageDatas.length >= 2 && imageDatas[0] === imageDatas[1]) {
+        imageDatas.splice(1, 1);
       }
 
       const updated = normalizeProductData(productId, {

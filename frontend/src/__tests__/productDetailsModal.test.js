@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 
 // Mock contexts
@@ -94,5 +94,97 @@ describe('ProductDetailsModal Image Deduplication & Gallery', () => {
     // Exactly 3 unique thumbnail buttons (no duplicate of knapsack-1)
     const thumbnailButtons = container.querySelectorAll('.w-16.h-16.rounded-xl');
     expect(thumbnailButtons.length).toBe(3);
+  });
+
+  it('renders transparent shift buttons and shifts images on click and keyboard arrows', () => {
+    const productWithMultiple = {
+      id: 'agri-knapsack-sprayer-16l',
+      name: 'Battery Knapsack Sprayer 16L',
+      category: 'Farm Sprayers & Agri Tools',
+      price: 1850,
+      mrp: 2400,
+      imageUrl: '/images/products/knapsack-1.png',
+      imageDatas: [
+        '/images/products/knapsack-1.png',
+        '/images/products/knapsack-2-nozzle.png',
+        '/images/products/knapsack-3-battery.png',
+      ],
+      highlights: ['16L capacity'],
+    };
+
+    const { container } = render(
+      <ProductDetailsModal
+        product={productWithMultiple}
+        isOpen={true}
+        onClose={vi.fn()}
+      />
+    );
+
+    const prevBtn = screen.getByLabelText('Previous image');
+    const nextBtn = screen.getByLabelText('Next image');
+    expect(prevBtn).toBeInTheDocument();
+    expect(nextBtn).toBeInTheDocument();
+
+    // Check counter pill
+    expect(screen.getByText('1 / 3')).toBeInTheDocument();
+
+    // Click next
+    act(() => {
+      fireEvent.click(nextBtn);
+    });
+    expect(screen.getByText('2 / 3')).toBeInTheDocument();
+
+    // Click next again
+    act(() => {
+      fireEvent.click(nextBtn);
+    });
+    expect(screen.getByText('3 / 3')).toBeInTheDocument();
+
+    // Click next wraps back to 1
+    act(() => {
+      fireEvent.click(nextBtn);
+    });
+    expect(screen.getByText('1 / 3')).toBeInTheDocument();
+
+    // Click prev wraps to 3
+    act(() => {
+      fireEvent.click(prevBtn);
+    });
+    expect(screen.getByText('3 / 3')).toBeInTheDocument();
+
+    // Arrow keys
+    act(() => {
+      fireEvent.keyDown(window, { key: 'ArrowLeft' });
+    });
+    expect(screen.getByText('2 / 3')).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.keyDown(window, { key: 'ArrowRight' });
+    });
+    expect(screen.getByText('3 / 3')).toBeInTheDocument();
+  });
+
+  it('does not render shift buttons or counter badge when only 1 image exists', () => {
+    const singleImageProduct = {
+      id: 'agri-single-seed',
+      name: 'Single Seed Packet',
+      category: 'Vegetable Seeds',
+      price: 99,
+      mrp: 120,
+      imageUrl: '/images/products/hybrid-tomato-seeds.png',
+      imageDatas: ['/images/products/hybrid-tomato-seeds.png'],
+    };
+
+    render(
+      <ProductDetailsModal
+        product={singleImageProduct}
+        isOpen={true}
+        onClose={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByLabelText('Previous image')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Next image')).not.toBeInTheDocument();
+    expect(screen.queryByText(/1 \/ 1/)).not.toBeInTheDocument();
   });
 });

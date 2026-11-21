@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
@@ -70,36 +70,19 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
     setActiveTab('highlights');
   }, [product?.id]);
 
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose?.();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [onClose]);
-
-  if (!product) return null;
-
-  const isWishlisted = isInWishlist(product.id);
-  const qty = getItemQuantity(product.id);
-  const isSoldOut = product.inStock === false;
-
   // Strictly collect, filter, and deduplicate images to eliminate any duplicate copies
-  const rawImages = [
-    product.imageUrl,
-    ...(Array.isArray(product.imageDatas) ? product.imageDatas : []),
-    product.imageData,
-  ].filter(
+  const rawImages = (
+    Array.isArray(product?.imageDatas) && product.imageDatas.length > 0
+      ? product.imageDatas
+      : (Array.isArray(product?.images) && product.images.length > 0
+          ? product.images
+          : [product?.imageUrl || product?.imageData])
+  ).filter(
     (img) => img && typeof img === 'string' && !img.includes('lh3.googleusercontent.com') && img.trim() !== ''
   );
 
-  const productNameLower = (product.name || '').toLowerCase();
-  const productIdLower = (product.id || '').toLowerCase();
+  const productNameLower = (product?.name || '').toLowerCase();
+  const productIdLower = (product?.id || '').toLowerCase();
   const isChilli = productIdLower.includes('chilli') || productNameLower.includes('chilli');
   const isWheat = productIdLower.includes('wheat') || productNameLower.includes('wheat');
 
@@ -110,10 +93,134 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
   });
 
   const uniqueImages = Array.from(new Set(filteredImages.length > 0 ? filteredImages : rawImages));
-  const allImages = uniqueImages.length > 0 ? uniqueImages : ['/images/products/hybrid-tomato-seeds.png'];
+
+  // Deduplicate consecutive identical data URLs or raw/compressed duplicates
+  if (uniqueImages.length >= 2) {
+    if (uniqueImages[0] === uniqueImages[1]) {
+      uniqueImages.splice(1, 1);
+    } else if (
+      typeof uniqueImages[0] === 'string' &&
+      typeof uniqueImages[1] === 'string' &&
+      uniqueImages[0].startsWith('data:image/') &&
+      uniqueImages[1].startsWith('data:image/')
+    ) {
+      const b0 = uniqueImages[0].split(',')[1] || '';
+      const b1 = uniqueImages[1].split(',')[1] || '';
+      if (b0 === b1 || (b0.length > 50 && b1.length > 50 && b0.substring(0, 50) === b1.substring(0, 50))) {
+        uniqueImages.splice(1, 1);
+      }
+    }
+  }
+
+  const initialGallery = uniqueImages.length > 0 ? uniqueImages : ['/images/products/hybrid-tomato-seeds.png'];
+
+  const [galleryImages, setGalleryImages] = useState(initialGallery);
+
+  useEffect(() => {
+    setGalleryImages(initialGallery);
+  }, [JSON.stringify(initialGallery)]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (initialGallery.length <= 1) return;
+
+    // Check if image 0 and image 1 are visual duplicates using an offscreen canvas
+    const checkVisualDuplicate = async () => {
+      try {
+        const [img0, img1] = initialGallery;
+        if (!img0 || !img1) return;
+
+        const getHash = (src) =>
+          new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+              try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 16;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 16, 16);
+                const data = ctx.getImageData(0, 0, 16, 16).data;
+                let hash = '';
+                for (let i = 0; i < data.length; i += 4) {
+                  const lum = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+                  hash += lum > 128 ? '1' : '0';
+                }
+                resolve(hash);
+              } catch {
+                resolve(null);
+              }
+            };
+            img.onerror = () => resolve(null);
+            img.src = src;
+          });
+
+        const [h0, h1] = await Promise.all([getHash(img0), getHash(img1)]);
+        if (!isMounted) return;
+
+        if (h0 && h1 && h0 === h1) {
+          // Exactly the same visual content! Drop the duplicate second image
+          setGalleryImages(initialGallery.filter((_, idx) => idx !== 1));
+        }
+      } catch {
+        // Fallback gracefully
+      }
+    };
+
+    checkVisualDuplicate();
+    return () => {
+      isMounted = false;
+    };
+  }, [JSON.stringify(initialGallery)]);
+
+  const allImages = galleryImages.length > 0 ? galleryImages : initialGallery;
 
   const safeImageIndex = Math.min(Math.max(0, currentImageIndex), allImages.length - 1);
   const currentImage = allImages[safeImageIndex] || allImages[0];
+
+  const handlePrevImage = useCallback(
+    (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : allImages.length - 1));
+    },
+    [allImages.length]
+  );
+
+  const handleNextImage = useCallback(
+    (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      setCurrentImageIndex((prev) => (prev < allImages.length - 1 ? prev + 1 : 0));
+    },
+    [allImages.length]
+  );
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose?.();
+      if (e.key === 'ArrowLeft') handlePrevImage(e);
+      if (e.key === 'ArrowRight') handleNextImage(e);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose, handlePrevImage, handleNextImage]);
+
+  if (!product) return null;
+
+  const isWishlisted = isInWishlist(product.id);
+  const qty = getItemQuantity(product.id);
+  const isSoldOut = product.inStock === false;
 
   const discountVal =
     product.mrp && product.mrp > product.price ? product.mrp - product.price : 0;
@@ -197,12 +304,13 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             {/* Left Column: Images (5 Cols) */}
             <div className="md:col-span-5 flex flex-col gap-3">
-              <div className="relative w-full aspect-square rounded-2xl bg-[#EDF2F7] overflow-hidden flex items-center justify-center border border-[#CBD5E1]/50">
+              <div className="relative w-full aspect-square rounded-2xl bg-[#EDF2F7] overflow-hidden flex items-center justify-center border border-[#CBD5E1]/50 group select-none">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.img
                     key={currentImage}
                     src={currentImage}
                     alt={product.name}
+                    data-testid="main-product-image"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -210,13 +318,53 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                     className="w-full h-full object-cover"
                   />
                 </AnimatePresence>
+
+                {/* Transparent Shift Buttons */}
+                {allImages.length > 1 && (
+                  <motion.button
+                    type="button"
+                    data-testid="shift-prev-btn"
+                    whileTap={{ scale: 0.92 }}
+                    onClick={handlePrevImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/65 active:bg-black/85 text-white backdrop-blur-md flex items-center justify-center transition-all duration-150 border border-white/30 shadow-lg z-20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50"
+                    aria-label="Previous image"
+                    title="Previous image"
+                  >
+                    <span className="material-symbols-outlined text-[24px]">chevron_left</span>
+                  </motion.button>
+                )}
+                {allImages.length > 1 && (
+                  <motion.button
+                    type="button"
+                    data-testid="shift-next-btn"
+                    whileTap={{ scale: 0.92 }}
+                    onClick={handleNextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/65 active:bg-black/85 text-white backdrop-blur-md flex items-center justify-center transition-all duration-150 border border-white/30 shadow-lg z-20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50"
+                    aria-label="Next image"
+                    title="Next image"
+                  >
+                    <span className="material-symbols-outlined text-[24px]">chevron_right</span>
+                  </motion.button>
+                )}
+
+                {/* Image Counter Badge */}
+                {allImages.length > 1 && (
+                  <div
+                    data-testid="image-counter-badge"
+                    className="absolute bottom-3 right-3 bg-black/55 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-full border border-white/25 pointer-events-none z-20 flex items-center gap-1 shadow-md"
+                  >
+                    <span className="material-symbols-outlined text-[13px]">photo_library</span>
+                    <span>{`${safeImageIndex + 1} / ${allImages.length}`}</span>
+                  </div>
+                )}
+
                 {discountPercent && (
-                  <span className="absolute top-3 left-3 bg-[#FF9F43] text-[#142B4A] text-xs font-headline font-extrabold px-2.5 py-1 rounded-full shadow-md">
+                  <span className="absolute top-3 left-3 bg-[#FF9F43] text-[#142B4A] text-xs font-headline font-extrabold px-2.5 py-1 rounded-full shadow-md z-10">
                     {discountPercent}
                   </span>
                 )}
                 {product.isOrganic && (
-                  <span className="absolute bottom-3 left-3 bg-white/95 text-[#A74E00] text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm border border-orange-100">
+                  <span className="absolute bottom-3 left-3 bg-white/95 text-[#A74E00] text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm border border-orange-100 z-10">
                     <span className="material-symbols-outlined text-[15px]">eco</span>
                     Certified Organic
                   </span>
@@ -233,7 +381,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                       whileTap={iconTap}
                       onClick={() => setCurrentImageIndex(idx)}
                       className={`w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all duration-150 ${
-                        currentImageIndex === idx
+                        safeImageIndex === idx
                           ? 'border-[#142B4A] shadow-md scale-[1.03]'
                           : 'border-slate-200 opacity-70 hover:opacity-100'
                       }`}
