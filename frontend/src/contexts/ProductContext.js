@@ -290,7 +290,10 @@ const computeFilteredProducts = (sourceProducts, currentFilters, currentSort) =>
 };
 
 export function ProductProvider({ children }) {
-  const [products, setProducts] = useState(() => readProductsCache());
+  // Initialize with canonical server-safe default products to eliminate SSR / localStorage hydration mismatch
+  const [products, setProducts] = useState(() =>
+    DEFAULT_GROCERY_PRODUCTS.map((p) => normalizeProductData(p.id, p))
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -318,6 +321,10 @@ export function ProductProvider({ children }) {
   useEffect(() => {
     setCartItems(readCartStorage());
     setWishlistItems(readWishlistStorage());
+    const cached = readProductsCache();
+    if (Array.isArray(cached) && cached.length > 0) {
+      setProducts(cached);
+    }
     setStorageHydrated(true);
   }, []);
 
@@ -453,25 +460,27 @@ export function ProductProvider({ children }) {
     ],
   };
 
-  const [homeShowcase, setHomeShowcase] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem('agrimart_home_showcase_v1');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed && typeof parsed === 'object') {
-            return {
-              heroDeals: Array.isArray(parsed.heroDeals) ? parsed.heroDeals.slice(0, 2) : DEFAULT_HOME_SHOWCASE.heroDeals,
-              flashDeals: Array.isArray(parsed.flashDeals) ? parsed.flashDeals.slice(0, 6) : DEFAULT_HOME_SHOWCASE.flashDeals,
-            };
-          }
+  // Start with default canonical home showcase so Server and Client hydration match 100%
+  const [homeShowcase, setHomeShowcase] = useState(DEFAULT_HOME_SHOWCASE);
+
+  // Hydrate local home showcase after mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = localStorage.getItem('agrimart_home_showcase_v1');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          setHomeShowcase((prev) => ({
+            heroDeals: Array.isArray(parsed.heroDeals) ? parsed.heroDeals.slice(0, 2) : prev.heroDeals,
+            flashDeals: Array.isArray(parsed.flashDeals) ? parsed.flashDeals.slice(0, 6) : prev.flashDeals,
+          }));
         }
-      } catch (err) {
-        console.warn('Error reading local home showcase:', err);
       }
+    } catch (err) {
+      console.warn('Error reading local home showcase:', err);
     }
-    return DEFAULT_HOME_SHOWCASE;
-  });
+  }, []);
 
   // Subscribe to site_settings/home_showcase in Firebase RTDB
   useEffect(() => {

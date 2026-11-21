@@ -27,6 +27,11 @@ export default function LandingPage() {
   } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [verifiedReviews, setVerifiedReviews] = useState([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Subscribe to real verified reviews from Firebase Realtime Database
   useEffect(() => {
@@ -87,8 +92,10 @@ export default function LandingPage() {
   ];
 
   // Dynamic Hero Deal Products (strictly 2 slots configured by admin via Home Showcase Manager)
+  // Note: Before client hydration completes, always use canonical defaults so server-rendered HTML and client initial DOM match 100%
   const heroDealProducts = useMemo(() => {
-    const ids = homeShowcase?.heroDeals || ['agri-kisan-starter-kit', 'agri-soil-booster-combo'];
+    const defaultIds = ['agri-kisan-starter-kit', 'agri-soil-booster-combo'];
+    const ids = (mounted && homeShowcase?.heroDeals) || defaultIds;
     const matched = ids.map((id) => products.find((p) => p.id === id)).filter(Boolean);
     if (matched.length >= 2) return matched.slice(0, 2);
     // Fallback if some product not found
@@ -97,17 +104,16 @@ export default function LandingPage() {
     );
     const combined = [...matched, ...fallbackKits.filter((f) => !matched.some((m) => m.id === f.id)), ...products];
     return combined.slice(0, 2);
-  }, [homeShowcase?.heroDeals, products]);
+  }, [mounted, homeShowcase?.heroDeals, products]);
 
   // Flash deals products (curated by admin or first 6 items)
   const flashProducts = useMemo(() => {
-    const ids = homeShowcase?.flashDeals;
-    if (Array.isArray(ids) && ids.length > 0) {
-      const matched = ids.map((id) => products.find((p) => p.id === id)).filter(Boolean);
+    if (mounted && Array.isArray(homeShowcase?.flashDeals) && homeShowcase.flashDeals.length > 0) {
+      const matched = homeShowcase.flashDeals.map((id) => products.find((p) => p.id === id)).filter(Boolean);
       if (matched.length > 0) return matched.slice(0, 6);
     }
     return products.slice(0, 6);
-  }, [homeShowcase?.flashDeals, products]);
+  }, [mounted, homeShowcase?.flashDeals, products]);
 
   // Soil Nutrition Corner products (organic and soil items)
   const soilProducts = products
@@ -228,10 +234,16 @@ export default function LandingPage() {
                     title={`Click to view details for ${item.name}`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <span className={`${isFirst ? 'bg-[#FF9F43] text-[#142B4A]' : 'bg-[#142B4A] text-white'} font-headline text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider font-extrabold shadow-sm`}>
+                      <span
+                        suppressHydrationWarning
+                        className={`${isFirst ? 'bg-[#FF9F43] text-[#142B4A]' : 'bg-[#142B4A] text-white'} font-headline text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider font-extrabold shadow-sm`}
+                      >
                         {badgeText}
                       </span>
-                      <span className="font-mono text-xs text-[#A74E00] font-bold flex items-center gap-1">
+                      <span
+                        suppressHydrationWarning
+                        className="font-mono text-xs text-[#A74E00] font-bold flex items-center gap-1"
+                      >
                         <span className="material-symbols-outlined text-[15px]">{isFirst ? 'local_fire_department' : 'eco'}</span>
                         {subTag}
                       </span>
@@ -251,19 +263,38 @@ export default function LandingPage() {
                         />
                       </div>
                       <div className="flex flex-col flex-1 min-w-0">
-                        <span className="text-[11px] font-bold text-[#5A6B82] uppercase tracking-wider truncate">
+                        <span
+                          suppressHydrationWarning
+                          className="text-[11px] font-bold text-[#5A6B82] uppercase tracking-wider truncate"
+                        >
                           {item.category || (isFirst ? 'All-in-One Sowing Kit' : 'Soil Regeneration')}
                         </span>
-                        <h3 className="font-headline text-base font-bold text-[#142B4A] leading-tight mt-0.5 line-clamp-2 group-hover:text-[#E27B12] transition-colors">
+                        <h3
+                          suppressHydrationWarning
+                          className="font-headline text-base font-bold text-[#142B4A] leading-tight mt-0.5 line-clamp-2 group-hover:text-[#E27B12] transition-colors"
+                        >
                           {item.name}
                         </h3>
-                        <p className="text-xs text-[#5A6B82] mt-1 line-clamp-1">
+                        <p
+                          suppressHydrationWarning
+                          className="text-xs text-[#5A6B82] mt-1 line-clamp-1"
+                        >
                           {item.unit || item.description || 'Certified farm input'}
                         </p>
                         <div className="flex items-baseline gap-2 mt-2">
-                          <span className="font-price text-lg font-extrabold text-[#142B4A]">₹{item.price}</span>
+                          <span
+                            suppressHydrationWarning
+                            className="font-price text-lg font-extrabold text-[#142B4A]"
+                          >
+                            ₹{item.price}
+                          </span>
                           {item.mrp && item.mrp > item.price && (
-                            <span className="text-xs text-slate-400 line-through">₹{item.mrp}</span>
+                            <span
+                              suppressHydrationWarning
+                              className="text-xs text-slate-400 line-through"
+                            >
+                              ₹{item.mrp}
+                            </span>
                           )}
                         </div>
                       </div>
