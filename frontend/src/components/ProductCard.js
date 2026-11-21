@@ -111,35 +111,35 @@ export default function ProductCard({
         layout: { duration: 0.22, ease: EASE.out },
       }}
       onClick={handleCardClick}
-      className={`group bg-white rounded-2xl p-3.5 shadow-sm hover:shadow-lg transition-shadow duration-200 ease-out flex flex-col justify-between relative border border-[#CBD5E1]/50 hover:border-[#CBD5E1] cursor-pointer min-w-0 w-full overflow-hidden ${
+      className={`group bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-sm hover:shadow-lg transition-shadow duration-200 ease-out flex flex-col justify-between relative border border-[#CBD5E1]/50 hover:border-[#CBD5E1] cursor-pointer min-w-0 w-full overflow-hidden ${
         isSoldOut ? 'opacity-65' : ''
       }`}
     >
       {/* Top Badges */}
-      <div className="flex items-center justify-between gap-1 mb-2">
+      <div className="flex items-center justify-between gap-1 mb-1.5 sm:mb-2">
         {discountPercent ? (
-          <span className="bg-[#FFE8D6] text-[#A74E00] font-headline text-[10px] px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wider shadow-sm">
+          <span className="bg-[#FFE8D6] text-[#A74E00] font-headline text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wider shadow-sm truncate">
             {discountPercent}
           </span>
         ) : (
-          <span className="bg-[#EDF2F7] text-[#142B4A] text-[10px] px-2 py-0.5 rounded-full font-bold">
+          <span className="bg-[#EDF2F7] text-[#142B4A] text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full font-bold">
             Fresh
           </span>
         )}
 
         {isAdmin ? (
-          <div className="flex items-center gap-1 z-10" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-1 z-10 shrink-0" onClick={(e) => e.stopPropagation()}>
             <motion.button
               whileTap={buttonTap}
               onClick={handleEditClick}
-              className="bg-[#142B4A] text-white text-[10px] px-2 py-0.5 rounded hover:bg-[#1B385D] transition-colors duration-150"
+              className="bg-[#142B4A] text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded hover:bg-[#1B385D] transition-colors duration-150"
             >
               Edit
             </motion.button>
             <motion.button
               whileTap={buttonTap}
               onClick={handleDelete}
-              className="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded hover:bg-rose-700 transition-colors duration-150"
+              className="bg-rose-600 text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded hover:bg-rose-700 transition-colors duration-150"
             >
               Delete
             </motion.button>
@@ -156,7 +156,7 @@ export default function ProductCard({
                 addToWishlist(product);
               }
             }}
-            className={`transition-all duration-150 p-1.5 rounded-full shadow-xs border ${
+            className={`transition-all duration-150 p-1 sm:p-1.5 rounded-full shadow-xs border shrink-0 ${
               isWishlisted
                 ? 'bg-rose-50 border-rose-200 text-rose-500 hover:bg-rose-100'
                 : 'bg-white/90 border-slate-200/80 text-slate-400 hover:text-rose-500 hover:bg-white'
@@ -169,7 +169,7 @@ export default function ProductCard({
               initial={mounted ? { scale: 0.8, opacity: 0.7 } : false}
               animate={{ scale: isWishlisted ? [1, 1.22, 1] : 1, opacity: 1 }}
               transition={{ duration: 0.22, ease: EASE.out }}
-              className="material-symbols-outlined text-[18px] block"
+              className="material-symbols-outlined text-[16px] sm:text-[18px] block"
               style={isWishlisted ? { fontVariationSettings: "'FILL' 1" } : {}}
             >
               favorite
@@ -179,7 +179,7 @@ export default function ProductCard({
       </div>
 
       {/* Product Image */}
-      <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#EDF2F7] mb-3 flex items-center justify-center">
+      <div className="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-[#EDF2F7] mb-2 sm:mb-3 flex items-center justify-center">
         <img
           ref={imgRef}
           src={displayImage}
@@ -198,20 +198,20 @@ export default function ProductCard({
 
         {/* Delivery Serviceability Badge */}
         {isServiceable ? (
-          <span className="absolute bottom-2 left-2 bg-white/95 text-[#142B4A] text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm border border-slate-100 transition-opacity duration-200">
-            <span className="material-symbols-outlined text-[13px] text-[#FF9F43]">local_shipping</span>
-            <span>{product.deliveryTime || '⚡ Fast Dispatch'}</span>
+          <span className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 bg-white/95 text-[#142B4A] text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md flex items-center gap-0.5 sm:gap-1 shadow-sm border border-slate-100 transition-opacity duration-200 max-w-[calc(100%-12px)] truncate">
+            <span className="material-symbols-outlined text-[11px] sm:text-[13px] text-[#FF9F43] shrink-0">local_shipping</span>
+            <span className="truncate">{product.deliveryTime || '⚡ Fast Dispatch'}</span>
           </span>
         ) : (
-          <span className="absolute bottom-2 left-2 bg-rose-600/95 text-white text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm">
-            <span className="material-symbols-outlined text-[11px]">location_off</span>
-            <span>Unavailable in Area</span>
+          <span className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 bg-rose-600/95 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md flex items-center gap-0.5 sm:gap-1 shadow-sm max-w-[calc(100%-12px)] truncate">
+            <span className="material-symbols-outlined text-[10px] sm:text-[11px] shrink-0">location_off</span>
+            <span className="truncate">Unavailable</span>
           </span>
         )}
 
         {isSoldOut && (
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[1px] flex items-center justify-center">
-            <span className="bg-white text-rose-600 font-extrabold text-xs px-3 py-1 rounded-md uppercase tracking-wider shadow-lg">
+            <span className="bg-white text-rose-600 font-extrabold text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-md uppercase tracking-wider shadow-lg">
               Sold Out
             </span>
           </div>
@@ -219,45 +219,45 @@ export default function ProductCard({
       </div>
 
       {/* Meta: Rating and Unit */}
-      <div className="flex items-center justify-between text-xs mb-1">
-        <div className="flex items-center gap-1 text-[#FF9F43]">
-          <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+      <div className="flex items-center justify-between text-xs mb-1 gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 text-[#FF9F43] shrink-0">
+          <span className="material-symbols-outlined text-[13px] sm:text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>
             star
           </span>
-          <span className="font-bold text-[#263449]">{product.rating ? Number(product.rating).toFixed(1) : '5.0'}</span>
+          <span className="font-bold text-[#263449] text-[11px] sm:text-xs">{product.rating ? Number(product.rating).toFixed(1) : '5.0'}</span>
           {Boolean(product.reviewCount) && (
-            <span className="text-[#74777E] text-[11px]">({product.reviewCount})</span>
+            <span className="text-[#74777E] text-[10px] sm:text-[11px] hidden xs:inline sm:inline">({product.reviewCount})</span>
           )}
         </div>
-        <span className="text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-2 py-0.5 rounded-md max-w-[130px] flex items-center gap-1 shrink-0 overflow-hidden">
-          <span className="shrink-0">{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
+        <span className="text-[10px] sm:text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-1.5 sm:px-2 py-0.5 rounded-md max-w-[95px] sm:max-w-[130px] flex items-center gap-0.5 sm:gap-1 shrink-0 overflow-hidden">
+          <span className="shrink-0 text-[10px] sm:text-xs">{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>
           <span className="truncate">{product.packSize || product.unit || product.weight || '1 unit'}</span>
         </span>
       </div>
 
       {/* Product Title */}
-      <h3 className="font-headline text-[14px] font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 line-clamp-2 min-h-[38px] leading-snug">
+      <h3 className="font-headline text-[13px] sm:text-[14px] font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 line-clamp-2 min-h-[34px] sm:min-h-[38px] leading-tight sm:leading-snug">
         {product.name}
       </h3>
 
       {/* Sourcing / Brand micro-label */}
-      <p className="text-[11px] text-[#5A6B82] mt-0.5 truncate">
+      <p className="text-[10px] sm:text-[11px] text-[#5A6B82] mt-0.5 truncate">
         {product.brand || 'AgriMart Select'} • {product.origin?.split(',')[0] || 'Certified Lot'}
       </p>
 
       {/* Bottom Pricing & Add / Stepper CTA */}
-      <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
-        <div className="flex flex-col">
-          <span className="font-price text-base font-extrabold text-[#142B4A] leading-tight">
+      <div className="flex items-center justify-between mt-2 sm:mt-3 pt-2 border-t border-slate-100 gap-1">
+        <div className="flex flex-col min-w-0">
+          <span className="font-price text-[13px] sm:text-base font-extrabold text-[#142B4A] leading-tight truncate">
             ₹{product.price}
           </span>
           {product.mrp && product.mrp > product.price ? (
-            <span className="text-[11px] text-[#74777E] line-through leading-tight">
+            <span className="text-[10px] sm:text-[11px] text-[#74777E] line-through leading-tight truncate">
               ₹{product.mrp}
             </span>
           ) : (
-            <span className="text-[10px] text-[#5A6B82] uppercase leading-tight font-semibold">
-              Standard MRP
+            <span className="text-[9px] sm:text-[10px] text-[#5A6B82] uppercase leading-tight font-semibold truncate">
+              Standard
             </span>
           )}
         </div>
@@ -267,9 +267,9 @@ export default function ProductCard({
           {isSoldOut ? (
             <span
               key="soldout"
-              className="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1.5 rounded-lg cursor-not-allowed"
+              className="text-[9px] sm:text-[11px] font-bold text-slate-400 bg-slate-100 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg cursor-not-allowed shrink-0"
             >
-              OUT OF STOCK
+              OUT
             </span>
           ) : justAdded ? (
             <motion.span
@@ -278,7 +278,7 @@ export default function ProductCard({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ duration: DURATION.fast, ease: EASE.out }}
-              className="bg-emerald-600 text-white font-headline text-xs px-3 py-1.5 rounded-lg font-bold shadow-sm inline-flex items-center gap-1"
+              className="bg-emerald-600 text-white font-headline text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold shadow-sm inline-flex items-center gap-1 shrink-0"
             >
               <span>✓ ADDED</span>
             </motion.span>
@@ -290,18 +290,18 @@ export default function ProductCard({
               exit={{ opacity: 0, scale: 0.94 }}
               transition={{ duration: DURATION.fast, ease: EASE.out }}
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center bg-[#142B4A] text-white rounded-lg shadow-sm overflow-hidden"
+              className="flex items-center bg-[#142B4A] text-white rounded-lg shadow-sm overflow-hidden shrink-0"
             >
               <motion.button
                 type="button"
                 whileTap={iconTap}
                 onClick={handleDecrement}
-                className="px-2 py-1.5 hover:bg-[#1B385D] transition-colors duration-150 flex items-center justify-center"
+                className="px-1.5 sm:px-2 py-1 sm:py-1.5 hover:bg-[#1B385D] transition-colors duration-150 flex items-center justify-center"
                 aria-label="Decrease quantity"
               >
-                <span className="material-symbols-outlined text-[14px]">remove</span>
+                <span className="material-symbols-outlined text-[13px] sm:text-[14px]">remove</span>
               </motion.button>
-              <div className="min-w-[24px] flex items-center justify-center overflow-hidden">
+              <div className="min-w-[18px] sm:min-w-[24px] flex items-center justify-center overflow-hidden">
                 <AnimatePresence mode="popLayout" initial={false}>
                   <motion.span
                     key={qty}
@@ -309,7 +309,7 @@ export default function ProductCard({
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    className="px-1 font-bold text-xs inline-block text-center"
+                    className="px-0.5 sm:px-1 font-bold text-[11px] sm:text-xs inline-block text-center"
                   >
                     {qty}
                   </motion.span>
@@ -319,10 +319,10 @@ export default function ProductCard({
                 type="button"
                 whileTap={iconTap}
                 onClick={handleIncrement}
-                className="px-2 py-1.5 hover:bg-[#1B385D] transition-colors duration-150 flex items-center justify-center"
+                className="px-1.5 sm:px-2 py-1 sm:py-1.5 hover:bg-[#1B385D] transition-colors duration-150 flex items-center justify-center"
                 aria-label="Increase quantity"
               >
-                <span className="material-symbols-outlined text-[14px]">add</span>
+                <span className="material-symbols-outlined text-[13px] sm:text-[14px]">add</span>
               </motion.button>
             </motion.div>
           ) : !isServiceable ? (
@@ -332,11 +332,11 @@ export default function ProductCard({
               whileTap={buttonTap}
               onClick={handleAdd}
               aria-label="Not deliverable to selected area"
-              className="bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-headline text-[11px] px-2.5 py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm flex items-center gap-1"
+              className="bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-headline text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm flex items-center gap-0.5 sm:gap-1 shrink-0"
               title="Outside 10 km hub. Tap to change location."
             >
               <span>Unavailable</span>
-              <span className="material-symbols-outlined text-[13px]">pin_drop</span>
+              <span className="material-symbols-outlined text-[12px] sm:text-[13px]">pin_drop</span>
             </motion.button>
           ) : (
             <motion.button
@@ -349,7 +349,7 @@ export default function ProductCard({
               transition={{ duration: DURATION.fast, ease: EASE.out }}
               onClick={handleAdd}
               aria-label="Add to Cart"
-              className="bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white font-headline text-xs px-3.5 py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm"
+              className="bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white font-headline text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm shrink-0"
             >
               ADD
             </motion.button>

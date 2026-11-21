@@ -232,12 +232,12 @@ export default function DashboardPage() {
         </section>
 
         {/* Main Body: Sidebar + Products Zone */}
-        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <section className="w-full max-w-7xl mx-auto px-2.5 sm:px-6 py-4 sm:py-8">
           {/* Mobile Filter Toggle */}
           <button
             type="button"
             onClick={() => setFiltersOpen(true)}
-            className="mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 text-xs font-bold text-[#142B4A] shadow-sm lg:hidden"
+            className="mb-4 sm:mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 text-xs font-bold text-[#142B4A] shadow-sm lg:hidden"
           >
             <span className="material-symbols-outlined text-[18px]">tune</span>
             <span>Filter &amp; Sort Seeds &amp; Fertilizers</span>

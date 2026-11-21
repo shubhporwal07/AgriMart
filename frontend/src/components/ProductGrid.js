@@ -175,10 +175,10 @@ export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin =
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.16, ease: EASE.out }}
-        className={`grid gap-4 mb-8 ${
+        className={`grid gap-2.5 sm:gap-4 md:gap-5 mb-8 ${
           layoutMode === 'compact'
-            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-            : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
+            ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'
+            : 'grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
         }`}
       >
         {paginatedProducts.map((product, idx) => (

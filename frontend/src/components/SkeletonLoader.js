@@ -27,7 +27,7 @@ export function PageSkeletonLoader() {
 
 export function SkeletonCardGrid({ count = 6 }) {
   return (
-    <div className="grid grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-2 justify-items-center gap-2.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
       {Array.from({ length: count }).map((_, index) => (
         <motion.div
           key={index}

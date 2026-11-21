@@ -82,7 +82,7 @@ export default function WishlistPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.18 }}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-5"
             >
               <AnimatePresence mode="popLayout">
                 {wishlistItems.map((product) => {
@@ -114,7 +114,7 @@ export default function WishlistPage() {
                         layout: { duration: 0.22, ease: EASE.out },
                         y: { duration: 0.18, ease: EASE.out },
                       }}
-                      className="group bg-white rounded-2xl border border-[#CBD5E1]/50 hover:border-[#CBD5E1] shadow-sm hover:shadow-lg transition-shadow duration-200 flex flex-col p-3.5"
+                      className="group bg-white rounded-xl sm:rounded-2xl border border-[#CBD5E1]/50 hover:border-[#CBD5E1] shadow-sm hover:shadow-lg transition-shadow duration-200 flex flex-col p-2.5 sm:p-3.5"
                     >
                       {/* Remove button */}
                       <div className="flex items-center justify-between mb-2">

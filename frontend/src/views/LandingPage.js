@@ -452,7 +452,7 @@ export default function LandingPage() {
           </div>
 
           {/* Flash Deals Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
             {flashProducts.map((p, idx) => (
               <ProductCard
                 key={p.id}
@@ -495,12 +495,12 @@ export default function LandingPage() {
             </div>
 
             {/* 4 Hero Soil Nutrition Items */}
-            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-6">
+            <div className="relative z-10 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 pt-6">
               {soilProducts.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => setSelectedProduct(item)}
-                  className="bg-white text-[#263449] rounded-2xl p-4 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 ease-out flex flex-col justify-between group border border-[#CBD5E1]/30 cursor-pointer"
+                  className="bg-white text-[#263449] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 ease-out flex flex-col justify-between group border border-[#CBD5E1]/30 cursor-pointer min-w-0"
                 >
                   <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#EDF2F7] mb-3">
                     <img
