@@ -34,7 +34,7 @@ const FEEDBACK_CATEGORIES = [
 
 const MAX_CHARS = 500;
 
-export default function FeedbackWidget() {
+export default function FeedbackWidget({ className = '', label = 'Feedback' }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
@@ -49,6 +49,13 @@ export default function FeedbackWidget() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Support opening via custom event from any footer link or button
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-agrimart-feedback', handleOpen);
+    return () => window.removeEventListener('open-agrimart-feedback', handleOpen);
   }, []);
 
   // Reset form when modal opens
@@ -68,7 +75,7 @@ export default function FeedbackWidget() {
   }, [isOpen]);
 
   // Do not render on admin console routes
-  if (!mounted || pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin')) {
     return null;
   }
 
@@ -109,7 +116,7 @@ export default function FeedbackWidget() {
         category: category,
         message: trimmed,
         submittedAt: new Date().toISOString(),
-        source: 'Website Floating Feedback Tag',
+        source: 'Footer Feedback Button',
       };
 
       await set(newFeedbackRef, feedbackData);
@@ -134,14 +141,14 @@ export default function FeedbackWidget() {
 
   return (
     <>
-      {/* Small Floating Feedback Tag on Site Portal (bottom-left) */}
+      {/* Feedback Button (in Footer) */}
       <motion.button
         type="button"
         id="site-feedback-tag"
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 bg-[#0B1B30] hover:bg-[#152B48] text-white px-4 py-2.5 rounded-full shadow-2xl border border-white/20 cursor-pointer transition-all duration-150 group"
+        className={`inline-flex items-center gap-2 bg-[#0B1B30] hover:bg-[#152B48] text-white px-4 py-2 rounded-full shadow-md border border-white/20 cursor-pointer transition-all duration-150 group shrink-0 ${className}`}
         title="Share your feedback or suggestions with AgriMart"
         aria-label="Open Feedback Form"
       >
@@ -152,7 +159,7 @@ export default function FeedbackWidget() {
         >
           rate_review
         </span>
-        <span className="text-xs font-bold tracking-wide">Feedback</span>
+        <span className="text-xs font-bold tracking-wide">{label}</span>
       </motion.button>
 
       {/* Animated Feedback Box / Modal */}

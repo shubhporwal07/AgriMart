@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buttonTap, EASE } from '../utils/motion';
+import FeedbackWidget from './FeedbackWidget';
 
 export default function Footer() {
   const [contact, setContact] = useState('');
@@ -108,6 +109,20 @@ export default function Footer() {
               <li className="hover:text-[#142B4A] transition-colors">
                 <Link href="/about-us">Rural & Farm Delivery Centers</Link>
               </li>
+              <li className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const btn = document.getElementById('site-feedback-tag');
+                    if (btn) btn.click();
+                    else window.dispatchEvent(new CustomEvent('open-agrimart-feedback'));
+                  }}
+                  className="hover:underline flex items-center gap-1.5 text-left text-xs font-bold text-[#142B4A] hover:text-[#E27B12] transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[16px] text-[#FF9F43]">rate_review</span>
+                  <span>Share Feedback & Suggestions</span>
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -193,9 +208,16 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[#5A6B82] text-xs">
-          <p>© 2025 AgriMart Agritech Solutions Pvt Ltd. All rights reserved.</p>
-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4 sm:gap-6">
+        <div className="pt-6 mt-4 border-t border-[#E5DFD3]/70 flex flex-col md:flex-row items-center justify-between gap-4 text-[#5A6B82] text-xs">
+          <p className="order-2 md:order-1 text-center md:text-left">
+            © 2025 AgriMart Agritech Solutions Pvt Ltd. All rights reserved.
+          </p>
+
+          <div className="order-1 md:order-2 flex items-center justify-center">
+            <FeedbackWidget />
+          </div>
+
+          <div className="order-3 flex flex-wrap items-center justify-center md:justify-end gap-4 sm:gap-6">
             <span className="flex items-center gap-1.5 font-medium">
               <span className="material-symbols-outlined text-[16px] text-emerald-700">verified</span>
               Seed License No: AGRI/SEED/DL-8841
