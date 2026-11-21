@@ -16,6 +16,31 @@ export function AuthProvider({ children }) {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authModal, setAuthModal] = useState({
+    show: false,
+    type: null, // 'login' | 'logout'
+    stage: null, // 'during' | 'after'
+    status: '', // 'authenticating' | 'success' | 'error'
+    title: '',
+    message: '',
+    userName: '',
+  });
+
+  const triggerAuthNotice = useCallback((notice) => {
+    setAuthModal({
+      show: true,
+      type: notice.type || 'login',
+      stage: notice.stage || 'during',
+      status: notice.status || '',
+      title: notice.title || '',
+      message: notice.message || '',
+      userName: notice.userName || '',
+    });
+  }, []);
+
+  const closeAuthNotice = useCallback(() => {
+    setAuthModal((prev) => ({ ...prev, show: false }));
+  }, []);
 
   const checkCustomerSession = useCallback(() => {
     if (typeof window === 'undefined') return false;
@@ -136,10 +161,22 @@ export function AuthProvider({ children }) {
     };
   }, [checkAdminSession, checkCustomerSession]);
 
-  // Logout function
+  // Logout function with animated transition and post-logout pop-up notice
   const logout = async () => {
     try {
       setLoading(true);
+      // 1. Trigger DURING LOGOUT modal animation
+      triggerAuthNotice({
+        type: 'logout',
+        stage: 'during',
+        status: 'authenticating',
+        title: 'Signing Out...',
+        message: 'Securing your AgriMart account & saving cart state...',
+      });
+
+      // Brief animation dwell time for smooth visual feedback
+      await new Promise((r) => setTimeout(r, 650));
+
       await signOut(auth).catch(() => {});
       localStorage.removeItem('adminSession');
       localStorage.removeItem('agrimart_user_email');
@@ -148,13 +185,41 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('userEmail');
       if (typeof window !== 'undefined') {
         sessionStorage.clear();
+        // Record post-logout notice in sessionStorage so destination page shows AFTER LOGOUT pop-up
+        sessionStorage.setItem(
+          'agrimart_auth_toast',
+          JSON.stringify({
+            type: 'logout',
+            stage: 'after',
+            title: 'Logged Out Successfully',
+            message: 'You have safely signed out of AgriMart. See you again soon!',
+            timestamp: Date.now(),
+          })
+        );
       }
       setUser(null);
       setUserRole(null);
       window.dispatchEvent(new Event('storage'));
       window.dispatchEvent(new CustomEvent('agrimart-auth-change'));
+      
+      // Update modal to post-logout toast
+      closeAuthNotice();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('agrimart-auth-notice', {
+            detail: {
+              type: 'logout',
+              stage: 'after',
+              title: 'Logged Out Successfully',
+              message: 'You have safely signed out of AgriMart. See you again soon!',
+              timestamp: Date.now(),
+            },
+          })
+        );
+      }
     } catch (error) {
       setError(error.message);
+      closeAuthNotice();
     } finally {
       setLoading(false);
     }
@@ -166,6 +231,9 @@ export function AuthProvider({ children }) {
     loading,
     error,
     logout,
+    authModal,
+    triggerAuthNotice,
+    closeAuthNotice,
     isAuthenticated: !!user || userRole === 'admin',
     isAdmin: userRole === 'admin',
   };

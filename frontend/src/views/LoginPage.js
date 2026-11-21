@@ -22,8 +22,10 @@ import { auth, db } from '../config/firebase';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import Toast from '../components/Toast';
 import { getFirebaseErrorMessage } from '../utils/validators';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginPage({ onAdminLogin }) {
+  const { triggerAuthNotice, closeAuthNotice } = useAuth();
   const ADMIN_IDENTIFIERS = ['admin', 'admin@gmail.com', 'admin@agrimart.farm'];
   const ADMIN_PASSWORD = 'admin9876';
 
@@ -131,10 +133,20 @@ export default function LoginPage({ onAdminLogin }) {
     if (!validateForm()) return;
 
     setLoading(true);
-    try {
-      const trimmedEmail = email.trim().toLowerCase();
-      const isAdmin = isAdminIdent(trimmedEmail);
+    const trimmedEmail = email.trim().toLowerCase();
+    const isAdmin = isAdminIdent(trimmedEmail);
 
+    triggerAuthNotice({
+      type: 'login',
+      stage: 'during',
+      status: 'authenticating',
+      title: isAdmin ? 'Verifying Admin Hub...' : 'Signing You In...',
+      message: isAdmin
+        ? 'Authenticating administrator credentials with AgriMart Hub...'
+        : 'Connecting to AgriMart Kisan Hub & securing session...',
+    });
+
+    try {
       if (isAdmin) {
         if (password === ADMIN_PASSWORD) {
           // Unified Admin Login
@@ -148,14 +160,37 @@ export default function LoginPage({ onAdminLogin }) {
           if (onAdminLogin) {
             onAdminLogin();
           }
-          showToast('AgriMart Admin authentication successful! Opening Console...', 'success');
+
+          triggerAuthNotice({
+            type: 'login',
+            stage: 'during',
+            status: 'success',
+            title: 'Admin Access Verified!',
+            message: 'Opening AgriMart Administration Console...',
+          });
+
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem(
+              'agrimart_auth_toast',
+              JSON.stringify({
+                type: 'login',
+                stage: 'after',
+                title: '⚡ AgriMart Admin Session Active',
+                message: 'Welcome to the AgriMart Management & Inventory Console.',
+                timestamp: Date.now(),
+              })
+            );
+          }
+
           setTimeout(() => {
+            closeAuthNotice();
             const redirectParam = searchParams.get('redirect');
             const target = (redirectParam && redirectParam.startsWith('/admin')) ? redirectParam : '/admin/panel';
             router.push(target);
-          }, 600);
+          }, 650);
           return;
         } else {
+          closeAuthNotice();
           showToast('Invalid admin credentials. Please verify your password.', 'error');
           setLoading(false);
           return;
@@ -170,11 +205,36 @@ export default function LoginPage({ onAdminLogin }) {
         localStorage.setItem('agrimart_user_email', (result.user.email || '').toLowerCase());
         localStorage.setItem('userEmail', (result.user.email || '').toLowerCase());
       }
-      showToast('Welcome back to AgriMart!', 'success');
+
+      const displayName = result.user.displayName || (result.user.email ? result.user.email.split('@')[0] : 'Kisan');
+      triggerAuthNotice({
+        type: 'login',
+        stage: 'during',
+        status: 'success',
+        title: 'Welcome Back, ' + displayName + '!',
+        message: 'Opening your farm dashboard & input catalog...',
+      });
+
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(
+          'agrimart_auth_toast',
+          JSON.stringify({
+            type: 'login',
+            stage: 'after',
+            title: '🌾 Welcome Back, ' + displayName + '!',
+            message: 'You are now securely signed in to AgriMart.',
+            userName: displayName,
+            timestamp: Date.now(),
+          })
+        );
+      }
+
       setTimeout(() => {
+        closeAuthNotice();
         router.replace(afterAuthPath());
-      }, 800);
+      }, 700);
     } catch (error) {
+      closeAuthNotice();
       const errorMessage = getFirebaseErrorMessage(error) || 'Unable to sign in right now. Please try again.';
       showToast(errorMessage, 'error');
     } finally {
@@ -187,6 +247,14 @@ export default function LoginPage({ onAdminLogin }) {
     if (!validateForm()) return;
 
     setLoading(true);
+    triggerAuthNotice({
+      type: 'login',
+      stage: 'during',
+      status: 'authenticating',
+      title: 'Creating Your Account...',
+      message: 'Setting up your AgriMart Kisan profile & farm orders...',
+    });
+
     try {
       await setPersistence(auth, browserLocalPersistence);
       const result = await createUserWithEmailAndPassword(auth, email, password);
@@ -195,11 +263,36 @@ export default function LoginPage({ onAdminLogin }) {
         localStorage.setItem('agrimart_user_email', (result.user.email || '').toLowerCase());
         localStorage.setItem('userEmail', (result.user.email || '').toLowerCase());
       }
-      showToast('Account created successfully! Welcome to AgriMart.', 'success');
+
+      const displayName = result.user.displayName || (result.user.email ? result.user.email.split('@')[0] : 'Kisan');
+      triggerAuthNotice({
+        type: 'login',
+        stage: 'during',
+        status: 'success',
+        title: 'Account Created Successfully!',
+        message: 'Welcome to India\'s certified farm inputs platform.',
+      });
+
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(
+          'agrimart_auth_toast',
+          JSON.stringify({
+            type: 'login',
+            stage: 'after',
+            title: '🎉 Welcome to AgriMart, ' + displayName + '!',
+            message: 'Your account was created successfully. Happy farm shopping!',
+            userName: displayName,
+            timestamp: Date.now(),
+          })
+        );
+      }
+
       setTimeout(() => {
+        closeAuthNotice();
         router.replace(afterAuthPath());
-      }, 800);
+      }, 700);
     } catch (error) {
+      closeAuthNotice();
       const errorMessage = error.code === 'auth/email-already-in-use'
         ? 'Email already registered. Please log in instead.'
         : error.code === 'auth/weak-password'
@@ -215,6 +308,14 @@ export default function LoginPage({ onAdminLogin }) {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    triggerAuthNotice({
+      type: 'login',
+      stage: 'during',
+      status: 'authenticating',
+      title: 'Connecting with Google...',
+      message: 'Verifying Google credentials with AgriMart Secure Auth...',
+    });
+
     try {
       const provider = new GoogleAuthProvider();
       await setPersistence(auth, browserLocalPersistence);
@@ -224,11 +325,36 @@ export default function LoginPage({ onAdminLogin }) {
         localStorage.setItem('agrimart_user_email', (result.user.email || '').toLowerCase());
         localStorage.setItem('userEmail', (result.user.email || '').toLowerCase());
       }
-      showToast('Welcome to AgriMart!', 'success');
+
+      const displayName = result.user.displayName || (result.user.email ? result.user.email.split('@')[0] : 'Kisan');
+      triggerAuthNotice({
+        type: 'login',
+        stage: 'during',
+        status: 'success',
+        title: 'Welcome Back, ' + displayName + '!',
+        message: 'Securely authenticated via Google.',
+      });
+
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(
+          'agrimart_auth_toast',
+          JSON.stringify({
+            type: 'login',
+            stage: 'after',
+            title: '🌾 Welcome Back, ' + displayName + '!',
+            message: 'Securely signed in to AgriMart with Google.',
+            userName: displayName,
+            timestamp: Date.now(),
+          })
+        );
+      }
+
       setTimeout(() => {
+        closeAuthNotice();
         router.replace(afterAuthPath());
-      }, 800);
+      }, 700);
     } catch (error) {
+      closeAuthNotice();
       if (error.code !== 'auth/popup-closed-by-user') {
         const errorMessage = getFirebaseErrorMessage(error) || 'Google sign-in failed. Please try again.';
         showToast(errorMessage, 'error');
