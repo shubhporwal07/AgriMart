@@ -16,12 +16,15 @@ import {
   AlertCircle,
   ExternalLink,
   ShieldCheck,
+  Star,
+  Edit,
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ProductReviewModal from '../components/ProductReviewModal';
 import { OrderListSkeleton } from '../components/SkeletonLoader';
 import { auth, realtimeDb } from '../config/firebase';
-import { ref as rtdbRef, onValue } from 'firebase/database';
+import { ref as rtdbRef, onValue, get } from 'firebase/database';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { accordionVariants, buttonTap, EASE } from '../utils/motion';
@@ -63,9 +66,10 @@ function formatDate(timestamp) {
   }
 }
 
-function OrderCard({ order }) {
+function OrderCard({ order, onOpenReview }) {
   const [expanded, setExpanded] = useState(false);
   const currentStep = getStatusIndex(order.status);
+  const isDelivered = (order.status || '').toLowerCase() === 'delivered';
 
   const getStatusBadge = (status) => {
     const norm = (status || '').toLowerCase();
@@ -199,37 +203,112 @@ function OrderCard({ order }) {
                   <ShoppingBag size={14} className="text-[#FF9F43]" />
                   <span>Certified Farm Products in Order ({order.items?.length || 0})</span>
                 </p>
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {(order.items || []).map((item, idx) => {
                     const displayImg =
                       (item.imageUrl && !item.imageUrl.includes('lh3.googleusercontent.com') && item.imageUrl) ||
                       '/images/products/hybrid-tomato-seeds.png';
+                    const itemId = item.id || `item_${idx}`;
+                    const itemReview = order.reviews?.[itemId] || order.reviews?.[item.id] || null;
 
                     return (
-                      <div key={idx} className="flex items-center gap-3.5 bg-white border border-stone-200 rounded-2xl p-3 shadow-xs">
-                        <img
-                          src={displayImg}
-                          alt={item.name}
-                          className="w-12 h-12 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0"
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = '/images/products/hybrid-tomato-seeds.png';
-                          }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</p>
-                          <div className="text-[11px] text-stone-500 flex items-center gap-2 mt-0.5">
-                            <span className="font-semibold text-slate-700">Qty: {item.quantity}</span>
-                            {(item.packSize || item.weight) && (
-                              <span className="font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                                {item.packSize || item.weight}
-                              </span>
-                            )}
+                      <div key={idx} className="bg-white border border-stone-200 rounded-2xl p-3.5 shadow-xs transition-shadow hover:shadow-sm">
+                        <div className="flex items-center gap-3.5">
+                          <img
+                            src={displayImg}
+                            alt={item.name}
+                            className="w-12 h-12 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = '/images/products/hybrid-tomato-seeds.png';
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</p>
+                            <div className="text-[11px] text-stone-500 flex items-center gap-2 mt-0.5">
+                              <span className="font-semibold text-slate-700">Qty: {item.quantity}</span>
+                              {(item.packSize || item.weight) && (
+                                <span className="font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                  {item.packSize || item.weight}
+                                </span>
+                              )}
+                            </div>
                           </div>
+                          <p className="text-xs sm:text-sm font-black text-slate-900 whitespace-nowrap">
+                            {formatPrice(item.price * item.quantity)}
+                          </p>
                         </div>
-                        <p className="text-xs sm:text-sm font-black text-slate-900 whitespace-nowrap">
-                          {formatPrice(item.price * item.quantity)}
-                        </p>
+
+                        {/* Verified Rating & Review Action (Delivered only) */}
+                        {isDelivered ? (
+                          itemReview ? (
+                            <div className="mt-2.5 pt-2.5 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold">
+                                  <CheckCircle2 size={13} className="text-emerald-600" />
+                                  <span>Rated</span>
+                                  <span className="flex text-amber-500 ml-0.5">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <Star
+                                        key={star}
+                                        className={`w-3 h-3 ${
+                                          star <= (itemReview.rating || 5)
+                                            ? 'fill-amber-400 text-amber-400'
+                                            : 'fill-transparent text-slate-300'
+                                        }`}
+                                      />
+                                    ))}
+                                  </span>
+                                </span>
+                                {itemReview.comment && (
+                                  <span className="text-xs text-slate-600 italic truncate max-w-[200px] sm:max-w-xs">
+                                    &ldquo;{itemReview.comment}&rdquo;
+                                  </span>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onOpenReview) onOpenReview(order, item, itemReview);
+                                }}
+                                className="text-xs font-bold text-[#0B1B30] hover:text-[#E27B12] flex items-center gap-1 transition-colors px-2.5 py-1 rounded-lg hover:bg-slate-100"
+                              >
+                                <Edit size={12} />
+                                <span>Edit Review</span>
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="mt-2.5 pt-2.5 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/80">
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-lg bg-amber-100 text-[#D97706] flex items-center justify-center shrink-0">
+                                  <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
+                                </div>
+                                <div>
+                                  <p className="text-xs font-bold text-slate-900 leading-tight">Delivered! How was this product?</p>
+                                  <p className="text-[11px] text-slate-500">Rate seed germination, crop yield or quality</p>
+                                </div>
+                              </div>
+                              <motion.button
+                                type="button"
+                                whileTap={buttonTap}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onOpenReview) onOpenReview(order, item, null);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B1B30] hover:bg-[#152B48] text-white text-xs font-bold transition-all shadow-xs shrink-0"
+                              >
+                                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                                <span>Rate &amp; Review</span>
+                              </motion.button>
+                            </div>
+                          )
+                        ) : (
+                          <div className="mt-2 pt-2 border-t border-stone-100 flex items-center gap-1.5 text-[11px] text-stone-400">
+                            <Clock size={12} />
+                            <span>Rating &amp; review will unlock once delivered to your farm</span>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -288,6 +367,32 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [searchFilter, setSearchFilter] = useState('');
   const [activeUser, setActiveUser] = useState(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedReviewOrder, setSelectedReviewOrder] = useState(null);
+  const [selectedReviewItem, setSelectedReviewItem] = useState(null);
+  const [selectedExistingReview, setSelectedExistingReview] = useState(null);
+
+  const handleOpenReview = (order, item, existingReview) => {
+    setSelectedReviewOrder(order);
+    setSelectedReviewItem(item);
+    setSelectedExistingReview(existingReview);
+    setReviewModalOpen(true);
+  };
+
+  const handleReviewSubmitted = (newReview) => {
+    setAllOrders((prev) =>
+      prev.map((order) => {
+        if (order.id === newReview.orderId) {
+          const updatedReviews = {
+            ...(order.reviews || {}),
+            [newReview.productId]: newReview,
+          };
+          return { ...order, reviews: updatedReviews };
+        }
+        return order;
+      })
+    );
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -319,11 +424,33 @@ export default function OrdersPage() {
     return () => unsub();
   }, [authUser]);
 
-  // Real-time subscription to orders in Firebase Realtime Database
+  // Immediate fetch + real-time subscription to orders in Firebase Realtime Database
   useEffect(() => {
     let unsubscribe = null;
     try {
       const ordersRef = rtdbRef(realtimeDb, 'orders');
+
+      // 1. Immediate fetch for instant response
+      get(ordersRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            const list = Object.keys(data).map((key) => ({
+              id: key,
+              ...data[key],
+            }));
+            list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            setAllOrders(list);
+          } else {
+            setAllOrders([]);
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+
+      // 2. Real-time updates listener
       unsubscribe = onValue(
         ordersRef,
         (snapshot) => {
@@ -334,7 +461,6 @@ export default function OrdersPage() {
               ...data[key],
             }));
 
-            // Sort newest orders first
             list.sort((a, b) => {
               const timeA = new Date(a.createdAt || 0).getTime();
               const timeB = new Date(b.createdAt || 0).getTime();
@@ -555,12 +681,27 @@ export default function OrdersPage() {
               </div>
 
               {matchedOrders.map((order) => (
-                <OrderCard key={order.id} order={order} />
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  onOpenReview={handleOpenReview}
+                />
               ))}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {selectedReviewOrder && selectedReviewItem && (
+        <ProductReviewModal
+          isOpen={reviewModalOpen}
+          onClose={() => setReviewModalOpen(false)}
+          order={selectedReviewOrder}
+          item={selectedReviewItem}
+          existingReview={selectedExistingReview}
+          onReviewSubmitted={handleReviewSubmitted}
+        />
+      )}
 
       <Footer />
     </div>

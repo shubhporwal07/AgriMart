@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { realtimeDb } from '../config/firebase';
+import { ref as rtdbRef, onValue } from 'firebase/database';
 import {
   backdropVariants,
   modalVariants,
@@ -27,6 +29,41 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
 
   const [activeTab, setActiveTab] = useState('highlights');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [productReviews, setProductReviews] = useState([]);
+
+  useEffect(() => {
+    if (!product?.id) {
+      setProductReviews([]);
+      return;
+    }
+
+    try {
+      const pRevRef = rtdbRef(realtimeDb, `productReviews/${product.id}`);
+      const unsub = onValue(pRevRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const list = Object.values(data).filter((r) => r && r.rating);
+          list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          setProductReviews(list);
+        } else {
+          setProductReviews([]);
+        }
+      });
+      return () => unsub();
+    } catch {
+      setProductReviews([]);
+    }
+  }, [product?.id]);
+
+  const liveAvgRating =
+    productReviews.length > 0
+      ? (
+          productReviews.reduce((sum, r) => sum + (Number(r.rating) || 5), 0) /
+          productReviews.length
+        ).toFixed(1)
+      : typeof product?.rating === 'number'
+      ? product.rating.toFixed(1)
+      : '5.0';
 
   useEffect(() => {
     setCurrentImageIndex(0);
@@ -262,10 +299,12 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                   <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     star
                   </span>
-                  <span>{product.rating || '4.9'}</span>
+                  <span>{liveAvgRating}</span>
                 </div>
                 <span className="text-xs text-[#5A6B82]">
-                  ({product.reviewCount || '890'} verified reviews)
+                  {productReviews.length > 0
+                    ? `(${productReviews.length} verified review${productReviews.length !== 1 ? 's' : ''})`
+                    : '(No reviews yet)'}
                 </span>
               </div>
 
@@ -434,6 +473,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                     { key: 'nutrition', label: 'Agronomy & Nutrients' },
                     { key: 'storage', label: 'Sowing & Storage' },
                     { key: 'manufacturer', label: 'License & Standards' },
+                    { key: 'reviews', label: `Reviews (${productReviews.length})` },
                   ].map((tab) => (
                     <button
                       key={tab.key}
@@ -579,6 +619,126 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                           <strong>Kisan Agronomist Advisory:</strong> AgriMart Support & Soil Doctor, Toll-Free Kisan Helpline 1800-AGRI-MART or email advisory@agrimart.farm.
                         </span>
                       </div>
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'reviews' && (
+                    <motion.div
+                      key="reviews"
+                      variants={tabContentVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className="py-4 space-y-3"
+                    >
+                      {productReviews.length > 0 ? (
+                        <div className="space-y-3">
+                          <div className="p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200/80 flex items-center justify-between">
+                            <div>
+                              <span className="text-xs font-bold text-amber-900 block">
+                                Verified Customer Rating
+                              </span>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="font-extrabold text-base text-amber-900">
+                                  {liveAvgRating} / 5.0
+                                </span>
+                                <div className="flex text-amber-400">
+                                  {[1, 2, 3, 4, 5].map((s) => (
+                                    <span
+                                      key={s}
+                                      className="material-symbols-outlined text-[16px]"
+                                      style={{
+                                        fontVariationSettings:
+                                          s <= Math.round(Number(liveAvgRating))
+                                            ? "'FILL' 1"
+                                            : "'FILL' 0",
+                                      }}
+                                    >
+                                      star
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <span className="text-xs font-semibold text-emerald-800 bg-emerald-100/80 px-2.5 py-1 rounded-xl">
+                              100% Post-Delivery Reviews
+                            </span>
+                          </div>
+
+                          <div className="space-y-2.5">
+                            {productReviews.map((rev) => (
+                              <div
+                                key={rev.id}
+                                className="p-3.5 rounded-2xl bg-[#F7F9FC] border border-slate-200/80 space-y-1.5"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="flex text-amber-400">
+                                      {[1, 2, 3, 4, 5].map((s) => (
+                                        <span
+                                          key={s}
+                                          className="material-symbols-outlined text-[14px]"
+                                          style={{
+                                            fontVariationSettings:
+                                              s <= (rev.rating || 5)
+                                                ? "'FILL' 1"
+                                                : "'FILL' 0",
+                                          }}
+                                        >
+                                          star
+                                        </span>
+                                      ))}
+                                    </div>
+                                    <span className="font-bold text-xs text-slate-900">
+                                      {rev.rating}.0
+                                    </span>
+                                  </div>
+                                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                                    ✓ Verified Delivery
+                                  </span>
+                                </div>
+
+                                {rev.title && (
+                                  <p className="text-xs font-bold text-slate-900">
+                                    {rev.title}
+                                  </p>
+                                )}
+
+                                <p className="text-xs text-slate-700 leading-relaxed italic">
+                                  &ldquo;{rev.comment}&rdquo;
+                                </p>
+
+                                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/50">
+                                  <span className="font-semibold text-slate-800">
+                                    {rev.authorName || 'Kisan Customer'} • {rev.location || 'India'}
+                                  </span>
+                                  <span>
+                                    {rev.createdAt
+                                      ? new Date(rev.createdAt).toLocaleDateString('en-IN', {
+                                          day: 'numeric',
+                                          month: 'short',
+                                          year: 'numeric',
+                                        })
+                                      : ''}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="py-6 text-center bg-slate-50 rounded-2xl border border-slate-200/80 p-6">
+                          <div className="w-10 h-10 rounded-xl bg-amber-50 text-[#FF9F43] flex items-center justify-center mx-auto mb-2">
+                            <span className="material-symbols-outlined text-[22px]">
+                              rate_review
+                            </span>
+                          </div>
+                          <p className="text-xs font-bold text-slate-800">No customer reviews yet</p>
+                          <p className="text-[11px] text-slate-500 mt-1 max-w-sm mx-auto">
+                            Reviews can only be submitted after verified farm delivery. Once you receive this input, rate it under My Orders!
+                          </p>
+                        </div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>

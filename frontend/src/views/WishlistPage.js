@@ -169,8 +169,10 @@ export default function WishlistPage() {
                         >
                           star
                         </span>
-                        <span className="font-bold text-[#263449]">{product.rating || '4.8'}</span>
-                        <span className="text-[#74777E] text-[11px]">({product.reviewCount || '120'})</span>
+                        <span className="font-bold text-[#263449]">{product.rating ? Number(product.rating).toFixed(1) : '5.0'}</span>
+                        {Boolean(product.reviewCount) && (
+                          <span className="text-[#74777E] text-[11px]">({product.reviewCount})</span>
+                        )}
                       </div>
 
                       {/* Name */}

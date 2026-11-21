@@ -224,8 +224,10 @@ export default function ProductCard({
           <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>
             star
           </span>
-          <span className="font-bold text-[#263449]">{product.rating || '4.8'}</span>
-          <span className="text-[#74777E] text-[11px]">({product.reviewCount || '120'})</span>
+          <span className="font-bold text-[#263449]">{product.rating ? Number(product.rating).toFixed(1) : '5.0'}</span>
+          {Boolean(product.reviewCount) && (
+            <span className="text-[#74777E] text-[11px]">({product.reviewCount})</span>
+          )}
         </div>
         <span className="text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-2 py-0.5 rounded-md truncate max-w-[130px] flex items-center gap-1">
           <span>{String(product.unit || '').toLowerCase().includes('l') || String(product.unit || '').toLowerCase().includes('ml') ? '🧪' : '⚖️'}</span>

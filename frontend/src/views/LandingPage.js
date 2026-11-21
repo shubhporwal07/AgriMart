@@ -10,6 +10,8 @@ import ProductCard from '../components/ProductCard';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 import { useProducts } from '../contexts/ProductContext';
 import { floatingBarVariants, sectionRevealProps, buttonTap, iconTap } from '../utils/motion';
+import { realtimeDb } from '../config/firebase';
+import { ref as rtdbRef, onValue } from 'firebase/database';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -24,6 +26,33 @@ export default function LandingPage() {
     homeShowcase,
   } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [verifiedReviews, setVerifiedReviews] = useState([]);
+
+  // Subscribe to real verified reviews from Firebase Realtime Database
+  useEffect(() => {
+    try {
+      const revRef = rtdbRef(realtimeDb, 'allReviews');
+      const unsub = onValue(revRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const list = Object.values(data).filter((r) => r && r.rating);
+          list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          setVerifiedReviews(list);
+        } else {
+          setVerifiedReviews([]);
+        }
+      });
+      return () => unsub();
+    } catch {
+      setVerifiedReviews([]);
+    }
+  }, []);
+
+  const avgRating = useMemo(() => {
+    if (verifiedReviews.length === 0) return 0;
+    const sum = verifiedReviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0);
+    return (sum / verifiedReviews.length).toFixed(1);
+  }, [verifiedReviews]);
 
   // Live countdown timer state for today's kisan sowing deals
   const [timeLeft, setTimeLeft] = useState({ hours: 6, minutes: 42, seconds: 19 });
@@ -604,133 +633,117 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
-        {/* SECTION 6: FARMER TESTIMONIALS & SOCIAL PROOF */}
+        {/* SECTION 6: VERIFIED FARMER REVIEWS OR AUTHENTIC PROMISE */}
         <motion.section {...sectionRevealProps} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-2">
+          {verifiedReviews.length > 0 ? (
             <div>
-              <span className="text-xs font-bold text-[#142B4A] uppercase tracking-wider">
-                Field Verified Results
-              </span>
-              <h2 className="font-headline text-2xl sm:text-3xl font-extrabold text-[#142B4A] mt-1">
-                Loved by Progressive Farmers
-              </h2>
-            </div>
-            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-2xl shadow-sm border border-[#CBD5E1]/40">
-              <div className="flex text-[#FF9F43]">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <span key={s} className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    star
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-2">
+                <div>
+                  <span className="text-xs font-bold text-[#142B4A] uppercase tracking-wider">
+                    Field Verified Results
                   </span>
+                  <h2 className="font-headline text-2xl sm:text-3xl font-extrabold text-[#142B4A] mt-1">
+                    Verified Kisan Reviews
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-2xl shadow-sm border border-[#CBD5E1]/40">
+                  <div className="flex text-[#FF9F43]">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <span
+                        key={s}
+                        className="material-symbols-outlined text-[18px]"
+                        style={{ fontVariationSettings: s <= Math.round(Number(avgRating)) ? "'FILL' 1" : "'FILL' 0" }}
+                      >
+                        star
+                      </span>
+                    ))}
+                  </div>
+                  <span className="font-price text-sm text-[#142B4A] font-extrabold ml-1">{avgRating} / 5</span>
+                  <span className="text-xs text-[#74777E]">from {verifiedReviews.length} verified review{verifiedReviews.length !== 1 ? 's' : ''}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {verifiedReviews.slice(0, 6).map((rev) => (
+                  <div
+                    key={rev.id}
+                    className="bg-white rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-[#CBD5E1]/40"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex text-amber-400">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <span
+                              key={s}
+                              className="material-symbols-outlined text-[16px]"
+                              style={{ fontVariationSettings: s <= (rev.rating || 5) ? "'FILL' 1" : "'FILL' 0" }}
+                            >
+                              star
+                            </span>
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[12px] text-emerald-600" style={{ fontVariationSettings: "'FILL' 1" }}>
+                            verified
+                          </span>
+                          Delivered
+                        </span>
+                      </div>
+                      {rev.title && (
+                        <p className="text-xs font-bold text-slate-900 mb-1 leading-snug">
+                          {rev.title}
+                        </p>
+                      )}
+                      <p className="text-xs text-[#263449] leading-relaxed italic">
+                        &ldquo;{rev.comment}&rdquo;
+                      </p>
+                      {rev.productName && (
+                        <p className="text-[11px] font-semibold text-slate-500 mt-2 truncate">
+                          Item: <strong className="text-slate-800">{rev.productName}</strong>
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-5 pt-3.5 border-t border-slate-100">
+                      <div className="w-9 h-9 rounded-full bg-[#0B1B30] text-[#FF9F43] font-black text-xs flex items-center justify-center shrink-0">
+                        {(rev.authorName || 'K')[0].toUpperCase()}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-headline text-xs font-bold text-[#142B4A] truncate">
+                          {rev.authorName || 'Verified Farmer'}
+                        </span>
+                        <span className="text-[11px] text-[#5A6B82] truncate">
+                          {rev.location || 'AgriMart Kisan Hub'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <span className="font-price text-sm text-[#142B4A] font-extrabold ml-1">4.91 / 5</span>
-              <span className="text-xs text-[#74777E]">from 62,000+ Kisan reviews</span>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Review 1 */}
-            <div className="bg-white rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-[#CBD5E1]/40">
-              <div>
-                <div className="flex text-[#FF9F43] mb-3">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <span key={s} className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      star
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-[#263449] leading-relaxed italic">
-                  "Sowed the Abhinav tomato seeds across my 3 acres. Germination was near 98% with zero damping-off issues. The AgriMart agronomist guided me on foliar NPK sprays, and yield went up 28%."
-                </p>
+          ) : (
+            <div className="bg-white/90 border border-slate-200/90 rounded-3xl p-8 sm:p-10 text-center max-w-2xl mx-auto shadow-sm">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-[#FF9F43] flex items-center justify-center mx-auto mb-3 shadow-xs">
+                <span className="material-symbols-outlined text-[26px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  verified
+                </span>
               </div>
-              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80"
-                    alt="Rajinder Singh Cheema"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1">
-                    <span className="font-headline text-xs font-bold text-[#142B4A]">Rajinder Singh Cheema</span>
-                    <span className="material-symbols-outlined text-[14px] text-emerald-600" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      verified
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-[#5A6B82]">Wheat & Tomato Farmer • Ludhiana, PB</span>
-                </div>
+              <h3 className="font-headline text-lg sm:text-xl font-bold text-slate-900">
+                100% Genuine, Post-Delivery Reviews
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed max-w-lg mx-auto">
+                AgriMart only features authentic feedback submitted by farmers after verified farm-gate order delivery. No fake or auto-generated testimonials.
+              </p>
+              <div className="mt-5 flex items-center justify-center gap-3">
+                <Link
+                  href="/orders"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B1B30] hover:bg-[#152B48] text-white text-xs font-bold transition-all shadow-xs"
+                >
+                  <span>Rate Your Delivered Orders</span>
+                  <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </Link>
               </div>
             </div>
-
-            {/* Review 2 */}
-            <div className="bg-white rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-[#CBD5E1]/40">
-              <div>
-                <div className="flex text-[#FF9F43] mb-3">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <span key={s} className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      star
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-[#263449] leading-relaxed italic">
-                  "Earlier local dealers charged inflated rates with zero guarantee of genuine brands. With AgriMart, 50 bags of vermicompost and micronutrient tonics arrived straight to my farm in 48 hours."
-                </p>
-              </div>
-              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80"
-                    alt="Venkatesh Gowda"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1">
-                    <span className="font-headline text-xs font-bold text-[#142B4A]">Venkatesh Gowda</span>
-                    <span className="material-symbols-outlined text-[14px] text-emerald-600" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      verified
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-[#5A6B82]">Pomegranate & Chilli Grower • Chitradurga</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Review 3 */}
-            <div className="bg-white rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-[#CBD5E1]/40">
-              <div>
-                <div className="flex text-[#FF9F43] mb-3">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <span key={s} className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      star
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-[#263449] leading-relaxed italic">
-                  "Their cold-pressed neem oil and bio-fungicides cleared our powdery mildew problem without any chemical burns on the crop. Genuine FCO approved products give real peace of mind."
-                </p>
-              </div>
-              <div className="flex items-center gap-3 mt-6 pt-4 border-t border-slate-100">
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80"
-                    alt="Sunita Devi"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1">
-                    <span className="font-headline text-xs font-bold text-[#142B4A]">Sunita Devi</span>
-                    <span className="material-symbols-outlined text-[14px] text-emerald-600" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      verified
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-[#5A6B82]">Polyhouse Floriculture • Nashik, MH</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </motion.section>
 
         {/* SECTION 7: FLOATING QUICK FARM CART BAR */}

@@ -161,21 +161,46 @@ export default function AdminPanel({ onLogout }) {
     const fetchFeedback = async () => {
       setFeedbackLoading(true);
       try {
-        const snapshot = await get(rtdbRef(realtimeDb, 'feedback'));
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const feedbackList = Object.keys(data).map(key => ({
-            id: key,
-            ...data[key]
-          }));
-          feedbackList.sort((a, b) => new Date(b.submittedAt || 0).getTime() - new Date(a.submittedAt || 0).getTime());
-          setFeedback(feedbackList);
-        } else {
-          setFeedback([]);
+        const [feedbackSnap, reviewsSnap] = await Promise.all([
+          get(rtdbRef(realtimeDb, 'feedback')),
+          get(rtdbRef(realtimeDb, 'allReviews')),
+        ]);
+        const list = [];
+        if (feedbackSnap.exists()) {
+          const data = feedbackSnap.val();
+          Object.keys(data).forEach((key) => {
+            list.push({ id: key, type: 'feedback', ...data[key] });
+          });
         }
+        if (reviewsSnap.exists()) {
+          const revData = reviewsSnap.val();
+          Object.keys(revData).forEach((key) => {
+            const r = revData[key];
+            list.push({
+              id: key,
+              type: 'product_review',
+              userName: r.authorName || 'Kisan Customer',
+              userEmail: r.authorEmail,
+              message: r.comment || r.title || 'Verified review',
+              rating: r.rating || 5,
+              productName: r.productName,
+              productId: r.productId,
+              orderId: r.orderId,
+              submittedAt: r.createdAt,
+              location: r.location,
+              ...r,
+            });
+          });
+        }
+        list.sort(
+          (a, b) =>
+            new Date(b.submittedAt || b.createdAt || 0).getTime() -
+            new Date(a.submittedAt || a.createdAt || 0).getTime()
+        );
+        setFeedback(list);
       } catch (err) {
-        console.error('Failed to fetch feedback:', err);
-        showToast('Failed to fetch feedback', 'error');
+        console.error('Failed to fetch feedback & reviews:', err);
+        showToast('Failed to fetch feedback & reviews', 'error');
       } finally {
         setFeedbackLoading(false);
       }
@@ -284,9 +309,22 @@ export default function AdminPanel({ onLogout }) {
   const confirmDeleteFeedback = async () => {
     if (!feedbackDeleteTarget) return;
     try {
-      await remove(rtdbRef(realtimeDb, `feedback/${feedbackDeleteTarget.id}`));
+      if (feedbackDeleteTarget.type === 'product_review') {
+        await Promise.allSettled([
+          remove(rtdbRef(realtimeDb, `allReviews/${feedbackDeleteTarget.id}`)),
+          feedbackDeleteTarget.productId
+            ? remove(rtdbRef(realtimeDb, `productReviews/${feedbackDeleteTarget.productId}/${feedbackDeleteTarget.id}`))
+            : Promise.resolve(),
+          feedbackDeleteTarget.orderId && feedbackDeleteTarget.productId
+            ? remove(rtdbRef(realtimeDb, `orders/${feedbackDeleteTarget.orderId}/reviews/${feedbackDeleteTarget.productId}`))
+            : Promise.resolve(),
+        ]);
+        showToast('Product review deleted', 'success');
+      } else {
+        await remove(rtdbRef(realtimeDb, `feedback/${feedbackDeleteTarget.id}`));
+        showToast('Feedback deleted', 'success');
+      }
       setFeedback(prev => prev.filter(f => f.id !== feedbackDeleteTarget.id));
-      showToast('Feedback deleted', 'success');
       setFeedbackDeleteTarget(null);
     } catch (err) {
       console.error('Error deleting feedback:', err);
@@ -760,14 +798,15 @@ export default function AdminPanel({ onLogout }) {
   const renderFeedback = () => (
     <>
       {feedbackLoading ? (
-        <TableSkeleton rows={5} columns={3} />
+        <TableSkeleton rows={5} columns={4} />
       ) : (
         <DataShell>
-          <table className="w-full min-w-[660px] text-sm">
+          <table className="w-full min-w-[720px] text-sm">
             <thead className="border-b border-slate-200 bg-slate-50/80">
               <tr>
-                <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Username</th>
-                <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Feedback</th>
+                <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Customer</th>
+                <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Type &amp; Rating</th>
+                <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Message / Review</th>
                 <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Date</th>
                 <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-700">Actions</th>
               </tr>
@@ -775,8 +814,8 @@ export default function AdminPanel({ onLogout }) {
             <tbody className="divide-y divide-slate-100">
               {filteredFeedback.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="px-5 py-8 text-center text-sm text-slate-500">
-                    {q ? 'No feedback matches your search.' : 'No feedback found.'}
+                  <td colSpan="5" className="px-5 py-8 text-center text-sm text-slate-500">
+                    {q ? 'No feedback matches your search.' : 'No feedback or reviews found.'}
                   </td>
                 </tr>
               ) : (
@@ -786,10 +825,32 @@ export default function AdminPanel({ onLogout }) {
                       <div className="font-semibold text-slate-900">{item.userName || 'Guest'}</div>
                       {item.userEmail && <div className="max-w-[180px] truncate text-xs text-slate-500">{item.userEmail}</div>}
                     </td>
-                    <td className="px-5 py-4 text-slate-700">
-                      <p className="max-w-2xl whitespace-pre-wrap leading-relaxed">{item.message}</p>
+                    <td className="px-5 py-4">
+                      {item.type === 'product_review' || item.rating ? (
+                        <div className="space-y-1">
+                          <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-900 border border-amber-200">
+                            ⭐ {item.rating || 5}.0 Stars
+                          </span>
+                          {item.productName && (
+                            <p className="text-[11px] font-semibold text-slate-700 truncate max-w-[180px]" title={item.productName}>
+                              📦 {item.productName}
+                            </p>
+                          )}
+                          <span className="block text-[10px] font-bold text-emerald-700">
+                            ✓ Post-Delivery Review
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700">
+                          General Feedback
+                        </span>
+                      )}
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap text-slate-600">
+                    <td className="px-5 py-4 text-slate-700">
+                      {item.title && <p className="font-bold text-xs text-slate-900 mb-0.5">{item.title}</p>}
+                      <p className="max-w-xl whitespace-pre-wrap leading-relaxed text-xs">{item.message}</p>
+                    </td>
+                    <td className="px-5 py-4 whitespace-nowrap text-slate-600 text-xs">
                       {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Unknown'}
                     </td>
                     <td className="px-5 py-4">
