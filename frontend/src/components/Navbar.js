@@ -133,7 +133,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md shadow-[0_1px_8px_rgba(11,27,48,0.08)] border-b border-[#E2E8F0] overflow-hidden">
+      <header className="sticky top-0 left-0 right-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md shadow-[0_1px_8px_rgba(11,27,48,0.08)] border-b border-[#E2E8F0]">
         {/* Top Kisan Notice Bar - only displayed on home page */}
         {isHomePage && (
           <div className="bg-[#0B1B30] text-white text-[11px] font-semibold overflow-hidden">
@@ -167,7 +167,7 @@ export default function Navbar() {
         )}
 
         {/* Main Brand & Actions Header */}
-        <div className="h-16 sm:h-20 max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
+        <div className="h-16 sm:h-20 max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 min-w-0 relative z-20">
           {/* Brand Logo & Name */}
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <Link href="/" prefetch={true} className="flex items-center gap-2 group">
@@ -376,48 +376,60 @@ export default function Navbar() {
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50 origin-top-right"
+                    className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-1.5 z-50 origin-top-right overflow-hidden ring-1 ring-black/5"
                     onClick={() => setUserDropdownOpen(false)}
                   >
-                    <div className="px-4 py-2 border-b border-slate-100">
+                    <div className="px-4 py-3 border-b border-slate-100 bg-[#FAF5EB]/60">
                       <p className="text-xs font-bold text-slate-900 truncate">
                         {user?.displayName || 'AgriMart Customer'}
                       </p>
-                      <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
+                      <p className="text-[11px] text-slate-500 truncate mt-0.5">{user?.email}</p>
                     </div>
-                    <Link
-                      href="/orders"
-                      prefetch={true}
-                      className="flex items-center gap-2 px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">local_shipping</span>
-                      <span>My Orders</span>
-                    </Link>
-                    <Link
-                      href="/wishlist"
-                      prefetch={true}
-                      className="flex items-center gap-2 px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 transition-colors duration-150"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">favorite</span>
-                      <span>My Wishlist</span>
-                    </Link>
-                    {isAdmin && (
+                    <div className="py-1">
                       <Link
-                        href="/admin/panel"
+                        href="/orders"
                         prefetch={true}
-                        className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 transition-colors duration-150"
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0B1B30] transition-colors duration-150"
                       >
-                        <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
-                        <span>Admin Dashboard</span>
+                        <span className="material-symbols-outlined text-[17px] text-[#5A6B82]">local_shipping</span>
+                        <span>My Orders</span>
                       </Link>
-                    )}
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 text-left border-t border-slate-100 transition-colors duration-150"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">logout</span>
-                      <span>Logout</span>
-                    </button>
+                      <Link
+                        href="/wishlist"
+                        prefetch={true}
+                        className="flex items-center justify-between px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0B1B30] transition-colors duration-150"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <span className="material-symbols-outlined text-[17px] text-rose-500">favorite</span>
+                          <span>My Wishlist</span>
+                        </span>
+                        {safeWishlistCount > 0 && (
+                          <span className="text-[10px] bg-rose-50 text-rose-600 font-bold px-1.5 py-0.5 rounded-full">
+                            {safeWishlistCount}
+                          </span>
+                        )}
+                      </Link>
+                      {isAdmin && (
+                        <Link
+                          href="/admin/panel"
+                          prefetch={true}
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 transition-colors duration-150"
+                        >
+                          <span className="material-symbols-outlined text-[17px]">admin_panel_settings</span>
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
+                    </div>
+                    <div className="border-t border-slate-100 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 text-left transition-colors duration-150 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[17px] text-rose-500">logout</span>
+                        <span>Log Out</span>
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -530,7 +542,7 @@ export default function Navbar() {
         </div>
 
         {/* Aisle Category Navigation Bar */}
-        <div className="bg-[#EDF2F7] border-t border-b border-[#CBD5E1]/40 overflow-hidden w-full">
+        <div className="bg-[#EDF2F7] border-t border-b border-[#CBD5E1]/40 w-full relative z-10">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 h-10 sm:h-11 flex items-center justify-between min-w-0 w-full overflow-hidden">
             <nav className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar py-1 min-w-0 w-full">
               <Link
@@ -591,8 +603,42 @@ export default function Navbar() {
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.24, ease: EASE.out }}
-                className="relative z-50 sm:hidden bg-white border-b border-slate-200 px-4 py-3 space-y-2 overflow-hidden shadow-lg"
+                className="relative z-50 sm:hidden bg-white border-b border-slate-200 px-4 py-3 space-y-3 shadow-2xl max-h-[calc(100vh-140px)] overflow-y-auto no-scrollbar"
               >
+                {/* User Account Bar in Mobile Drawer */}
+                {user ? (
+                  <div className="p-3 bg-[#FAF5EB] rounded-xl border border-[#E5DFD3] flex items-center justify-between shadow-xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-[#0B1B30] text-[#FF9F43] font-bold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        {user.displayName ? user.displayName[0].toUpperCase() : 'U'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[#0B1B30] truncate">
+                          {user.displayName || 'AgriMart Customer'}
+                        </p>
+                        <p className="text-[11px] text-[#5A6B82] truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    {isAdmin && (
+                      <span className="text-[10px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded-full shrink-0">
+                        Admin
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between p-3 bg-[#0B1B30] text-white rounded-xl shadow-sm active:scale-[0.98] transition-all"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[20px] text-[#FF9F43]">account_circle</span>
+                      <span className="text-xs font-bold">Sign In to AgriMart</span>
+                    </div>
+                    <span className="text-[11px] text-[#FF9F43] font-bold">Sign In &rarr;</span>
+                  </Link>
+                )}
+
                 <div className="pb-2 border-b border-slate-100 flex items-center justify-between">
                   <button
                     type="button"
@@ -616,21 +662,26 @@ export default function Navbar() {
                     {isServiceable ? deliveryTime || '⚡ Express Delivery' : 'Outside 10km'}
                   </span>
                 </div>
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/dashboard?category=${cat.slug}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block py-1.5 text-sm font-medium text-slate-800 hover:text-primary transition-colors duration-150"
-                  >
-                    {cat.label}
-                  </Link>
-                ))}
-                <div className="pt-2 border-t border-slate-100 space-y-2">
+
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#5A6B82] block px-1">Agri Input Aisles</span>
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat.slug}
+                      href={`/dashboard?category=${cat.slug}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-2 py-1.5 text-sm font-medium text-slate-800 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
+                    >
+                      {cat.label}
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 space-y-1.5">
                   <Link
                     href="/wishlist"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between text-sm text-slate-700 py-1 hover:text-primary transition-colors duration-150"
+                    className="flex items-center justify-between text-sm text-slate-700 px-2 py-1.5 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
                   >
                     <span className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-rose-500">favorite</span>
@@ -645,7 +696,7 @@ export default function Navbar() {
                   <Link
                     href="/orders"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-2 text-sm text-slate-700 py-1 hover:text-primary transition-colors duration-150"
+                    className="flex items-center gap-2 text-sm text-slate-700 px-2 py-1.5 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
                   >
                     <span className="material-symbols-outlined text-[18px]">package_2</span>
                     <span>Track My Orders</span>
@@ -653,7 +704,7 @@ export default function Navbar() {
                   <Link
                     href="/about-us"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-2 text-sm text-slate-700 py-1 hover:text-primary transition-colors duration-150"
+                    className="flex items-center gap-2 text-sm text-slate-700 px-2 py-1.5 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
                   >
                     <span className="material-symbols-outlined text-[18px]">info</span>
                     <span>About AgriMart</span>
@@ -662,13 +713,33 @@ export default function Navbar() {
                     <Link
                       href="/admin/panel"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-2 text-sm font-bold text-indigo-700 py-1"
+                      className="flex items-center gap-2 text-sm font-bold text-indigo-700 px-2 py-1.5 hover:bg-indigo-50 rounded-lg"
                     >
                       <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
                       <span>Admin Panel</span>
                     </Link>
                   )}
                 </div>
+
+                {/* Mobile Log Out Action */}
+                {user && (
+                  <div className="pt-2 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs transition-colors duration-150 border border-rose-200/70 shadow-xs active:scale-[0.98] cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[18px] text-rose-500">logout</span>
+                        <span>Log Out of AgriMart</span>
+                      </span>
+                      <span className="text-[10px] text-rose-500 font-semibold">{user.email?.split('@')[0]}</span>
+                    </button>
+                  </div>
+                )}
               </motion.div>
             </>
           )}

@@ -244,13 +244,15 @@ export default function LoginPage({ onAdminLogin }) {
       <header className="relative z-10 bg-white border-b border-slate-200">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 transition hover:opacity-90">
-              <img src="/images/logo.png" alt="AgriMart" className="h-10 w-auto object-contain rounded-xl" />
+            <Link href="/" className="flex items-center gap-2.5 transition hover:opacity-90 group">
+              <div className="w-9 h-9 rounded-xl bg-[#0B1B30] flex items-center justify-center text-[#FF9F43] shadow-sm transition-transform duration-150 ease-out group-hover:scale-[1.04]">
+                <span className="material-symbols-outlined text-[22px]">potted_plant</span>
+              </div>
               <div>
                 <span className="text-xl font-extrabold tracking-tight text-[#0B1B30] block leading-none">
-                  AGRI <span className="text-[#E27B12]">MART</span>
+                  Agri<span className="text-[#FF9F43]">Mart</span>
                 </span>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#FF9F43]">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#E27B12]">
                   ⚡ Certified Farm Inputs &amp; Seeds
                 </span>
               </div>

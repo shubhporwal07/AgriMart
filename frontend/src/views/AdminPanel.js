@@ -1081,7 +1081,9 @@ export default function AdminPanel({ onLogout }) {
       <div className="min-h-screen lg:pl-72">
         <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col border-r border-[#CBD5E1]/20 bg-[#0B1B30] px-6 py-7 text-white shadow-2xl lg:flex">
           <div className="mb-8 flex items-center gap-3">
-            <img src="/images/logo.png" alt="AgriMart logo" className="h-11 w-11 rounded-xl object-contain bg-white p-1" />
+            <div className="h-11 w-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-[#FF9F43] shadow-inner shrink-0">
+              <span className="material-symbols-outlined text-[26px]">potted_plant</span>
+            </div>
             <div>
               <p className="font-headline text-lg font-extrabold leading-tight text-white">AGRIMART</p>
               <p className="text-xs font-bold uppercase tracking-wide text-[#FF9F43]">Kisan Hub Console</p>

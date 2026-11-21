@@ -143,6 +143,8 @@ export function AuthProvider({ children }) {
       await signOut(auth).catch(() => {});
       localStorage.removeItem('adminSession');
       localStorage.removeItem('agrimart_user_email');
+      localStorage.removeItem('agrimart_user_name');
+      localStorage.removeItem('agrimart_customer_session_v1');
       localStorage.removeItem('userEmail');
       setUser(null);
       setUserRole(null);

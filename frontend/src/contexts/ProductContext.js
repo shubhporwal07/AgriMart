@@ -11,15 +11,29 @@ const LOCAL_PRODUCTS_KEY = 'agrimart_seeds_local_v7';
 const WISHLIST_STORAGE_KEY = 'agrimart_wishlist_v1';
 const DB_TIMEOUT_MS = 25000;
 
+export const CANONICAL_CATEGORY_MAP = {
+  'Grain & Field Crop Seeds': 'Grain & Crop Seeds',
+  'NPK & Water Soluble Fertilizers': 'NPK & Water Soluble',
+  'Micronutrients & Plant Growth': 'Micronutrients & Growth',
+  'Farm Sprayers & Agri Tools': 'Farm Tools & Sprayers',
+  'Soil Health & Testing Kits': 'Soil Health Kits',
+};
+
+export const normalizeCategory = (name) => {
+  if (!name || typeof name !== 'string') return '';
+  const trimmed = name.trim();
+  return CANONICAL_CATEGORY_MAP[trimmed] || trimmed;
+};
+
 export const DEFAULT_AGRI_CATEGORIES = [
   'Vegetable Seeds',
-  'Grain & Field Crop Seeds',
+  'Grain & Crop Seeds',
   'Organic Manure & Compost',
-  'NPK & Water Soluble Fertilizers',
-  'Micronutrients & Plant Growth',
+  'NPK & Water Soluble',
+  'Micronutrients & Growth',
   'Bio-Pesticides & Fungicides',
-  'Farm Sprayers & Agri Tools',
-  'Soil Health & Testing Kits',
+  'Farm Tools & Sprayers',
+  'Soil Health Kits',
 ];
 
 // Compress image helper
@@ -349,10 +363,10 @@ export function ProductProvider({ children }) {
     const set = new Set(DEFAULT_AGRI_CATEGORIES);
     customCategories.forEach((c) => {
       const name = typeof c === 'string' ? c : c?.name;
-      if (name && name.trim()) set.add(name.trim());
+      if (name && name.trim()) set.add(normalizeCategory(name));
     });
     products.forEach((p) => {
-      if (p.category && p.category.trim()) set.add(p.category.trim());
+      if (p.category && p.category.trim()) set.add(normalizeCategory(p.category));
     });
     return Array.from(set);
   }, [customCategories, products]);
