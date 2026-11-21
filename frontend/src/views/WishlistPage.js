@@ -131,12 +131,12 @@ export default function WishlistPage() {
                           type="button"
                           whileTap={iconTap}
                           onClick={() => removeFromWishlist(product.id)}
-                          className="text-rose-500 hover:text-rose-600 transition-colors duration-150 p-1 rounded-full hover:bg-rose-50"
+                          className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-rose-500 hover:text-rose-600 transition-colors duration-150 hover:bg-rose-50 shrink-0"
                           aria-label="Remove from wishlist"
                           title="Remove from Wishlist"
                         >
                           <span
-                            className="material-symbols-outlined text-[18px] block"
+                            className="material-symbols-outlined text-[18px] flex items-center justify-center leading-none"
                             style={{ fontVariationSettings: "'FILL' 1" }}
                           >
                             favorite

@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 import { useProducts } from '../contexts/ProductContext';
-import { floatingBarVariants, sectionRevealProps, buttonTap, iconTap } from '../utils/motion';
+import { floatingBarVariants, sectionRevealProps, buttonTap, iconTap, EASE } from '../utils/motion';
 import { realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, onValue } from 'firebase/database';
 
@@ -312,20 +312,23 @@ export default function LandingPage() {
                             addToWishlist(item);
                           }
                         }}
-                        className={`p-2 rounded-xl border transition-colors duration-150 shrink-0 ${
+                        className={`w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 transition-colors duration-150 shadow-xs ${
                           isInWishlist(item.id)
-                            ? 'bg-rose-50 border-rose-300 text-rose-500'
-                            : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500'
+                            ? 'bg-rose-50 border-rose-300 text-rose-500 hover:bg-rose-100'
+                            : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50/40'
                         }`}
                         title={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
                         aria-label="Wishlist item"
                       >
-                        <span
-                          className="material-symbols-outlined text-[18px] block"
+                        <motion.span
+                          key={isInWishlist(item.id) ? 'filled' : 'outline'}
+                          animate={{ scale: isInWishlist(item.id) ? [1, 1.25, 1] : 1 }}
+                          transition={{ duration: 0.22, ease: EASE.out }}
+                          className="material-symbols-outlined text-[20px] flex items-center justify-center leading-none"
                           style={isInWishlist(item.id) ? { fontVariationSettings: "'FILL' 1" } : {}}
                         >
                           favorite
-                        </span>
+                        </motion.span>
                       </motion.button>
                       <button
                         type="button"
@@ -333,7 +336,7 @@ export default function LandingPage() {
                           e.stopPropagation();
                           addToCart(item, 1);
                         }}
-                        className={`flex-1 ${isFirst ? 'bg-[#142B4A] hover:bg-[#1B385D] text-white' : 'bg-white hover:bg-[#142B4A] hover:text-white text-[#142B4A] border border-[#142B4A]/30'} text-xs py-2.5 rounded-xl font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm`}
+                        className={`h-11 flex-1 ${isFirst ? 'bg-[#142B4A] hover:bg-[#1B385D] text-white' : 'bg-white hover:bg-[#142B4A] hover:text-white text-[#142B4A] border border-[#142B4A]/30'} text-xs rounded-xl font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm`}
                       >
                         <span className="material-symbols-outlined text-[17px]">add_shopping_cart</span>
                         <span>Quick Order {isFirst ? 'Kit' : 'Combo'}</span>
@@ -523,7 +526,7 @@ export default function LandingPage() {
                     <span className="font-price text-base font-extrabold text-[#142B4A]">
                       ₹{item.price}
                     </span>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                       <motion.button
                         type="button"
                         whileTap={iconTap}
@@ -535,20 +538,23 @@ export default function LandingPage() {
                             addToWishlist(item);
                           }
                         }}
-                        className={`p-1.5 rounded-xl border transition-colors duration-150 ${
+                        className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-colors duration-150 shadow-xs ${
                           isInWishlist(item.id)
-                            ? 'bg-rose-50 border-rose-300 text-rose-500'
-                            : 'bg-slate-50 border-slate-200 text-slate-400 hover:text-rose-500'
+                            ? 'bg-rose-50 border-rose-300 text-rose-500 hover:bg-rose-100'
+                            : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50/40'
                         }`}
                         title={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
                         aria-label={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
                       >
-                        <span
-                          className="material-symbols-outlined text-[18px] block"
+                        <motion.span
+                          key={isInWishlist(item.id) ? 'filled' : 'outline'}
+                          animate={{ scale: isInWishlist(item.id) ? [1, 1.25, 1] : 1 }}
+                          transition={{ duration: 0.22, ease: EASE.out }}
+                          className="material-symbols-outlined text-[18px] flex items-center justify-center leading-none"
                           style={isInWishlist(item.id) ? { fontVariationSettings: "'FILL' 1" } : {}}
                         >
                           favorite
-                        </span>
+                        </motion.span>
                       </motion.button>
                       <motion.button
                         type="button"
@@ -557,11 +563,12 @@ export default function LandingPage() {
                           e.stopPropagation();
                           addToCart(item, 1);
                         }}
-                        className="bg-[#142B4A] hover:bg-[#1B385D] text-white p-1.5 rounded-xl transition-colors duration-150 shadow-sm"
+                        className="h-9 px-3 bg-[#142B4A] hover:bg-[#1B385D] text-white rounded-xl text-xs font-bold transition-colors duration-150 shadow-sm flex items-center justify-center gap-1 shrink-0"
                         title="Add to Farm Cart"
                         aria-label="Add to Farm Cart"
                       >
-                        <span className="material-symbols-outlined text-[18px] block">add</span>
+                        <span className="material-symbols-outlined text-[16px]">add</span>
+                        <span>ADD</span>
                       </motion.button>
                     </div>
                   </div>

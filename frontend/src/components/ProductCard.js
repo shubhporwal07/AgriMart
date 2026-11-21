@@ -156,10 +156,10 @@ export default function ProductCard({
                 addToWishlist(product);
               }
             }}
-            className={`transition-all duration-150 p-1 sm:p-1.5 rounded-full shadow-xs border shrink-0 ${
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-150 shadow-xs border shrink-0 ${
               isWishlisted
                 ? 'bg-rose-50 border-rose-200 text-rose-500 hover:bg-rose-100'
-                : 'bg-white/90 border-slate-200/80 text-slate-400 hover:text-rose-500 hover:bg-white'
+                : 'bg-white/90 border-slate-200/80 text-slate-400 hover:text-rose-500 hover:bg-white hover:border-rose-200'
             }`}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             title={isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}
@@ -169,7 +169,7 @@ export default function ProductCard({
               initial={mounted ? { scale: 0.8, opacity: 0.7 } : false}
               animate={{ scale: isWishlisted ? [1, 1.22, 1] : 1, opacity: 1 }}
               transition={{ duration: 0.22, ease: EASE.out }}
-              className="material-symbols-outlined text-[16px] sm:text-[18px] block"
+              className="material-symbols-outlined text-[16px] sm:text-[18px] flex items-center justify-center leading-none"
               style={isWishlisted ? { fontVariationSettings: "'FILL' 1" } : {}}
             >
               favorite
