@@ -34,7 +34,7 @@ const FEEDBACK_CATEGORIES = [
 
 const MAX_CHARS = 500;
 
-export default function FeedbackWidget({ className = '', label = 'Feedback' }) {
+export default function FeedbackWidget({ className = '', label = 'Feedback', asLink = false }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
@@ -141,26 +141,39 @@ export default function FeedbackWidget({ className = '', label = 'Feedback' }) {
 
   return (
     <>
-      {/* Feedback Button (in Footer) */}
-      <motion.button
-        type="button"
-        id="site-feedback-tag"
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(true)}
-        className={`inline-flex items-center gap-2 bg-[#0B1B30] hover:bg-[#152B48] text-white px-4 py-2 rounded-full shadow-md border border-white/20 cursor-pointer transition-all duration-150 group shrink-0 ${className}`}
-        title="Share your feedback or suggestions with AgriMart"
-        aria-label="Open Feedback Form"
-      >
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span
-          className="material-symbols-outlined text-[18px] text-[#FF9F43] group-hover:rotate-12 transition-transform"
-          style={{ fontVariationSettings: "'FILL' 1" }}
+      {/* Feedback Trigger in Footer */}
+      {asLink ? (
+        <button
+          type="button"
+          id="site-feedback-tag"
+          onClick={() => setIsOpen(true)}
+          className={`hover:text-[#142B4A] hover:underline transition-colors text-xs text-[#5A6B82] font-normal cursor-pointer bg-transparent border-0 p-0 ${className}`}
+          title="Share your feedback or suggestions with AgriMart"
+          aria-label="Open Feedback Form"
         >
-          rate_review
-        </span>
-        <span className="text-xs font-bold tracking-wide">{label}</span>
-      </motion.button>
+          {label}
+        </button>
+      ) : (
+        <motion.button
+          type="button"
+          id="site-feedback-tag"
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsOpen(true)}
+          className={`inline-flex items-center gap-2 bg-[#0B1B30] hover:bg-[#152B48] text-white px-4 py-2 rounded-full shadow-md border border-white/20 cursor-pointer transition-all duration-150 group shrink-0 ${className}`}
+          title="Share your feedback or suggestions with AgriMart"
+          aria-label="Open Feedback Form"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span
+            className="material-symbols-outlined text-[18px] text-[#FF9F43] group-hover:rotate-12 transition-transform"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            rate_review
+          </span>
+          <span className="text-xs font-bold tracking-wide">{label}</span>
+        </motion.button>
+      )}
 
       {/* Animated Feedback Box / Modal */}
       <AnimatePresence>

@@ -109,7 +109,7 @@ export default function Footer() {
               <li className="hover:text-[#142B4A] transition-colors">
                 <Link href="/about-us">Rural & Farm Delivery Centers</Link>
               </li>
-              <li className="pt-1">
+              <li className="hover:text-[#142B4A] transition-colors">
                 <button
                   type="button"
                   onClick={() => {
@@ -117,10 +117,9 @@ export default function Footer() {
                     if (btn) btn.click();
                     else window.dispatchEvent(new CustomEvent('open-agrimart-feedback'));
                   }}
-                  className="hover:underline flex items-center gap-1.5 text-left text-xs font-bold text-[#142B4A] hover:text-[#E27B12] transition-colors cursor-pointer"
+                  className="hover:underline text-left text-sm text-[#5A6B82] hover:text-[#142B4A] transition-colors cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[16px] text-[#FF9F43]">rate_review</span>
-                  <span>Share Feedback & Suggestions</span>
+                  Give Feedback
                 </button>
               </li>
             </ul>
@@ -209,20 +208,26 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="pt-6 mt-4 border-t border-[#E5DFD3]/70 flex flex-col md:flex-row items-center justify-between gap-4 text-[#5A6B82] text-xs">
-          <p className="order-2 md:order-1 text-center md:text-left">
-            © 2025 AgriMart Agritech Solutions Pvt Ltd. All rights reserved.
-          </p>
-
-          <div className="order-1 md:order-2 flex items-center justify-center">
-            <FeedbackWidget />
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center md:text-left">
+            <p>© 2025 AgriMart Agritech Solutions Pvt Ltd. All rights reserved.</p>
+            <span className="hidden lg:inline text-slate-300">|</span>
+            <span className="hidden lg:inline-flex items-center gap-1 font-medium text-slate-600">
+              <span className="material-symbols-outlined text-[15px] text-emerald-700">verified</span>
+              Seed License No: AGRI/SEED/DL-8841 • FCO/CR/2021/409
+            </span>
           </div>
 
-          <div className="order-3 flex flex-wrap items-center justify-center md:justify-end gap-4 sm:gap-6">
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="material-symbols-outlined text-[16px] text-emerald-700">verified</span>
-              Seed License No: AGRI/SEED/DL-8841
-            </span>
-            <span className="font-medium text-slate-700">FCO Registration: FCO/CR/2021/409</span>
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-5 sm:gap-6">
+            <Link href="/privacy-policy" className="hover:text-[#142B4A] hover:underline transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms-of-service" className="hover:text-[#142B4A] hover:underline transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/return-policy" className="hover:text-[#142B4A] hover:underline transition-colors">
+              Return Policy
+            </Link>
+            <FeedbackWidget asLink label="Give Feedback" />
           </div>
         </div>
       </div>
