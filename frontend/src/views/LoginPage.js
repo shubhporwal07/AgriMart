@@ -23,8 +23,10 @@ import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import Toast from '../components/Toast';
 import { getFirebaseErrorMessage } from '../utils/validators';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function LoginPage({ onAdminLogin }) {
+  const { isHindi } = useLanguage();
   const { triggerAuthNotice, closeAuthNotice } = useAuth();
   const ADMIN_IDENTIFIERS = ['admin', 'admin@gmail.com', 'admin@agrimart.farm'];
   const ADMIN_PASSWORD = 'admin9876';
@@ -379,15 +381,15 @@ export default function LoginPage({ onAdminLogin }) {
                   Agri<span className="text-[#FF9F43]">Mart</span>
                 </span>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-[#E27B12]">
-                  ⚡ Certified Farm Inputs &amp; Seeds
+                  {isHindi ? '⚡ प्रमाणित कृषि इनपुट्स एवं बीज' : '⚡ Certified Farm Inputs & Seeds'}
                 </span>
               </div>
             </Link>
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/dashboard?category=vegetable-seeds" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">Hybrid Seeds</Link>
-              <Link href="/dashboard?category=organic-manure-compost" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">Bio Fertilizers</Link>
-              <Link href="/dashboard?category=npk-water-soluble" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">NPK Nutrients</Link>
-              <Link href="/about-us" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">Why AgriMart</Link>
+              <Link href="/dashboard?category=vegetable-seeds" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">{isHindi ? 'हाइब्रिड बीज' : 'Hybrid Seeds'}</Link>
+              <Link href="/dashboard?category=organic-manure-compost" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">{isHindi ? 'जैविक खाद एवं उर्वरक' : 'Bio Fertilizers'}</Link>
+              <Link href="/dashboard?category=npk-water-soluble" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">{isHindi ? 'एनपीके पोषक तत्व' : 'NPK Nutrients'}</Link>
+              <Link href="/about-us" className="text-sm font-semibold text-slate-700 hover:text-[#0B1B30] transition">{isHindi ? 'एग्रीमार्ट क्यों' : 'Why AgriMart'}</Link>
             </div>
           </div>
         </nav>
@@ -409,13 +411,13 @@ export default function LoginPage({ onAdminLogin }) {
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FF9F43]/20 border border-[#FF9F43]/30 text-[#FF9F43] text-xs font-extrabold uppercase tracking-wider mb-6">
                 <Zap className="w-4 h-4 fill-current" />
-                India's Certified Farm Inputs Express
+                {isHindi ? 'भारत का प्रमाणित कृषि इनपुट एक्सप्रेस' : "India's Certified Farm Inputs Express"}
               </div>
               <h2 className="text-3xl lg:text-5xl font-black tracking-tight leading-tight mb-4">
-                Certified seeds &amp; fertilizers, directly dispatched.
+                {isHindi ? 'प्रमाणित बीज एवं उर्वरक, सीधे प्रेषित।' : 'Certified seeds & fertilizers, directly dispatched.'}
               </h2>
               <p className="text-slate-300 text-sm lg:text-base leading-relaxed max-w-md">
-                Certified high-yield hybrid seeds, pure organic bio-fertilizers, and essential farm inputs dispatched fast to your farmland with Express &amp; Standard options.
+                {isHindi ? 'प्रमाणित उच्च-उत्पादन हाइब्रिड बीज, शुद्ध जैविक उर्वरक और आवश्यक कृषि इनपुट्स एक्सप्रेस एवं मानक विकल्पों के साथ सीधे आपके खेत तक पहुंचाए जाते हैं।' : 'Certified high-yield hybrid seeds, pure organic bio-fertilizers, and essential farm inputs dispatched fast to your farmland with Express & Standard options.'}
               </p>
             </div>
 
@@ -424,19 +426,19 @@ export default function LoginPage({ onAdminLogin }) {
                 <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <span><strong>100% Quality Guaranteed:</strong> Accredited lab germination and FCO certification.</span>
+                <span><strong>{isHindi ? '१००% गुणवत्ता की गारंटी:' : '100% Quality Guaranteed:'}</strong> {isHindi ? 'मान्यता प्राप्त लैब अंकुरण और एफसीओ प्रमाणीकरण।' : 'Accredited lab germination and FCO certification.'}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-slate-200">
                 <div className="w-8 h-8 rounded-full bg-[#FF9F43]/20 text-[#FF9F43] flex items-center justify-center flex-shrink-0">
                   <Sparkles className="w-5 h-5" />
                 </div>
-                <span><strong>Direct Farm Gate Dispatch:</strong> Sourced directly from certified research centers.</span>
+                <span><strong>{isHindi ? 'सीधा खेत तक प्रेषण:' : 'Direct Farm Gate Dispatch:'}</strong> {isHindi ? 'प्रमाणित अनुसंधान केंद्रों से सीधे प्राप्त।' : 'Sourced directly from certified research centers.'}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-slate-200">
                 <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center flex-shrink-0">
                   <Zap className="w-5 h-5" />
                 </div>
-                <span><strong>Dark Pod Network:</strong> Express &amp; Standard parcel dispatch across agricultural belts.</span>
+                <span><strong>{isHindi ? 'डार्क पॉड नेटवर्क:' : 'Dark Pod Network:'}</strong> {isHindi ? 'कृषि क्षेत्रों में एक्सप्रेस एवं मानक पार्सल प्रेषण।' : 'Express & Standard parcel dispatch across agricultural belts.'}</span>
               </div>
             </div>
           </div>
@@ -465,7 +467,7 @@ export default function LoginPage({ onAdminLogin }) {
                       className="absolute inset-0 bg-[#0B1B30] rounded-xl shadow-sm -z-10"
                     />
                   )}
-                  SIGN IN
+                  {isHindi ? 'साइन इन' : 'SIGN IN'}
                 </button>
                 <button
                   type="button"
@@ -486,25 +488,27 @@ export default function LoginPage({ onAdminLogin }) {
                       className="absolute inset-0 bg-[#0B1B30] rounded-xl shadow-sm -z-10"
                     />
                   )}
-                  CREATE ACCOUNT
+                  {isHindi ? 'खाता बनाएं' : 'CREATE ACCOUNT'}
                 </button>
               </div>
 
               <div className="mb-6">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1B30]">
-                  {isSignup ? 'Join AgriMart' : 'Welcome Back'}
+                  {isSignup
+                    ? (isHindi ? 'एग्रीमार्ट से जुड़ें' : 'Join AgriMart')
+                    : (isHindi ? 'वापसी पर स्वागत है' : 'Welcome Back')}
                 </h1>
                 <p className="text-slate-500 text-xs sm:text-sm mt-1">
                   {isSignup
-                    ? 'Get ₹200 discount on your first certified farm inputs order with KISAN200'
-                    : 'Access your farm input orders, saved addresses & wishlist'}
+                    ? (isHindi ? 'KISAN200 कोड के साथ अपने पहले ऑर्डर पर ₹200 की छूट पाएं' : 'Get ₹200 discount on your first certified farm inputs order with KISAN200')
+                    : (isHindi ? 'अपने कृषि इनपुट ऑर्डर, सहेजे गए पते और विशलिस्ट तक पहुंचें' : 'Access your farm input orders, saved addresses & wishlist')}
                 </p>
               </div>
 
               {searchParams?.get('redirect')?.includes('/cart') && (
                 <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-950 flex items-center gap-2.5 font-semibold animate-fadeIn shadow-xs">
                   <Sparkles className="w-4 h-4 text-[#FF9F43] shrink-0" />
-                  <span>Sign in to proceed with your farm delivery. Your cart is saved!</span>
+                  <span>{isHindi ? 'अपनी डिलीवरी जारी रखने के लिए साइन इन करें। आपका कार्ट सुरक्षित है!' : 'Sign in to proceed with your farm delivery. Your cart is saved!'}</span>
                 </div>
               )}
 
@@ -518,7 +522,11 @@ export default function LoginPage({ onAdminLogin }) {
               <form noValidate onSubmit={isSignup ? handleSignup : handleLogin} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    {isSignup ? 'Email Address *' : (isAdminRequested ? 'Email Address or Admin Identifier *' : 'Email Address *')}
+                    {isSignup
+                      ? (isHindi ? 'ईमेल पता *' : 'Email Address *')
+                      : (isAdminRequested
+                          ? (isHindi ? 'ईमेल पता या व्यवस्थापक आईडी *' : 'Email Address or Admin Identifier *')
+                          : (isHindi ? 'ईमेल पता *' : 'Email Address *'))}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -548,7 +556,7 @@ export default function LoginPage({ onAdminLogin }) {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    Password *
+                    {isHindi ? 'पासवर्ड *' : 'Password *'}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -594,7 +602,7 @@ export default function LoginPage({ onAdminLogin }) {
                       className="overflow-hidden"
                     >
                       <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                        Confirm Password
+                        {isHindi ? 'पासवर्ड की पुष्टि करें *' : 'Confirm Password'}
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -637,8 +645,12 @@ export default function LoginPage({ onAdminLogin }) {
                   className="w-full py-3.5 px-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-black rounded-xl transition-colors duration-150 shadow-md flex items-center justify-center gap-2 text-sm disabled:opacity-50 mt-2"
                 >
                   {loading
-                    ? (isSignup ? 'Creating your account...' : 'Signing in...')
-                    : (isSignup ? 'Create Free AgriMart Account' : 'Sign In to AgriMart')
+                    ? (isSignup
+                        ? (isHindi ? 'खाता बनाया जा रहा है...' : 'Creating your account...')
+                        : (isHindi ? 'साइन इन हो रहा है...' : 'Signing in...'))
+                    : (isSignup
+                        ? (isHindi ? 'निःशुल्क एग्रीमार्ट खाता बनाएं' : 'Create Free AgriMart Account')
+                        : (isHindi ? 'एग्रीमार्ट में साइन इन करें' : 'Sign In to AgriMart'))
                   }
                   {!loading && <ArrowRight className="w-4 h-4" />}
                 </motion.button>
@@ -650,7 +662,7 @@ export default function LoginPage({ onAdminLogin }) {
                         <div className="w-full border-t border-slate-200"></div>
                       </div>
                       <div className="relative flex justify-center text-xs">
-                        <span className="px-3 bg-white text-slate-400 font-semibold uppercase">Or continue with</span>
+                        <span className="px-3 bg-white text-slate-400 font-semibold uppercase">{isHindi ? 'या इसके साथ जारी रखें' : 'Or continue with'}</span>
                       </div>
                     </div>
 
@@ -666,7 +678,7 @@ export default function LoginPage({ onAdminLogin }) {
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                       </svg>
-                      Continue with Google
+                      {isHindi ? 'Google के साथ जारी रखें' : 'Continue with Google'}
                     </button>
                   </>
                 )}
@@ -674,7 +686,7 @@ export default function LoginPage({ onAdminLogin }) {
 
               <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-xs text-slate-400">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>Protected by AgriMart Secure 256-bit encryption</span>
+                <span>{isHindi ? 'एग्रीमार्ट सुरक्षित २५६-बिट एन्क्रिप्शन द्वारा सुरक्षित' : 'Protected by AgriMart Secure 256-bit encryption'}</span>
               </div>
             </div>
           </div>

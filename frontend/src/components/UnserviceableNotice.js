@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { accordionVariants, buttonTap, EASE } from '../utils/motion';
 
 export default function UnserviceableNotice({ className = '' }) {
   const { location, isServiceable, setLocationModalOpen, primaryHub } = useLocationContext();
+  const { t, isHindi } = useLanguage();
   const [notified, setNotified] = useState(false);
   const [notifyInput, setNotifyInput] = useState('');
 
@@ -36,10 +38,10 @@ export default function UnserviceableNotice({ className = '' }) {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <h2 className="text-xs sm:text-base font-extrabold text-slate-900">
-                    Currently Not Available in Your Area
+                    {t('unserviceable.title', 'Currently Not Available in Your Area')}
                   </h2>
                   <span className="text-[10px] sm:text-[11px] bg-rose-100 text-rose-700 font-extrabold px-2 py-0.5 rounded-full border border-rose-200">
-                    Outside 30 km Hub Zone
+                    {t('unserviceable.badge', 'Outside 30 km Hub Zone')}
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
@@ -63,7 +65,7 @@ export default function UnserviceableNotice({ className = '' }) {
                 className="flex-1 sm:flex-none bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-150 flex items-center justify-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[16px]">edit_location_alt</span>
-                <span>Select Phagwara Address</span>
+                <span>{isHindi ? 'सेवा क्षेत्र का पता चुनें' : 'Select Phagwara Address'}</span>
               </motion.button>
 
               <AnimatePresence mode="wait" initial={false}>
@@ -77,7 +79,7 @@ export default function UnserviceableNotice({ className = '' }) {
                     className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                    <span>We will notify you!</span>
+                    <span>{isHindi ? 'हम आपको सूचित करेंगे!' : 'We will notify you!'}</span>
                   </motion.div>
                 ) : (
                   <motion.form

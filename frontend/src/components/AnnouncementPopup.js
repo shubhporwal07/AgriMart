@@ -6,11 +6,13 @@ import { Bell, X, Check, Megaphone, Calendar } from 'lucide-react';
 import { ref as rtdbRef, onValue, set, get } from 'firebase/database';
 import { realtimeDb } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { backdropVariants, modalVariants, buttonTap, iconTap } from '../utils/motion';
 
 export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { isHindi } = useLanguage();
 
   const [announcement, setAnnouncement] = useState(null);
   const [hasSeenThis, setHasSeenThis] = useState(false);
@@ -238,10 +240,10 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
                 </div>
                 <div className="min-w-0">
                   <div className="inline-flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-full text-[10px] font-bold text-[#FF9F43] uppercase tracking-wider mb-0.5">
-                    <span>🌾</span> AgriMart Kisan Hub Notice
+                    <span>🌾</span> {isHindi ? 'एग्रीमार्ट किसान केंद्र सूचना' : 'AgriMart Kisan Hub Notice'}
                   </div>
                   <h2 id="announcement-title" className="font-headline font-extrabold text-base text-white leading-tight truncate">
-                    Official Announcement
+                    {isHindi ? 'आधिकारिक घोषणा' : 'Official Announcement'}
                   </h2>
                 </div>
               </div>
@@ -278,7 +280,7 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
                       <span>{formattedDate}</span>
                     </span>
                     <span className="font-bold text-[#142B4A] bg-white/80 px-2 py-0.5 rounded-md border border-amber-200/40">
-                      {announcement.type === 'once' ? 'Important Notice' : 'Seasonal Advisory'}
+                      {announcement.type === 'once' ? (isHindi ? 'महत्वपूर्ण सूचना' : 'Important Notice') : (isHindi ? 'मौसमी कृषि सलाह' : 'Seasonal Advisory')}
                     </span>
                   </div>
                 )}
@@ -293,7 +295,7 @@ export default function AnnouncementPopup({ userId: propUserId, onDismiss }) {
                   className="w-full sm:w-auto px-6 py-2.5 bg-[#0B1B30] hover:bg-[#152B48] text-white rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2"
                 >
                   <Check className="w-4 h-4 text-[#FF9F43]" />
-                  <span>Acknowledge &amp; Dismiss</span>
+                  <span>{isHindi ? 'स्वीकार करें और बंद करें' : 'Acknowledge & Dismiss'}</span>
                 </motion.button>
               </div>
             </div>

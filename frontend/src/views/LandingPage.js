@@ -150,7 +150,7 @@ export default function LandingPage() {
               <div className="relative z-10 flex items-center justify-between gap-2 flex-wrap">
                 <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-md px-2.5 sm:px-3.5 py-1 rounded-full text-slate-100 border border-white/10 text-[10px] sm:text-xs max-w-full">
                   <span className="inline-block w-2 h-2 rounded-full bg-[#FF9F43] animate-ping shrink-0" />
-                  <span className="uppercase tracking-wider font-bold truncate">Kharif & Rabi Seed Batches In Stock</span>
+                  <span className="uppercase tracking-wider font-bold truncate">{isHindi ? 'खरीफ एवं रबी बीज स्टॉक में उपलब्ध' : 'Kharif & Rabi Seed Batches In Stock'}</span>
                 </div>
                 <span className="font-mono text-xs text-slate-300 hidden sm:inline-block">
                   CERTIFIED_SEED_ACT_1966 • FCO_COMPLIANT
@@ -199,19 +199,19 @@ export default function LandingPage() {
                   <span className="material-symbols-outlined text-[#FF9F43] text-[18px] sm:text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     verified
                   </span>
-                  <span className="text-slate-100 font-semibold">95%+ Certified Germination</span>
+                  <span className="text-slate-100 font-semibold">{isHindi ? '९५%+ प्रमाणित अंकुरण' : '95%+ Certified Germination'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[#FF9F43] text-[18px] sm:text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     local_shipping
                   </span>
-                  <span className="text-slate-100 font-semibold">Direct Doorstep Farm Delivery</span>
+                  <span className="text-slate-100 font-semibold">{isHindi ? 'सीधे खेत के पते पर डिलीवरी' : 'Direct Doorstep Farm Delivery'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[#FF9F43] text-[18px] sm:text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     support_agent
                   </span>
-                  <span className="text-slate-100 font-semibold">Free Agronomist Advisory</span>
+                  <span className="text-slate-100 font-semibold">{isHindi ? 'निःशुल्क कृषि वैज्ञानिक सलाह' : 'Free Agronomist Advisory'}</span>
                 </div>
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function LandingPage() {
                         className={`h-11 flex-1 ${isFirst ? 'bg-[#142B4A] hover:bg-[#1B385D] text-white' : 'bg-white hover:bg-[#142B4A] hover:text-white text-[#142B4A] border border-[#142B4A]/30'} text-xs rounded-xl font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm`}
                       >
                         <span className="material-symbols-outlined text-[17px]">add_shopping_cart</span>
-                        <span>Quick Order {isFirst ? 'Kit' : 'Combo'}</span>
+                        <span>{isHindi ? (isFirst ? 'त्वरित किट ऑर्डर' : 'त्वरित कॉम्बो ऑर्डर') : `Quick Order ${isFirst ? 'Kit' : 'Combo'}`}</span>
                       </button>
                     </div>
                   </div>
@@ -357,17 +357,17 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center gap-2 text-[#142B4A] text-xs font-bold uppercase tracking-wider">
                 <span className="w-5 h-0.5 bg-[#142B4A]" />
-                <span>Crop Input Catalog</span>
+                <span>{isHindi ? 'फसल इनपुट कैटलॉग' : 'Crop Input Catalog'}</span>
               </div>
               <h2 className="font-headline text-2xl sm:text-3xl font-extrabold text-[#142B4A] mt-1">
-                Explore by Category
+                {isHindi ? 'श्रेणी अनुसार खोजें' : 'Explore by Category'}
               </h2>
             </div>
             <Link
               href="/dashboard?category=all"
               className="text-xs font-bold text-[#142B4A] hover:text-[#E27B12] flex items-center gap-1 group"
             >
-              <span>View all 1,200+ farm inputs</span>
+              <span>{isHindi ? 'सभी १,२००+ कृषि इनपुट्स देखें' : 'View all 1,200+ farm inputs'}</span>
               <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">
                 east
               </span>
@@ -408,13 +408,15 @@ export default function LandingPage() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <h2 className="font-headline text-lg sm:text-2xl font-extrabold text-[#142B4A] truncate">
-                    Today's Kisan Sowing Deals
+                    {t('landing.flashDealsTitle', "Today's Kisan Sowing Deals")}
                   </h2>
                   <span className="bg-[#FF9F43] text-[#142B4A] text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse shrink-0">
                     Live
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-[#5A6B82] mt-0.5 truncate">Subsidized direct-to-farm inputs with batch lab reports</p>
+                <p className="text-[11px] sm:text-xs text-[#5A6B82] mt-0.5 truncate">
+                  {t('landing.flashDealsSub', 'Subsidized direct-to-farm inputs with batch lab reports')}
+                </p>
               </div>
             </div>
 
@@ -422,7 +424,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-2 sm:gap-4 w-full md:w-auto justify-between md:justify-end flex-wrap">
               <div className="flex items-center gap-1 sm:gap-1.5 font-mono text-center">
                 <span className="text-[10px] sm:text-xs text-[#5A6B82] uppercase mr-1 font-sans font-semibold">
-                  Closes In:
+                  {t('landing.closesIn', 'Closes In:')}
                 </span>
                 <div className="bg-[#142B4A] text-white px-2.5 py-1 rounded-lg shadow-sm">
                   <span className="text-xs font-bold text-white">
@@ -450,7 +452,7 @@ export default function LandingPage() {
                 href="/dashboard?category=all"
                 className="hidden sm:flex items-center gap-1 text-xs text-[#142B4A] hover:text-[#E27B12] font-bold"
               >
-                <span>View All 58 Farm Deals</span>
+                <span>{t('landing.viewAllDeals', 'View All 58 Farm Deals')}</span>
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </Link>
             </div>
@@ -478,13 +480,13 @@ export default function LandingPage() {
             <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sm:gap-6 pb-6 border-b border-white/15">
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-1.5 bg-[#FF9F43] text-[#142B4A] px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2 shadow-sm">
-                  <span>⭐</span> Government Tested Soil Nutrition Lab
+                  <span>⭐</span> {t('landing.soilCornerTag', 'Government Tested Soil Nutrition Lab')}
                 </div>
                 <h2 className="font-headline text-xl sm:text-3xl text-white font-extrabold tracking-tight">
-                  Certified Organic & Government Tested Soil Nutrition
+                  {t('landing.soilCornerTitle', 'Certified Organic & Government Tested Soil Nutrition')}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-200 mt-2 leading-relaxed">
-                  Direct access to bio-fertilizers, mycorrhizal root inoculants, steamed bone meal, and certified hybrid field seeds with 100% verified germination rates and batch purity reports.
+                  {t('landing.soilCornerDesc', 'Direct access to bio-fertilizers, mycorrhizal root inoculants, steamed bone meal, and certified hybrid field seeds with 100% verified germination rates and batch purity reports.')}
                 </p>
               </div>
 
@@ -492,9 +494,9 @@ export default function LandingPage() {
                 <span className="material-symbols-outlined text-[#FF9F43] text-[28px] sm:text-[32px]">biotech</span>
                 <div>
                   <span className="text-[10px] text-[#FF9F43] uppercase tracking-wider block font-bold">
-                    FCO Approved
+                    {t('landing.fcoApproved', 'FCO Approved')}
                   </span>
-                  <span className="text-xs text-white font-bold">Zero Adulteration Guarantee</span>
+                  <span className="text-xs text-white font-bold">{t('landing.zeroAdulteration', 'Zero Adulteration Guarantee')}</span>
                 </div>
               </div>
             </div>
@@ -514,7 +516,7 @@ export default function LandingPage() {
                       className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
                     />
                     <span className="absolute top-2 left-2 bg-[#142B4A] text-white text-[9px] px-2 py-0.5 rounded font-bold uppercase">
-                      FCO Certified
+                      {isHindi ? 'एफसीओ प्रमाणित' : 'FCO Certified'}
                     </span>
                   </div>
                   <div>
@@ -570,7 +572,7 @@ export default function LandingPage() {
                         aria-label="Add to Farm Cart"
                       >
                         <span className="material-symbols-outlined text-[16px]">add</span>
-                        <span>ADD</span>
+                        <span>{isHindi ? 'जोड़ें' : 'ADD'}</span>
                       </motion.button>
                     </div>
                   </div>
@@ -584,13 +586,13 @@ export default function LandingPage() {
         <motion.section {...sectionRevealProps} className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-10 w-full overflow-hidden">
           <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
             <span className="text-[11px] sm:text-xs uppercase tracking-widest text-[#142B4A] font-extrabold">
-              Uncompromising Quality & Trust
+              {isHindi ? 'सख्त गुणवत्ता और अटूट विश्वास' : 'Uncompromising Quality & Trust'}
             </span>
             <h2 className="font-headline text-xl sm:text-3xl text-[#142B4A] font-extrabold mt-1">
-              Why Over 250,000+ Farmers Trust AgriMart
+              {isHindi ? '२,५०,०००+ से अधिक किसान एग्रीमार्ट पर क्यों भरोसा करते हैं' : 'Why Over 250,000+ Farmers Trust AgriMart'}
             </h2>
             <p className="text-xs sm:text-sm text-[#5A6B82] mt-2">
-              Eliminating fake seeds, spurious chemicals, and predatory mandi middle-commissions with certified farm inputs.
+              {isHindi ? 'प्रमाणित कृषि इनपुट्स के साथ नकली बीज, मिलावटी रसायनों और बिचौलियों के अनुचित मुनाफे को समाप्त करना।' : 'Eliminating fake seeds, spurious chemicals, and predatory mandi middle-commissions with certified farm inputs.'}
             </p>
           </div>
 
@@ -603,14 +605,14 @@ export default function LandingPage() {
                     biotech
                   </span>
                 </div>
-                <h3 className="font-headline text-base font-bold text-[#142B4A]">95%+ Lab Germination</h3>
+                <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? '९५%+ लैब अंकुरण' : '95%+ Lab Germination'}</h3>
                 <p className="text-xs text-[#5A6B82] mt-2 leading-relaxed">
-                  Every seed batch undergoes seed moisture and vigor analysis in accredited ICAR labs before dispatch to guarantee stand uniformity.
+                  {isHindi ? 'फसल की एकरूपता सुनिश्चित करने के लिए प्रेषण से पहले प्रत्येक बीज बैच का आईसीएआर से मान्यता प्राप्त प्रयोगशालाओं में परीक्षण किया जाता है।' : 'Every seed batch undergoes seed moisture and vigor analysis in accredited ICAR labs before dispatch to guarantee stand uniformity.'}
                 </p>
               </div>
               <div className="mt-6 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[#142B4A] text-xs font-bold">
                 <span className="material-symbols-outlined text-[16px] text-emerald-600">verified</span>
-                <span>Seed Act 1966 Certified</span>
+                <span>{isHindi ? 'बीज अधिनियम १९६६ प्रमाणित' : 'Seed Act 1966 Certified'}</span>
               </div>
             </div>
 
@@ -622,14 +624,14 @@ export default function LandingPage() {
                     price_check
                   </span>
                 </div>
-                <h3 className="font-headline text-base font-bold text-[#142B4A]">Direct Factory Rates</h3>
+                <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? 'सीधे फ़ैक्टरी की दरें' : 'Direct Factory Rates'}</h3>
                 <p className="text-xs text-[#5A6B82] mt-2 leading-relaxed">
-                  By bypassing regional distributors and sub-dealers, we provide wholesale manufacturer rates that save you 20-35% on every sowing acre.
+                  {isHindi ? 'क्षेत्रीय वितरकों और डीलरों को हटाकर, हम थोक निर्माता दरें प्रदान करते हैं जिससे आपको प्रत्येक बुवाई एकड़ पर २०-३५% की बचत होती है।' : 'By bypassing regional distributors and sub-dealers, we provide wholesale manufacturer rates that save you 20-35% on every sowing acre.'}
                 </p>
               </div>
               <div className="mt-6 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[#A74E00] text-xs font-bold">
                 <span className="material-symbols-outlined text-[16px]">savings</span>
-                <span>Transparent MRP & Subsidies</span>
+                <span>{isHindi ? 'पारदर्शी एमआरपी और सब्सिडी' : 'Transparent MRP & Subsidies'}</span>
               </div>
             </div>
 
@@ -641,14 +643,14 @@ export default function LandingPage() {
                     support_agent
                   </span>
                 </div>
-                <h3 className="font-headline text-base font-bold text-[#142B4A]">Agronomist on Call</h3>
+                <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? 'फ़ोन पर कृषि विशेषज्ञ' : 'Agronomist on Call'}</h3>
                 <p className="text-xs text-[#5A6B82] mt-2 leading-relaxed">
-                  Have crop disease or pest questions? Free phone consultations with certified agricultural scientists for tailored dosage charts.
+                  {isHindi ? 'फसल रोग या कीट से जुड़े प्रश्न हैं? सही मात्रा चार्ट के लिए प्रमाणित कृषि वैज्ञानिकों से निःशुल्क फ़ोन परामर्श लें।' : 'Have crop disease or pest questions? Free phone consultations with certified agricultural scientists for tailored dosage charts.'}
                 </p>
               </div>
               <div className="mt-6 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[#142B4A] text-xs font-bold">
                 <span className="material-symbols-outlined text-[16px] text-emerald-600">call</span>
-                <span>Toll-Free Kisan Advisory</span>
+                <span>{isHindi ? 'टोल-फ्री किसान सलाह' : 'Toll-Free Kisan Advisory'}</span>
               </div>
             </div>
 
@@ -660,14 +662,14 @@ export default function LandingPage() {
                     local_shipping
                   </span>
                 </div>
-                <h3 className="font-headline text-base font-bold text-[#142B4A]">Pan-India Village Delivery</h3>
+                <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? 'अखिल भारतीय ग्रामीण डिलीवरी' : 'Pan-India Village Delivery'}</h3>
                 <p className="text-xs text-[#5A6B82] mt-2 leading-relaxed">
-                  Reaching 18,000+ pin codes. Doorstep delivery directly to your farm gate, village gram panchayat point, or nearest taluka depot.
+                  {isHindi ? '१८,०००+ पिन कोड तक पहुंच। सीधे आपके खेत, ग्राम पंचायत या निकटतम तहसील डिपो तक डिलीवरी।' : 'Reaching 18,000+ pin codes. Doorstep delivery directly to your farm gate, village gram panchayat point, or nearest taluka depot.'}
                 </p>
               </div>
               <div className="mt-6 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[#142B4A] text-xs font-bold">
                 <span className="material-symbols-outlined text-[16px] text-emerald-600">route</span>
-                <span>Safe In-Transit Insurance</span>
+                <span>{isHindi ? 'सुरक्षित पारगमन बीमा' : 'Safe In-Transit Insurance'}</span>
               </div>
             </div>
           </div>
@@ -680,10 +682,10 @@ export default function LandingPage() {
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-2">
                 <div>
                   <span className="text-xs font-bold text-[#142B4A] uppercase tracking-wider">
-                    Field Verified Results
+                    {isHindi ? 'खेत-सत्यापित परिणाम' : 'Field Verified Results'}
                   </span>
                   <h2 className="font-headline text-2xl sm:text-3xl font-extrabold text-[#142B4A] mt-1">
-                    Verified Kisan Reviews
+                    {isHindi ? 'सत्यापित किसान समीक्षाएं' : 'Verified Kisan Reviews'}
                   </h2>
                 </div>
                 <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-2xl shadow-sm border border-[#CBD5E1]/40">
@@ -699,7 +701,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <span className="font-price text-sm text-[#142B4A] font-extrabold ml-1">{avgRating} / 5</span>
-                  <span className="text-xs text-[#74777E]">from {verifiedReviews.length} verified review{verifiedReviews.length !== 1 ? 's' : ''}</span>
+                  <span className="text-xs text-[#74777E]">{isHindi ? `${verifiedReviews.length} सत्यापित समीक्षाओं से` : `from ${verifiedReviews.length} verified review${verifiedReviews.length !== 1 ? 's' : ''}`}</span>
                 </div>
               </div>
 
@@ -726,7 +728,7 @@ export default function LandingPage() {
                           <span className="material-symbols-outlined text-[12px] text-emerald-600" style={{ fontVariationSettings: "'FILL' 1" }}>
                             verified
                           </span>
-                          Delivered
+                          {isHindi ? 'डिलीवर हुआ' : 'Delivered'}
                         </span>
                       </div>
                       {rev.title && (
@@ -739,7 +741,7 @@ export default function LandingPage() {
                       </p>
                       {rev.productName && (
                         <p className="text-[11px] font-semibold text-slate-500 mt-2 truncate">
-                          Item: <strong className="text-slate-800">{rev.productName}</strong>
+                          {isHindi ? 'उत्पाद:' : 'Item:'} <strong className="text-slate-800">{rev.productName}</strong>
                         </p>
                       )}
                     </div>
@@ -749,7 +751,7 @@ export default function LandingPage() {
                       </div>
                       <div className="flex flex-col min-w-0">
                         <span className="font-headline text-xs font-bold text-[#142B4A] truncate">
-                          {rev.authorName || 'Verified Farmer'}
+                          {rev.authorName || (isHindi ? 'प्रगतिशील किसान' : 'Verified Farmer')}
                         </span>
                         <span className="text-[11px] text-[#5A6B82] truncate">
                           {rev.location || 'AgriMart Kisan Hub'}
@@ -768,17 +770,17 @@ export default function LandingPage() {
                 </span>
               </div>
               <h3 className="font-headline text-lg sm:text-xl font-bold text-slate-900">
-                100% Genuine, Post-Delivery Reviews
+                {isHindi ? '१००% वास्तविक, डिलीवरी उपरांत समीक्षाएं' : '100% Genuine, Post-Delivery Reviews'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed max-w-lg mx-auto">
-                AgriMart only features authentic feedback submitted by farmers after verified farm-gate order delivery. No fake or auto-generated testimonials.
+                {isHindi ? 'एग्रीमार्ट केवल सत्यापित खेत-वितरण के बाद किसानों द्वारा दी गई वास्तविक प्रतिक्रिया दिखाता है। कोई नकली या स्वतः-निर्मित समीक्षा नहीं।' : 'AgriMart only features authentic feedback submitted by farmers after verified farm-gate order delivery. No fake or auto-generated testimonials.'}
               </p>
               <div className="mt-5 flex items-center justify-center gap-3">
                 <Link
                   href="/orders"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0B1B30] hover:bg-[#152B48] text-white text-xs font-bold transition-all shadow-xs"
                 >
-                  <span>Rate Your Delivered Orders</span>
+                  <span>{isHindi ? 'अपने डिलीवर किए गए ऑर्डर को रेट करें' : 'Rate Your Delivered Orders'}</span>
                   <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </Link>
               </div>
@@ -804,7 +806,9 @@ export default function LandingPage() {
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[24px] text-[#FF9F43]">agriculture</span>
                   <span className="font-headline text-xs font-bold">
-                    {cartCount === 1 ? '1 Farm Input in Cart' : `${cartCount} Farm Inputs in Cart`}
+                    {cartCount === 1
+                      ? (isHindi ? '1 उत्पाद कार्ट में' : '1 Farm Input in Cart')
+                      : (isHindi ? `${cartCount} उत्पाद कार्ट में` : `${cartCount} Farm Inputs in Cart`)}
                   </span>
                 </div>
                 <span className="text-slate-400">|</span>

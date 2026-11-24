@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from './ProductCard';
 import { SkeletonCardGrid } from './SkeletonLoader';
 import { useProducts } from '../contexts/ProductContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { DURATION, EASE, buttonTap, iconTap } from '../utils/motion';
 
 export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin = false }) {
@@ -20,6 +21,7 @@ export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin =
     filters,
     clearAllFilters,
   } = useProducts();
+  const { t, isHindi, translateCategory } = useLanguage();
 
   const [layoutMode, setLayoutMode] = useState('grid'); // 'grid' | 'compact'
 
@@ -51,16 +53,18 @@ export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin =
         <div className="w-16 h-16 rounded-full bg-[#FFE8D6] text-[#A74E00] flex items-center justify-center mb-4">
           <span className="material-symbols-outlined text-[32px]">search_off</span>
         </div>
-        <h3 className="font-headline text-xl font-bold text-[#142B4A]">No certified farm inputs found</h3>
+        <h3 className="font-headline text-xl font-bold text-[#142B4A]">
+          {isHindi ? 'कोई कृषि उत्पाद नहीं मिला' : 'No certified farm inputs found'}
+        </h3>
         <p className="mt-1 text-sm text-[#5A6B82] max-w-sm">
-          We could not find any farm inputs matching your current filters or search terms.
+          {isHindi ? 'आपके वर्तमान फ़िल्टर या खोज शब्दों से मेल खाता कोई उत्पाद नहीं मिला।' : 'We could not find any farm inputs matching your current filters or search terms.'}
         </p>
         <motion.button
           whileTap={buttonTap}
           onClick={clearAllFilters}
           className="mt-5 bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all duration-150 shadow-sm"
         >
-          Reset All Filters
+          {isHindi ? 'सभी फ़िल्टर हटाएं' : 'Reset All Filters'}
         </motion.button>
       </motion.div>
     );
@@ -81,10 +85,12 @@ export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin =
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-headline text-lg font-extrabold text-[#142B4A]">
-              {filters.category?.length > 0 ? filters.category.join(', ') : 'All Farm Inputs'}
+              {Array.isArray(filters.category) && filters.category.length > 0
+                ? filters.category.map(translateCategory).join(', ')
+                : (isHindi ? 'सभी कृषि उत्पाद' : 'All Farm Inputs')}
             </span>
             <span className="text-xs text-[#5A6B82] font-semibold">
-              (Showing {startItem}–{endItem} of {filteredProducts.length})
+              ({isHindi ? `${filteredProducts.length} में से ${startItem}–${endItem} उत्पाद` : `Showing ${startItem}–${endItem} of ${filteredProducts.length}`})
             </span>
           </div>
 
@@ -107,7 +113,7 @@ export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin =
         <div className="flex items-center gap-3 self-end md:self-auto shrink-0">
           <div className="flex items-center gap-2 bg-[#EDF2F7] px-3 py-1.5 rounded-xl border border-slate-200 transition-colors duration-150 focus-within:border-[#142B4A]/40 focus-within:bg-white">
             <label htmlFor="sortDropdown" className="text-xs text-[#5A6B82] font-semibold whitespace-nowrap">
-              Sort by:
+              {isHindi ? 'क्रमबद्ध करें:' : 'Sort by:'}
             </label>
             <select
               id="sortDropdown"
@@ -115,12 +121,12 @@ export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin =
               onChange={(e) => setSortBy(e.target.value)}
               className="bg-transparent text-xs font-extrabold text-[#142B4A] focus:outline-none cursor-pointer"
             >
-              <option value="recommended">Recommended</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Customer Rating</option>
-              <option value="discount">Biggest Discount</option>
-              <option value="newest">Newly Harvested</option>
+              <option value="recommended">{isHindi ? 'सुझाए गए (सर्वश्रेष्ठ)' : 'Recommended'}</option>
+              <option value="price-low">{isHindi ? 'कीमत: कम से अधिक' : 'Price: Low to High'}</option>
+              <option value="price-high">{isHindi ? 'कीमत: अधिक से कम' : 'Price: High to Low'}</option>
+              <option value="rating">{isHindi ? 'किसान रेटिंग' : 'Customer Rating'}</option>
+              <option value="discount">{isHindi ? 'अधिकतम छूट' : 'Biggest Discount'}</option>
+              <option value="newest">{isHindi ? 'नवीनतम उत्पाद' : 'Newly Harvested'}</option>
             </select>
           </div>
 

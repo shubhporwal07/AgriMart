@@ -15,6 +15,7 @@ import {
 import { backdropVariants, modalVariants, buttonTap, fieldMessageVariants, EASE } from '../utils/motion';
 import { realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, set, push, update } from 'firebase/database';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const STAR_LABELS = {
   1: '1 Star — Poor / Low germination or quality',
@@ -41,6 +42,7 @@ export default function ProductReviewModal({
   existingReview = null,
   onReviewSubmitted,
 }) {
+  const { isHindi } = useLanguage();
   const [rating, setRating] = useState(existingReview?.rating || 5);
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState(existingReview?.title || '');
@@ -190,12 +192,14 @@ export default function ProductReviewModal({
               </div>
               <div>
                 <h2 className="font-headline font-extrabold text-base text-[#0B1B30] leading-tight">
-                  {existingReview ? 'Update Your Verified Review' : 'Rate & Review Delivered Input'}
+                  {existingReview
+                    ? (isHindi ? 'अपनी सत्यापित समीक्षा अपडेट करें' : 'Update Your Verified Review')
+                    : (isHindi ? 'डिलीवर किए गए इनपुट की समीक्षा एवं रेटिंग दें' : 'Rate & Review Delivered Input')}
                 </h2>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
                     <ShieldCheck size={11} className="text-emerald-700" />
-                    Verified Delivered Order
+                    {isHindi ? 'सत्यापित डिलीवर किया गया ऑर्डर' : 'Verified Delivered Order'}
                   </span>
                   <span className="text-[10px] text-slate-500 font-mono">
                     Ref: {order.razorpayOrderId || order.id}
@@ -275,7 +279,7 @@ export default function ProductReviewModal({
             {/* Star Rating Section */}
             <div>
               <label className="block text-xs font-bold text-slate-800 mb-1.5 uppercase tracking-wide">
-                1. Select Star Rating *
+                {isHindi ? '1. स्टार रेटिंग चुनें *' : '1. Select Star Rating *'}
               </label>
               <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 flex flex-col items-center sm:items-start gap-2">
                 <div className="flex items-center gap-2">
@@ -313,7 +317,7 @@ export default function ProductReviewModal({
             <div>
               <label className="block text-xs font-bold text-slate-800 mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
                 <Sparkles size={14} className="text-[#FF9F43]" />
-                <span>2. Quick Experience Tags (Tap to add)</span>
+                <span>{isHindi ? '2. त्वरित अनुभव टैग (जोड़ने के लिए टैप करें)' : '2. Quick Experience Tags (Tap to add)'}</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {QUICK_TAGS.map((tag) => {
@@ -339,13 +343,13 @@ export default function ProductReviewModal({
             {/* Review Title */}
             <div>
               <label className="block text-xs font-bold text-slate-800 mb-1">
-                3. Review Headline (Optional)
+                {isHindi ? '3. समीक्षा शीर्षक (वैकल्पिक)' : '3. Review Headline (Optional)'}
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Excellent germination within 3 days, very satisfied!"
+                placeholder={isHindi ? 'उदा. 3 दिनों के भीतर उत्कृष्ट अंकुरण, बहुत संतुष्ट!' : 'e.g. Excellent germination within 3 days, very satisfied!'}
                 className="w-full text-xs p-3 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1B30]/20 focus:border-[#0B1B30]"
               />
             </div>
@@ -353,13 +357,13 @@ export default function ProductReviewModal({
             {/* Review Comment */}
             <div>
               <label className="block text-xs font-bold text-slate-800 mb-1">
-                4. Field Experience &amp; Comments *
+                {isHindi ? '4. खेत का अनुभव एवं टिप्पणियां *' : '4. Field Experience & Comments *'}
               </label>
               <textarea
                 rows={3}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Share details on seed germination rate, crop yield, leaf health, fertilizer solubility, packing quality, or advice received..."
+                placeholder={isHindi ? 'बीज अंकुरण दर, फसल की पैदावार, पत्तों का स्वास्थ्य, उर्वरक घुलनशीलता, या पैकिंग गुणवत्ता पर विवरण साझा करें...' : 'Share details on seed germination rate, crop yield, leaf health, fertilizer solubility, packing quality, or advice received...'}
                 className="w-full text-xs p-3 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#0B1B30]/20 focus:border-[#0B1B30] leading-relaxed"
               />
             </div>
@@ -368,7 +372,7 @@ export default function ProductReviewModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div>
                 <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                  Your Name / Kisan Handle
+                  {isHindi ? 'आपका नाम / किसान पहचान' : 'Your Name / Kisan Handle'}
                 </label>
                 <input
                   type="text"
@@ -380,7 +384,7 @@ export default function ProductReviewModal({
               </div>
               <div>
                 <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                  Farm Location / Region
+                  {isHindi ? 'खेत का स्थान / क्षेत्र' : 'Farm Location / Region'}
                 </label>
                 <div className="flex items-center gap-1.5 text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700">
                   <MapPin size={14} className="text-emerald-600 shrink-0" />
@@ -399,7 +403,7 @@ export default function ProductReviewModal({
                 disabled={submitting}
                 className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
               >
-                Cancel
+                {isHindi ? 'रद्द करें' : 'Cancel'}
               </button>
               <motion.button
                 type="submit"
@@ -408,7 +412,7 @@ export default function ProductReviewModal({
                 className="px-5 py-2.5 rounded-xl bg-[#0B1B30] hover:bg-[#152B48] text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
               >
                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span>{submitting ? 'Submitting Review...' : existingReview ? 'Update Verified Review' : 'Submit Verified Review'}</span>
+                <span>{submitting ? (isHindi ? 'समीक्षा जमा हो रही है...' : 'Submitting Review...') : existingReview ? (isHindi ? 'समीक्षा अपडेट करें' : 'Update Verified Review') : (isHindi ? 'समीक्षा जमा करें' : 'Submit Verified Review')}</span>
               </motion.button>
             </div>
           </form>

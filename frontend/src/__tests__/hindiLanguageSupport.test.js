@@ -85,6 +85,28 @@ describe('LanguageContext & Hindi i18n System', () => {
     expect(Object.keys(hi.nav)).toEqual(expect.arrayContaining(Object.keys(en.nav)));
     expect(Object.keys(hi.categories)).toEqual(expect.arrayContaining(Object.keys(en.categories)));
     expect(Object.keys(hi.filters)).toEqual(expect.arrayContaining(Object.keys(en.filters)));
+    expect(Object.keys(hi.orders)).toEqual(expect.arrayContaining(Object.keys(en.orders)));
+    expect(Object.keys(hi.profile)).toEqual(expect.arrayContaining(Object.keys(en.profile)));
+    expect(Object.keys(hi.about)).toEqual(expect.arrayContaining(Object.keys(en.about)));
+    expect(Object.keys(hi.auth)).toEqual(expect.arrayContaining(Object.keys(en.auth)));
+    expect(Object.keys(hi.cart)).toEqual(expect.arrayContaining(Object.keys(en.cart)));
+  });
+
+  it('translates orders, profile, about, and auth keys accurately in Hindi', () => {
+    const { result } = renderHook(() => useLanguage(), {
+      wrapper: ({ children }) => <LanguageProvider>{children}</LanguageProvider>,
+    });
+
+    act(() => {
+      result.current.setLanguage('hi');
+    });
+
+    expect(result.current.t('orders.heading')).toBe('मेरे कृषि एवं फ़ार्म ऑर्डर');
+    expect(result.current.t('orders.statusDelivered')).toBe('खेत पर सफलतापूर्वक डिलीवर');
+    expect(result.current.t('profile.kisanPass')).toBe('एग्रीमार्ट किसान पास');
+    expect(result.current.t('profile.verifiedFarmer')).toBe('प्रमाणित किसान');
+    expect(result.current.t('about.fourPillarsTitle')).toBe('एग्रीमार्ट के चार मुख्य स्तंभ');
+    expect(result.current.t('auth.joinAgriMart')).toBe('एग्रीमार्ट से जुड़ें');
   });
 });
 

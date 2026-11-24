@@ -27,6 +27,7 @@ import { auth, realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, onValue, get } from 'firebase/database';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { accordionVariants, buttonTap, EASE } from '../utils/motion';
 
 const statusSteps = [
@@ -66,23 +67,30 @@ function formatDate(timestamp) {
   }
 }
 
-function OrderCard({ order, onOpenReview }) {
+function OrderCard({ order, onOpenReview, t = (k, f) => f || k, isHindi = false }) {
   const [expanded, setExpanded] = useState(false);
   const currentStep = getStatusIndex(order.status);
   const isDelivered = (order.status || '').toLowerCase() === 'delivered';
 
+  const dynamicStatusSteps = [
+    { key: 'placed', label: t('orders.statusConfirmed', 'Order Confirmed'), icon: CheckCircle2 },
+    { key: 'processing', label: t('orders.statusProcessing', 'Processing at Hub'), icon: Clock },
+    { key: 'shipped', label: t('orders.statusShipped', 'Out for Delivery'), icon: Truck },
+    { key: 'delivered', label: t('orders.statusDelivered', 'Delivered to Farm'), icon: Package },
+  ];
+
   const getStatusBadge = (status) => {
     const norm = (status || '').toLowerCase();
     if (norm === 'delivered') {
-      return { label: 'Delivered', bg: 'bg-emerald-50 text-emerald-700 border border-emerald-200' };
+      return { label: t('orders.statusDelivered', 'Delivered'), bg: 'bg-emerald-50 text-emerald-700 border border-emerald-200' };
     }
     if (norm === 'shipped' || norm === 'out_for_delivery') {
-      return { label: 'Out for Delivery', bg: 'bg-blue-50 text-blue-700 border border-blue-200' };
+      return { label: t('orders.statusShipped', 'Out for Delivery'), bg: 'bg-blue-50 text-blue-700 border border-blue-200' };
     }
     if (norm === 'processing') {
-      return { label: 'Processing', bg: 'bg-amber-50 text-amber-700 border border-amber-200' };
+      return { label: t('orders.statusProcessing', 'Processing'), bg: 'bg-amber-50 text-amber-700 border border-amber-200' };
     }
-    return { label: 'Order Confirmed', bg: 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold' };
+    return { label: t('orders.statusConfirmed', 'Order Confirmed'), bg: 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold' };
   };
 
   const badge = getStatusBadge(order.status);
@@ -105,14 +113,14 @@ function OrderCard({ order, onOpenReview }) {
             </div>
             <div>
               <p className="text-[11px] text-stone-500 font-bold tracking-wider uppercase">
-                Order Reference
+                {t('orders.orderRef', 'Order Reference')}
               </p>
               <p className="text-sm font-bold text-slate-900 font-mono">
                 {order.razorpayOrderId || order.id}
               </p>
               {order.userEmail && (
                 <p className="text-[11px] text-stone-500 truncate max-w-xs sm:max-w-md">
-                  Ordered by: <span className="font-semibold text-slate-800">{order.userName || 'Customer'}</span> ({order.userEmail})
+                  {t('orders.orderedBy', 'Ordered by:')} <span className="font-semibold text-slate-800">{order.userName || (isHindi ? 'ग्राहक' : 'Customer')}</span> ({order.userEmail})
                 </p>
               )}
             </div>
@@ -120,11 +128,11 @@ function OrderCard({ order, onOpenReview }) {
 
           <div className="flex items-center gap-4 sm:gap-6 self-end sm:self-center">
             <div className="text-right">
-              <p className="text-[11px] text-stone-500 font-medium">Total Paid</p>
+              <p className="text-[11px] text-stone-500 font-medium">{t('orders.totalPaid', 'Total Paid')}</p>
               <p className="text-base sm:text-lg font-black text-[#142B4A]">{formatPrice(order.amount)}</p>
             </div>
             <div className="text-right hidden sm:block">
-              <p className="text-[11px] text-stone-500 font-medium">Date &amp; Time</p>
+              <p className="text-[11px] text-stone-500 font-medium">{t('orders.dateTime', 'Date & Time')}</p>
               <p className="text-xs font-semibold text-stone-700">{formatDate(order.createdAt)}</p>
             </div>
             <div className="flex items-center">
@@ -162,17 +170,17 @@ function OrderCard({ order, onOpenReview }) {
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-4 flex items-center gap-1.5">
                   <ShieldCheck size={14} className="text-emerald-600" />
-                  <span>Dispatch &amp; Delivery Tracking</span>
+                  <span>{t('orders.dispatchTracking', 'Dispatch & Delivery Tracking')}</span>
                 </p>
                 <div className="flex items-center justify-between relative px-2 sm:px-6">
                   {/* Progress line */}
                   <div className="absolute top-5 left-8 right-8 h-1 bg-stone-200" />
                   <div
                     className="absolute top-5 left-8 h-1 bg-[#0B1B30] transition-all duration-500"
-                    style={{ width: `calc(${(currentStep / (statusSteps.length - 1)) * 100}% - 40px)` }}
+                    style={{ width: `calc(${(currentStep / (dynamicStatusSteps.length - 1)) * 100}% - 40px)` }}
                   />
 
-                  {statusSteps.map((step, index) => {
+                  {dynamicStatusSteps.map((step, index) => {
                     const Icon = step.icon;
                     const isActive = index <= currentStep;
                     return (
@@ -201,7 +209,7 @@ function OrderCard({ order, onOpenReview }) {
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3 flex items-center gap-1.5">
                   <ShoppingBag size={14} className="text-[#FF9F43]" />
-                  <span>Certified Farm Products in Order ({order.items?.length || 0})</span>
+                  <span>{t('orders.farmProductsInOrder', 'Certified Farm Products in Order ({count})', { count: order.items?.length || 0 })}</span>
                 </p>
                 <div className="space-y-3">
                   {(order.items || []).map((item, idx) => {
@@ -226,7 +234,7 @@ function OrderCard({ order, onOpenReview }) {
                           <div className="flex-1 min-w-0">
                             <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</p>
                             <div className="text-[11px] text-stone-500 flex items-center gap-2 mt-0.5">
-                              <span className="font-semibold text-slate-700">Qty: {item.quantity}</span>
+                              <span className="font-semibold text-slate-700">{t('orders.qty', 'Qty:')} {item.quantity}</span>
                               {(item.packSize || item.weight) && (
                                 <span className="font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                                   {item.packSize || item.weight}
@@ -246,7 +254,7 @@ function OrderCard({ order, onOpenReview }) {
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold">
                                   <CheckCircle2 size={13} className="text-emerald-600" />
-                                  <span>Rated</span>
+                                  <span>{t('orders.rated', 'Rated')}</span>
                                   <span className="flex text-amber-500 ml-0.5">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                       <Star
@@ -275,7 +283,7 @@ function OrderCard({ order, onOpenReview }) {
                                 className="text-xs font-bold text-[#0B1B30] hover:text-[#E27B12] flex items-center gap-1 transition-colors px-2.5 py-1 rounded-lg hover:bg-slate-100"
                               >
                                 <Edit size={12} />
-                                <span>Edit Review</span>
+                                <span>{t('orders.editReview', 'Edit Review')}</span>
                               </button>
                             </div>
                           ) : (
@@ -285,8 +293,8 @@ function OrderCard({ order, onOpenReview }) {
                                   <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
                                 </div>
                                 <div>
-                                  <p className="text-xs font-bold text-slate-900 leading-tight">Delivered! How was this product?</p>
-                                  <p className="text-[11px] text-slate-500">Rate seed germination, crop yield or quality</p>
+                                  <p className="text-xs font-bold text-slate-900 leading-tight">{t('orders.deliveredReviewPrompt', 'Delivered! How was this product?')}</p>
+                                  <p className="text-[11px] text-slate-500">{t('orders.ratePromptSub', 'Rate seed germination, crop yield or quality')}</p>
                                 </div>
                               </div>
                               <motion.button
@@ -299,14 +307,14 @@ function OrderCard({ order, onOpenReview }) {
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B1B30] hover:bg-[#152B48] text-white text-xs font-bold transition-all shadow-xs shrink-0"
                               >
                                 <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                                <span>Rate &amp; Review</span>
+                                <span>{t('orders.rateAndReview', 'Rate & Review')}</span>
                               </motion.button>
                             </div>
                           )
                         ) : (
                           <div className="mt-2 pt-2 border-t border-stone-100 flex items-center gap-1.5 text-[11px] text-stone-400">
                             <Clock size={12} />
-                            <span>Rating &amp; review will unlock once delivered to your farm</span>
+                            <span>{t('orders.reviewUnlockedOnDelivery', 'Rating & review will unlock once delivered to your farm')}</span>
                           </div>
                         )}
                       </div>
@@ -318,26 +326,26 @@ function OrderCard({ order, onOpenReview }) {
               {/* Payment & Delivery Address Info */}
               <div className="pt-4 border-t border-stone-200/80 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div className="bg-white p-3.5 rounded-2xl border border-stone-200">
-                  <p className="text-stone-500 font-semibold mb-1">Payment Details</p>
+                  <p className="text-stone-500 font-semibold mb-1">{t('orders.paymentDetails', 'Payment Details')}</p>
                   <p className="font-extrabold text-emerald-700">{order.paymentMethod || 'Online Payment'}</p>
                   <p className="font-mono text-[11px] text-stone-600 mt-0.5">
                     ID: {order.razorpayPaymentId || order.id || '—'}
                   </p>
-                  <p className="text-[11px] text-stone-500 mt-1">Status: <strong className="text-slate-800">{order.paymentStatus || 'Paid'}</strong></p>
+                  <p className="text-[11px] text-stone-500 mt-1">{t('orders.status', 'Status:')} <strong className="text-slate-800">{order.paymentStatus || t('orders.paid', 'Paid')}</strong></p>
                 </div>
 
                 <div className="bg-white p-3.5 rounded-2xl border border-stone-200">
-                  <p className="text-stone-500 font-semibold mb-1">Delivery Dispatch</p>
+                  <p className="text-stone-500 font-semibold mb-1">{t('orders.deliveryDispatch', 'Delivery Dispatch')}</p>
                   <p className="font-bold text-slate-900">{order.deliverySlot || 'Standard Delivery'}</p>
                   <p className="text-[11px] text-stone-500 mt-1">
-                    Hub: <strong>{order.deliveryLocation || 'AgriMart Hub @ LPU'}</strong>
+                    {t('orders.hub', 'Hub:')} <strong>{order.deliveryLocation || 'AgriMart Hub @ LPU'}</strong>
                   </p>
                 </div>
 
                 <div className="bg-white p-3.5 rounded-2xl border border-stone-200">
-                  <p className="text-stone-500 font-semibold mb-1">Shipping Destination</p>
+                  <p className="text-stone-500 font-semibold mb-1">{t('orders.shippingDest', 'Shipping Destination')}</p>
                   <p className="font-bold text-slate-900 truncate">
-                    {order.shippingAddress?.fullName || order.userName || 'Customer'}
+                    {order.shippingAddress?.fullName || order.userName || (isHindi ? 'ग्राहक' : 'Customer')}
                   </p>
                   <p className="text-[11px] text-stone-600 leading-snug line-clamp-2 mt-0.5">
                     {order.shippingAddress?.addressLine1 || order.shippingAddress?.flatBuilding || ''}
@@ -362,6 +370,8 @@ function OrderCard({ order, onOpenReview }) {
 export default function OrdersPage() {
   const router = useRouter();
   const { user: authUser, loading: authLoading, isAuthenticated } = useAuth();
+  const { t, language } = useLanguage();
+  const isHindi = language === 'hi';
   const [mounted, setMounted] = useState(false);
   const [allOrders, setAllOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -543,22 +553,22 @@ export default function OrdersPage() {
             className="inline-flex items-center gap-2 text-stone-600 hover:text-[#142B4A] mb-3 transition text-xs sm:text-sm font-bold"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Crop Input Catalog
+            {t('orders.backToCatalog', 'Back to Crop Input Catalog')}
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#142B4A]">
-                MY AGRI &amp; FARM ORDERS
+                {t('orders.heading', 'MY AGRI & FARM ORDERS')}
               </h1>
               <p className="mt-1 text-xs sm:text-sm text-stone-500">
-                Track certified seeds, fertilizers, and village doorstep dispatches
+                {t('orders.subheading', 'Track certified seeds, fertilizers, and village doorstep dispatches')}
               </p>
             </div>
 
             {currentEmail && (
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white border border-stone-200 shadow-xs text-xs">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-stone-500">Account:</span>
+                <span className="text-stone-500">{t('orders.account', 'Account:')}</span>
                 <span className="font-bold text-slate-900">{currentEmail}</span>
               </div>
             )}
@@ -573,7 +583,7 @@ export default function OrdersPage() {
               type="text"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              placeholder="Look up order by email (e.g. pranavsinghkia@gmail.com), phone, or Order ID..."
+              placeholder={t('orders.searchPlaceholder', 'Look up order by email (e.g. pranavsinghkia@gmail.com), phone, or Order ID...')}
               className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-[#0B1B30]"
             />
           </div>
@@ -583,7 +593,7 @@ export default function OrdersPage() {
               onClick={() => setSearchFilter('')}
               className="text-xs text-stone-500 hover:text-stone-800 underline font-semibold shrink-0"
             >
-              Clear filter
+              {t('orders.clearFilter', 'Clear filter')}
             </button>
           )}
         </div>
@@ -597,10 +607,10 @@ export default function OrdersPage() {
               </div>
               <div>
                 <h4 className="text-xs sm:text-sm font-bold text-amber-950">
-                  Viewing in Guest Mode
+                  {t('orders.guestNoticeTitle', 'Viewing in Guest Mode')}
                 </h4>
                 <p className="text-xs text-amber-800 mt-0.5">
-                  Sign in with your email (e.g. <strong>pranavsinghkia@gmail.com</strong>) to keep your orders synced, or use the lookup box above.
+                  {t('orders.guestNoticeDesc', 'Sign in with your email to keep your orders synced, or use the lookup box above.')}
                 </p>
               </div>
             </div>
@@ -609,7 +619,7 @@ export default function OrdersPage() {
               href="/login?redirect=/orders"
               className="px-4 py-2 bg-[#0B1B30] text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition whitespace-nowrap shadow-xs"
             >
-              Sign In to Your Account
+              {t('orders.signInToAccount', 'Sign In to Your Account')}
             </Link>
           </div>
         )}
@@ -638,13 +648,13 @@ export default function OrdersPage() {
               <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 mb-5 border border-amber-100">
                 <Package className="h-10 w-10" strokeWidth={1.5} />
               </div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1.5">No Orders Found</h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-1.5">{t('orders.noOrders', 'No Orders Found')}</h2>
               <p className="text-xs sm:text-sm text-stone-500 mb-6 max-w-md leading-relaxed">
                 {searchFilter
                   ? `No orders matching "${searchFilter}". Please check the email, phone number, or Order ID.`
                   : currentEmail
                   ? `No previous orders found for ${currentEmail}. When you place an order, dispatch tracking will appear here.`
-                  : 'Sign in to view your past orders, or search by your email above.'}
+                  : t('orders.noOrdersDesc', 'Sign in to view your past orders, or search by your email above.')}
               </p>
 
               <div className="flex flex-wrap items-center justify-center gap-3">
@@ -653,7 +663,7 @@ export default function OrdersPage() {
                     href="/login?redirect=/orders"
                     className="px-5 py-2.5 bg-[#0B1B30] text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition shadow-xs"
                   >
-                    Sign In
+                    {t('orders.signIn', 'Sign In')}
                   </Link>
                 )}
                 <Link
@@ -661,7 +671,7 @@ export default function OrdersPage() {
                   prefetch={true}
                   className="px-5 py-2.5 bg-stone-100 text-stone-700 rounded-xl text-xs font-bold hover:bg-stone-200 transition"
                 >
-                  Browse Seeds &amp; Fertilizers
+                  {t('orders.browseSeeds', 'Browse Seeds & Fertilizers')}
                 </Link>
               </div>
             </motion.div>
@@ -675,9 +685,9 @@ export default function OrdersPage() {
             >
               <div className="flex items-center justify-between text-xs font-bold text-stone-600 px-1">
                 <span>
-                  {matchedOrders.length} Order{matchedOrders.length !== 1 ? 's' : ''} Found
+                  {t('orders.ordersFound', '{count} Orders Found', { count: matchedOrders.length })}
                 </span>
-                <span className="text-emerald-700 font-medium">● Live Tracking Connected</span>
+                <span className="text-emerald-700 font-medium">{t('orders.liveTracking', '● Live Tracking Connected')}</span>
               </div>
 
               {matchedOrders.map((order) => (
@@ -685,6 +695,8 @@ export default function OrdersPage() {
                   key={order.id}
                   order={order}
                   onOpenReview={handleOpenReview}
+                  t={t}
+                  isHindi={isHindi}
                 />
               ))}
             </motion.div>

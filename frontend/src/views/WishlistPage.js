@@ -6,10 +6,12 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 import { useProducts } from '../contexts/ProductContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { wishlistItemVariants, buttonTap, iconTap, DURATION, EASE } from '../utils/motion';
 
 export default function WishlistPage() {
   const { wishlistItems, removeFromWishlist, addToCart, storageHydrated } = useProducts();
+  const { t, isHindi } = useLanguage();
   const [addedIds, setAddedIds] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -32,15 +34,15 @@ export default function WishlistPage() {
             className="flex items-center gap-1.5 text-sm text-[#5A6B82] hover:text-[#142B4A] transition-colors duration-150 font-medium group"
           >
             <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform duration-150">arrow_back</span>
-            Continue Shopping
+            {t('wishlist.continueShopping', 'Continue Shopping')}
           </Link>
         </div>
 
         <h1 className="font-headline text-2xl font-extrabold text-[#142B4A] mb-1">
-          My Wishlist
+          {t('wishlist.title', 'My Wishlist')}
         </h1>
         <p className="text-sm text-[#5A6B82] mb-6">
-          {wishlistItems.length} saved {wishlistItems.length === 1 ? 'item' : 'items'}
+          {wishlistItems.length} {isHindi ? 'सुरक्षित उत्पाद' : `saved ${wishlistItems.length === 1 ? 'item' : 'items'}`}
         </p>
 
         <AnimatePresence mode="wait">
@@ -63,16 +65,16 @@ export default function WishlistPage() {
                 <span className="material-symbols-outlined text-[40px] text-rose-300">favorite</span>
               </div>
               <h2 className="font-headline text-xl font-bold text-[#142B4A] mb-2">
-                Your wishlist is empty
+                {t('wishlist.emptyTitle', 'Your wishlist is empty')}
               </h2>
               <p className="text-sm text-[#5A6B82] max-w-xs mb-6">
-                Save your favourite seeds, fertilizers and farm inputs here for easy access later.
+                {t('wishlist.emptyDesc', 'Save your favourite seeds, fertilizers and farm inputs here for easy access later.')}
               </p>
               <Link
                 href="/dashboard"
                 className="bg-[#142B4A] hover:bg-[#1B385D] text-white font-bold text-sm px-6 py-2.5 rounded-xl transition-all duration-150 active:scale-[0.97] shadow-sm"
               >
-                Browse Products
+                {t('wishlist.browseProducts', 'Browse Products')}
               </Link>
             </motion.div>
           ) : (

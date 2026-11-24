@@ -38,6 +38,7 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Toast from '../components/Toast';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocationContext } from '../contexts/LocationContext';
 import { useProducts } from '../contexts/ProductContext';
@@ -60,6 +61,8 @@ export default function ProfilePage() {
   const { user, isAuthenticated, logout } = useAuth();
   const { location: userLocation, isServiceable, hubDistance } = useLocationContext();
   const { cartCount, wishlistCount } = useProducts();
+  const { t, language } = useLanguage();
+  const isHindi = language === 'hi';
 
   const [isEditing, setIsEditing] = useState(false);
   const [showAadhaar, setShowAadhaar] = useState(false);
@@ -258,12 +261,12 @@ export default function ProfilePage() {
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#5A6B82] hover:text-[#0B1B30] bg-white px-3 py-2 rounded-xl border border-stone-200/80 shadow-xs hover:border-stone-300 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Store</span>
+              <span>{t('profile.backToStore', 'Back to Store')}</span>
             </Link>
             <span className="text-stone-300 hidden sm:inline">|</span>
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[20px] text-[#16A34A]">agriculture</span>
-              <span className="text-xs sm:text-sm font-bold text-slate-800">AgriMart Kisan Portal</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">{t('profile.portalTitle', 'AgriMart Kisan Portal')}</span>
             </div>
           </div>
 
@@ -276,7 +279,7 @@ export default function ProfilePage() {
               title="Print Kisan Identity Slip"
             >
               <Printer className="w-4 h-4 text-slate-600" />
-              <span className="hidden sm:inline">Print ID Slip</span>
+              <span className="hidden sm:inline">{t('profile.printSlip', 'Print ID Slip')}</span>
             </button>
 
             {!isEditing ? (
@@ -287,7 +290,7 @@ export default function ProfilePage() {
                 className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-white bg-[#0B1B30] hover:bg-[#142B4A] px-4 py-2 rounded-xl shadow-sm transition-all"
               >
                 <Edit3 className="w-4 h-4 text-[#FF9F43]" />
-                <span>Edit Profile</span>
+                <span>{t('profile.editProfile', 'Edit Profile')}</span>
               </motion.button>
             ) : (
               <div className="flex items-center gap-2">
@@ -298,7 +301,7 @@ export default function ProfilePage() {
                   className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-slate-600 bg-stone-100 hover:bg-stone-200 px-3 py-2 rounded-xl transition-colors"
                 >
                   <X className="w-4 h-4" />
-                  <span>Cancel</span>
+                  <span>{t('profile.cancel', 'Cancel')}</span>
                 </button>
                 <motion.button
                   whileTap={buttonTap}
@@ -312,7 +315,7 @@ export default function ProfilePage() {
                   ) : (
                     <Save className="w-4 h-4" />
                   )}
-                  <span>Save Changes</span>
+                  <span>{t('profile.saveChanges', 'Save Changes')}</span>
                 </motion.button>
               </div>
             )}
@@ -325,9 +328,9 @@ export default function ProfilePage() {
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-[24px] text-amber-600 shrink-0">info</span>
               <div>
-                <p className="text-xs sm:text-sm font-bold">Viewing Demo Kisan Account</p>
+                <p className="text-xs sm:text-sm font-bold">{t('profile.demoAccountTitle', 'Viewing Demo Kisan Account')}</p>
                 <p className="text-[11px] sm:text-xs text-amber-800">
-                  You can inspect or test editing the Kisan profile. Sign in with your phone or email to save records to your permanent account.
+                  {t('profile.demoAccountDesc', 'You can inspect or test editing the Kisan profile. Sign in with your phone or email to save records to your permanent account.')}
                 </p>
               </div>
             </div>
@@ -335,7 +338,7 @@ export default function ProfilePage() {
               href="/login?redirect=/profile"
               className="shrink-0 text-xs font-bold text-white bg-amber-700 hover:bg-amber-800 px-3 py-1.5 rounded-lg shadow-xs transition-colors"
             >
-              Sign In
+              {t('orders.signIn', 'Sign In')}
             </Link>
           </div>
         )}
@@ -346,10 +349,10 @@ export default function ProfilePage() {
             <div className="flex items-center gap-2.5">
               <span className="material-symbols-outlined text-[22px] text-[#16A34A]">edit_note</span>
               <span className="text-xs sm:text-sm font-semibold">
-                <strong>Editing Mode Enabled:</strong> You can edit your Farmer Identity, Aadhaar, Phone, Land Holding, and Dispatch Address below.
+                <strong>{t('profile.editingModeEnabled', 'Editing Mode Enabled:')}</strong> {t('profile.editingModeDesc', 'You can edit your Farmer Identity, Aadhaar, Phone, Land Holding, and Dispatch Address below.')}
               </span>
             </div>
-            <span className="text-[11px] bg-emerald-200/80 text-emerald-900 font-bold px-2 py-0.5 rounded-md">Live Preview</span>
+            <span className="text-[11px] bg-emerald-200/80 text-emerald-900 font-bold px-2 py-0.5 rounded-md">{t('profile.livePreview', 'Live Preview')}</span>
           </div>
         )}
 
@@ -376,7 +379,7 @@ export default function ProfilePage() {
                   </h1>
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    Verified Farmer
+                    {t('profile.verifiedFarmer', 'Verified Farmer')}
                   </span>
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
                     <Sparkles className="w-3.5 h-3.5 text-amber-600" />
@@ -412,16 +415,16 @@ export default function ProfilePage() {
             {/* Quick Metrics Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full md:w-auto shrink-0">
               <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200/80 text-center">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Cultivated Land</span>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">{t('profile.cultivatedLand', 'Cultivated Land')}</span>
                 <span className="text-sm sm:text-base font-extrabold text-[#0B1B30] mt-0.5 block">{profile.landSize}</span>
               </div>
               <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200/80 text-center">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Delivery Hub</span>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">{t('profile.deliveryHub', 'Delivery Hub')}</span>
                 <span className="text-sm sm:text-base font-extrabold text-[#16A34A] mt-0.5 block">{profile.city}</span>
               </div>
               <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200/80 text-center col-span-2 sm:col-span-1">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">KCC Credit</span>
-                <span className="text-sm sm:text-base font-extrabold text-amber-700 mt-0.5 block">Approved</span>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">{t('profile.kccCredit', 'KCC Credit')}</span>
+                <span className="text-sm sm:text-base font-extrabold text-amber-700 mt-0.5 block">{t('profile.approved', 'Approved')}</span>
               </div>
             </div>
           </div>
@@ -444,8 +447,8 @@ export default function ProfilePage() {
                     <span className="material-symbols-outlined text-[18px] text-[#FF9F43]">eco</span>
                   </div>
                   <div>
-                    <h2 className="text-xs font-black tracking-widest uppercase text-emerald-400">AgriMart Kisan Pass</h2>
-                    <p className="text-[10px] text-slate-300">Govt & Mandi Certified Digital Card</p>
+                    <h2 className="text-xs font-black tracking-widest uppercase text-emerald-400">{t('profile.kisanPass', 'AgriMart Kisan Pass')}</h2>
+                    <p className="text-[10px] text-slate-300">{t('profile.govtCertifiedCard', 'Govt & Mandi Certified Digital Card')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -465,7 +468,7 @@ export default function ProfilePage() {
 
               {/* Kisan ID in Big Monospace */}
               <div className="mb-4 relative z-10">
-                <div className="text-[10px] uppercase font-bold tracking-wider text-slate-300">Kisan Identifier</div>
+                <div className="text-[10px] uppercase font-bold tracking-wider text-slate-300">{t('profile.kisanId', 'Kisan Identifier')}</div>
                 <div className="flex items-center justify-between mt-0.5">
                   <span className="font-mono text-lg sm:text-xl font-black tracking-wider text-[#FF9F43] drop-shadow-sm">
                     {profile.kisanId}
@@ -484,12 +487,12 @@ export default function ProfilePage() {
               {/* Farmer Name & Aadhaar Number */}
               <div className="grid grid-cols-2 gap-3 mb-4 text-xs relative z-10">
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-medium">Farmer Name</span>
+                  <span className="text-[10px] text-slate-400 block font-medium">{t('profile.farmerName', 'Farmer Name')}</span>
                   <span className="font-bold text-white tracking-wide truncate block">{profile.fullName}</span>
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-400 block font-medium">Aadhaar (e-KYC)</span>
+                    <span className="text-[10px] text-slate-400 block font-medium">{t('profile.aadhaarNumber', 'Aadhaar (e-KYC)')}</span>
                     <button
                       type="button"
                       onClick={() => setShowAadhaar(!showAadhaar)}
@@ -506,11 +509,11 @@ export default function ProfilePage() {
               {/* Hub, Land & Validity Details */}
               <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10 text-xs relative z-10">
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-medium">Dark Store Hub</span>
+                  <span className="text-[10px] text-slate-400 block font-medium">{t('profile.deliveryHub', 'Dark Store Hub')}</span>
                   <span className="font-semibold text-emerald-300 truncate block">Hub @ {profile.city}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-medium">Member Since</span>
+                  <span className="text-[10px] text-slate-400 block font-medium">{isHindi ? 'सदस्यता' : 'Member Since'}</span>
                   <span className="font-semibold text-slate-200 block">{profile.memberSince}</span>
                 </div>
               </div>
@@ -520,13 +523,13 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-1 tracking-widest text-white/70 font-mono text-[9px]">
                   <span>||| | | |||| || | || ||||| | ||| || |||</span>
                 </div>
-                <span className="text-[9px] uppercase tracking-wider text-emerald-400 font-bold">100% Guaranteed Genuine Inputs</span>
+                <span className="text-[9px] uppercase tracking-wider text-emerald-400 font-bold">{isHindi ? '100% प्रामाणिक कृषि इनपुट्स की गारंटी' : '100% Guaranteed Genuine Inputs'}</span>
               </div>
             </div>
 
             {/* Quick Navigation Cards */}
             <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm space-y-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 px-1">Quick Kisan Actions</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 px-1">{isHindi ? 'त्वरित किसान क्रियाएं' : 'Quick Kisan Actions'}</h3>
 
               <Link
                 href="/orders"
@@ -537,8 +540,8 @@ export default function ProfilePage() {
                     <Package className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">Track Farm Orders</p>
-                    <p className="text-[11px] text-slate-500">Live dispatch status & past invoices</p>
+                    <p className="font-bold text-slate-900">{isHindi ? 'फ़ार्म ऑर्डर ट्रैक करें' : 'Track Farm Orders'}</p>
+                    <p className="text-[11px] text-slate-500">{isHindi ? 'लाइव प्रेषण स्थिति और पिछले बिल' : 'Live dispatch status & past invoices'}</p>
                   </div>
                 </div>
                 <span className="material-symbols-outlined text-[18px] text-slate-400 group-hover:translate-x-0.5 transition-transform">
@@ -555,8 +558,8 @@ export default function ProfilePage() {
                     <Heart className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">Saved Wishlist</p>
-                    <p className="text-[11px] text-slate-500">{wishlistCount} saved seeds & fertilizers</p>
+                    <p className="font-bold text-slate-900">{t('profile.savedWishlist', 'Saved Wishlist')}</p>
+                    <p className="text-[11px] text-slate-500">{t('profile.savedItems', '{count} saved seeds & fertilizers', { count: wishlistCount })}</p>
                   </div>
                 </div>
                 <span className="material-symbols-outlined text-[18px] text-slate-400 group-hover:translate-x-0.5 transition-transform">
@@ -573,8 +576,8 @@ export default function ProfilePage() {
                     <Truck className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">Delivery Cart</p>
-                    <p className="text-[11px] text-slate-500">{cartCount} items ready for dispatch</p>
+                    <p className="font-bold text-slate-900">{t('profile.deliveryCart', 'Delivery Cart')}</p>
+                    <p className="text-[11px] text-slate-500">{t('profile.cartReady', '{count} items ready for dispatch', { count: cartCount })}</p>
                   </div>
                 </div>
                 <span className="material-symbols-outlined text-[18px] text-slate-400 group-hover:translate-x-0.5 transition-transform">
@@ -592,8 +595,8 @@ export default function ProfilePage() {
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900">Kisan Toll-Free Helpline</p>
-                    <p className="text-[11px] text-slate-500">1800-AGRI-MART (Toll-Free 24/7)</p>
+                    <p className="font-bold text-slate-900">{t('profile.tollFreeHelpline', 'Kisan Toll-Free Helpline')}</p>
+                    <p className="text-[11px] text-slate-500">{t('profile.tollFreeSub', '1800-AGRI-MART (Toll-Free 24/7)')}</p>
                   </div>
                 </a>
               </div>
@@ -610,20 +613,20 @@ export default function ProfilePage() {
                     <User className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-sm sm:text-base font-bold text-slate-900">Customer Identity & KYC Details</h2>
-                    <p className="text-[11px] text-slate-500">Official farmer verification data</p>
+                    <h2 className="text-sm sm:base font-bold text-slate-900">{t('profile.identityAndKyc', 'Customer Identity & KYC Details')}</h2>
+                    <p className="text-[11px] text-slate-500">{t('profile.farmerVerificationData', 'Official farmer verification data')}</p>
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  UIDAI / e-KYC Verified
+                  {t('profile.uidaiVerified', 'UIDAI / e-KYC Verified')}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {/* Full Name */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Customer / Farmer Name *</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.farmerName', 'Customer / Farmer Name *')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -641,7 +644,7 @@ export default function ProfilePage() {
 
                 {/* Kisan ID */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Govt Kisan ID (Farmer Code)</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.kisanId', 'Govt Kisan ID (Farmer Code)')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -668,7 +671,7 @@ export default function ProfilePage() {
                 {/* Aadhaar Number */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-[11px] font-bold text-slate-600">Aadhaar Card Number *</label>
+                    <label className="block text-[11px] font-bold text-slate-600">{t('profile.aadhaarNumber', 'Aadhaar Card Number *')}</label>
                     {!isEditing && (
                       <button
                         type="button"
@@ -676,7 +679,7 @@ export default function ProfilePage() {
                         className="text-[10px] text-slate-500 hover:text-slate-800 flex items-center gap-1 font-semibold"
                       >
                         {showAadhaar ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                        {showAadhaar ? 'Hide' : 'Show'}
+                        {showAadhaar ? t('profile.hideAadhaar', 'Hide') : t('profile.showAadhaar', 'Show')}
                       </button>
                     )}
                   </div>
@@ -692,14 +695,14 @@ export default function ProfilePage() {
                   ) : (
                     <div className="p-3 bg-stone-50 rounded-xl font-mono font-bold text-slate-800 text-sm border border-stone-200/60 flex items-center justify-between">
                       <span>{formattedAadhaar}</span>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Verified</span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">{t('profile.verifiedBadge', 'Verified')}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Contact Number */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Primary Mobile Number *</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.primaryMobile', 'Primary Mobile Number *')}</label>
                   {isEditing ? (
                     <div className="relative">
                       <span className="absolute left-3 top-2.5 text-slate-400 text-sm font-semibold">+91</span>
@@ -724,7 +727,7 @@ export default function ProfilePage() {
 
                 {/* Alternate / WhatsApp Number */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">WhatsApp / Alternate Number</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.alternateMobile', 'WhatsApp / Alternate Number')}</label>
                   {isEditing ? (
                     <div className="relative">
                       <span className="absolute left-3 top-2.5 text-slate-400 text-sm font-semibold">+91</span>
@@ -746,7 +749,7 @@ export default function ProfilePage() {
 
                 {/* Email Address */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Email Address</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.emailAddress', 'Email Address')}</label>
                   {isEditing ? (
                     <input
                       type="email"
@@ -772,19 +775,19 @@ export default function ProfilePage() {
                     <Sprout className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-sm sm:text-base font-bold text-slate-900">Farm Land & Agricultural Profile</h2>
-                    <p className="text-[11px] text-slate-500">Crops, soil category, irrigation, and cooperative data</p>
+                    <h2 className="text-sm sm:text-base font-bold text-slate-900">{t('profile.farmLandProfile', 'Farm Land & Agricultural Profile')}</h2>
+                    <p className="text-[11px] text-slate-500">{t('profile.farmLandSub', 'Crops, soil category, irrigation, and cooperative data')}</p>
                   </div>
                 </div>
                 <span className="text-[11px] font-bold text-slate-600 bg-stone-100 px-2 py-0.5 rounded-lg">
-                  Kharif & Rabi Ready
+                  {t('profile.kharifRabiReady', 'Kharif & Rabi Ready')}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {/* Total Land Holding */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Total Farmland Holding</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.landHolding', 'Total Farmland Holding')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -802,17 +805,17 @@ export default function ProfilePage() {
 
                 {/* Land Ownership */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Land Ownership Category</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.ownershipCategory', 'Land Ownership Category')}</label>
                   {isEditing ? (
                     <select
                       value={editFormData.ownershipType}
                       onChange={(e) => handleInputChange('ownershipType', e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B1B30] bg-white"
                     >
-                      <option value="Self-Owned (Ancestral Land)">Self-Owned (Ancestral Land)</option>
-                      <option value="Tenant / Leased Farmland">Tenant / Leased Farmland</option>
-                      <option value="Joint Family Holding">Joint Family Holding</option>
-                      <option value="FPO Contract Farming">FPO Contract Farming</option>
+                      <option value="Self-Owned (Ancestral Land)">{t('profile.selfOwned', 'Self-Owned (Ancestral Land)')}</option>
+                      <option value="Tenant / Leased Farmland">{t('profile.tenantFarmland', 'Tenant / Leased Farmland')}</option>
+                      <option value="Joint Family Holding">{t('profile.jointFamily', 'Joint Family Holding')}</option>
+                      <option value="FPO Contract Farming">{t('profile.fpoContract', 'FPO Contract Farming')}</option>
                     </select>
                   ) : (
                     <div className="p-3 bg-stone-50 rounded-xl font-medium text-slate-800 text-sm border border-stone-200/60">
@@ -823,7 +826,7 @@ export default function ProfilePage() {
 
                 {/* Primary Crops Cultivated */}
                 <div className="sm:col-span-2">
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Primary Crops Grown</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.primaryCrops', 'Primary Crops Grown')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -841,7 +844,7 @@ export default function ProfilePage() {
 
                 {/* Soil Type */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Soil Type & Health Condition</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.soilType', 'Soil Type & Health Condition')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -859,7 +862,7 @@ export default function ProfilePage() {
 
                 {/* Irrigation Source */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Irrigation Source</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.irrigationSource', 'Irrigation Source')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -877,7 +880,7 @@ export default function ProfilePage() {
 
                 {/* FPO Affiliation */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">FPO / Farmer Cooperative</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.fpoMembership', 'FPO / Farmer Cooperative')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -895,7 +898,7 @@ export default function ProfilePage() {
 
                 {/* Kisan Credit Card Status */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Kisan Credit Card (KCC)</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.kccStatus', 'Kisan Credit Card (KCC)')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -922,20 +925,20 @@ export default function ProfilePage() {
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-sm sm:text-base font-bold text-slate-900">Farm Address & Dispatch Location</h2>
-                    <p className="text-[11px] text-slate-500">Auto-synced with checkout and delivery vehicles</p>
+                    <h2 className="text-sm sm:text-base font-bold text-slate-900">{t('profile.farmAddressTitle', 'Farm Address & Dispatch Location')}</h2>
+                    <p className="text-[11px] text-slate-500">{t('profile.farmAddressSub', 'Auto-synced with checkout and delivery vehicles')}</p>
                   </div>
                 </div>
                 <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-lg flex items-center gap-1">
                   <Truck className="w-3.5 h-3.5" />
-                  Direct Farm Delivery
+                  {t('profile.directFarmDelivery', 'Direct Farm Delivery')}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 {/* Farm / Street Address */}
                 <div className="sm:col-span-2">
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Farm Name / House / Road *</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.farmAddress', 'Farm Name / House / Road *')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -953,7 +956,7 @@ export default function ProfilePage() {
 
                 {/* Village / Area */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Village / Colony / Area</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.village', 'Village / Colony / Area')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -971,7 +974,7 @@ export default function ProfilePage() {
 
                 {/* City / Tehsil */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">City / Tehsil *</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.cityTehsil', 'City / Tehsil *')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -989,7 +992,7 @@ export default function ProfilePage() {
 
                 {/* State */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">State *</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.state', 'State *')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -1007,7 +1010,7 @@ export default function ProfilePage() {
 
                 {/* PIN Code */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">PIN Code *</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.pincode', 'PIN Code *')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -1026,7 +1029,7 @@ export default function ProfilePage() {
 
                 {/* Special Delivery Directions */}
                 <div className="sm:col-span-2">
-                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Delivery Directions & Tractor Access Landmark</label>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">{t('profile.deliveryDirections', 'Delivery Directions & Tractor Access Landmark')}</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -1049,13 +1052,13 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[20px] text-[#16A34A]">warehouse</span>
                   <div>
-                    <span className="font-bold text-emerald-950">Nearest AgriMart Dark Store: </span>
+                    <span className="font-bold text-emerald-950">{t('profile.nearestDarkStore', 'Nearest AgriMart Dark Store:')} </span>
                     <span className="text-emerald-900 font-medium">AgriMart Kisan Hub @ LPU, Phagwara</span>
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-                  Serviceable (&le;30 km)
+                  {t('profile.serviceable30km', 'Serviceable (≤30 km)')}
                 </span>
               </div>
             </div>
@@ -1069,7 +1072,7 @@ export default function ProfilePage() {
               >
                 <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
                   <span className="material-symbols-outlined text-[18px] text-[#16A34A]">save</span>
-                  <span>Remember to save your updated customer information.</span>
+                  <span>{t('profile.savePrompt', 'Remember to save your updated customer information.')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -1078,7 +1081,7 @@ export default function ProfilePage() {
                     disabled={saving}
                     className="px-4 py-2 text-xs font-semibold text-slate-600 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
                   >
-                    Cancel
+                    {t('profile.cancel', 'Cancel')}
                   </button>
                   <button
                     type="button"
@@ -1091,7 +1094,7 @@ export default function ProfilePage() {
                     ) : (
                       <Save className="w-4 h-4" />
                     )}
-                    <span>Save Profile</span>
+                    <span>{t('profile.saveProfile', 'Save Profile')}</span>
                   </button>
                 </div>
               </motion.div>

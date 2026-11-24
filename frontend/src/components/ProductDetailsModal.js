@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, onValue } from 'firebase/database';
 import {
@@ -31,6 +32,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
     removeFromWishlist,
   } = useProducts();
   const { isServiceable, location: userLocation, setLocationModalOpen } = useLocationContext();
+  const { t, isHindi } = useLanguage();
 
   const [activeTab, setActiveTab] = useState('highlights');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -540,14 +542,16 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                       favorite
                     </span>
                     <span className="hidden sm:inline ml-1">
-                      {isWishlisted ? 'Saved' : 'Wishlist'}
+                      {isWishlisted
+                        ? (isHindi ? 'सहेजा गया' : 'Saved')
+                        : (isHindi ? 'विशलिस्ट' : 'Wishlist')}
                     </span>
                   </motion.button>
 
                   <AnimatePresence mode="wait" initial={false}>
                     {isSoldOut ? (
                       <span key="sold" className="bg-slate-200 text-slate-500 font-bold text-xs px-3 sm:px-4 py-2.5 rounded-xl block whitespace-nowrap shrink-0">
-                        Sold Out
+                        {isHindi ? 'स्टॉक समाप्त' : 'Sold Out'}
                       </span>
                     ) : qty > 0 ? (
                       <motion.div
@@ -601,7 +605,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         title="Outside 10 km Phagwara hub. Tap to change location."
                       >
                         <span className="material-symbols-outlined text-[16px] sm:text-[18px]">location_off</span>
-                        <span>Unavailable</span>
+                        <span>{isHindi ? 'अनुपलब्ध' : 'Unavailable'}</span>
                       </motion.button>
                     ) : (
                       <motion.button
@@ -618,7 +622,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         <span className="material-symbols-outlined text-[16px] sm:text-[18px]">
                           add_shopping_cart
                         </span>
-                        <span>ADD TO CART</span>
+                        <span>{isHindi ? 'कार्ट में जोड़ें' : 'ADD TO CART'}</span>
                       </motion.button>
                     )}
                   </AnimatePresence>
@@ -653,11 +657,11 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                 {/* Tab Headers with sliding active indicator */}
                 <div className="flex border-b border-slate-200 gap-4 overflow-x-auto no-scrollbar">
                   {[
-                    { key: 'highlights', label: 'Highlights' },
-                    { key: 'nutrition', label: 'Agronomy & Nutrients' },
-                    { key: 'storage', label: 'Sowing & Storage' },
-                    { key: 'manufacturer', label: 'License & Standards' },
-                    { key: 'reviews', label: `Reviews (${productReviews.length})` },
+                    { key: 'highlights', label: isHindi ? 'मुख्य विशेषताएं' : 'Highlights' },
+                    { key: 'nutrition', label: isHindi ? 'कृषि विज्ञान एवं पोषक तत्व' : 'Agronomy & Nutrients' },
+                    { key: 'storage', label: isHindi ? 'बुवाई एवं भंडारण' : 'Sowing & Storage' },
+                    { key: 'manufacturer', label: isHindi ? 'लाइसेंस एवं मानक' : 'License & Standards' },
+                    { key: 'reviews', label: isHindi ? `किसान समीक्षाएं (${productReviews.length})` : `Reviews (${productReviews.length})` },
                   ].map((tab) => (
                     <button
                       key={tab.key}
@@ -723,8 +727,8 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         <table className="w-full text-xs text-left">
                           <thead>
                             <tr className="bg-slate-200/60 text-[#142B4A] font-bold">
-                              <th className="p-2.5">Agri Parameter / Element</th>
-                              <th className="p-2.5">Certified Standard</th>
+                              <th className="p-2.5">{isHindi ? 'कृषि मापदंड / तत्व' : 'Agri Parameter / Element'}</th>
+                              <th className="p-2.5">{isHindi ? 'प्रमाणित मानक' : 'Certified Standard'}</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-200">
@@ -739,7 +743,9 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         </table>
                       </div>
                       <p className="text-[10px] text-[#74777E] mt-2 italic">
-                        *Guaranteed laboratory analysis verified under Seed Act 1966 & Fertilizer Control Order (FCO) 1985.
+                        {isHindi
+                          ? '*बीज अधिनियम १९६६ और उर्वरक नियंत्रण आदेश (एफसीओ) १९८५ के तहत सत्यापित गारंटीकृत प्रयोगशाला विश्लेषण।'
+                          : '*Guaranteed laboratory analysis verified under Seed Act 1966 & Fertilizer Control Order (FCO) 1985.'}
                       </p>
                     </motion.div>
                   )}
@@ -755,7 +761,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                     >
                       <div className="bg-amber-50/60 border border-amber-200 p-3 rounded-xl">
                         <span className="font-bold text-amber-900 block mb-1">
-                          Shelf Life & Viability
+                          {isHindi ? 'शेल्फ लाइफ एवं जीवनक्षमता' : 'Shelf Life & Viability'}
                         </span>
                         <p className="text-[#5A6B82]">
                           {product.shelfLife || '18 months from packaging date.'}
@@ -763,7 +769,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                       </div>
                       <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
                         <span className="font-bold text-slate-900 block mb-1">
-                          Farm Storage & Sowing Instructions
+                          {isHindi ? 'खेत भंडारण एवं बुवाई निर्देश' : 'Farm Storage & Sowing Instructions'}
                         </span>
                         <p className="text-[#5A6B82]">
                           {product.storageInstructions ||
@@ -783,24 +789,24 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                       className="py-4 space-y-3 text-xs"
                     >
                       <div>
-                        <span className="font-bold text-[#142B4A] block">Country of Origin</span>
-                        <span className="text-[#5A6B82]">India</span>
+                        <span className="font-bold text-[#142B4A] block">{isHindi ? 'मूल देश' : 'Country of Origin'}</span>
+                        <span className="text-[#5A6B82]">{isHindi ? 'भारत' : 'India'}</span>
                       </div>
                       <div>
-                        <span className="font-bold text-[#142B4A] block">Research Center / Origin Hub</span>
+                        <span className="font-bold text-[#142B4A] block">{isHindi ? 'अनुसंधान केंद्र / मूल हब' : 'Research Center / Origin Hub'}</span>
                         <span className="text-[#5A6B82]">{product.origin}</span>
                       </div>
                       <div>
-                        <span className="font-bold text-[#142B4A] block">Seed Act / FCO License Number</span>
+                        <span className="font-bold text-[#142B4A] block">{isHindi ? 'बीज अधिनियम / एफसीओ लाइसेंस नंबर' : 'Seed Act / FCO License Number'}</span>
                         <span className="font-mono text-[#5A6B82]">{product.fssaiLicence}</span>
                       </div>
                       <div>
-                        <span className="font-bold text-[#142B4A] block">Packer & Seed Producer</span>
+                        <span className="font-bold text-[#142B4A] block">{isHindi ? 'पैकर एवं बीज उत्पादक' : 'Packer & Seed Producer'}</span>
                         <span className="text-[#5A6B82]">{product.manufacturerDetails}</span>
                       </div>
                       <div className="pt-2 border-t border-slate-100">
                         <span className="text-[11px] text-slate-500">
-                          <strong>Kisan Agronomist Advisory:</strong> AgriMart Support & Soil Doctor, Toll-Free Kisan Helpline 1800-AGRI-MART or email advisory@agrimart.farm.
+                          <strong>{isHindi ? 'किसान कृषि वैज्ञानिक सलाह:' : 'Kisan Agronomist Advisory:'}</strong> {isHindi ? 'एग्रीमार्ट सहायता एवं मृदा विशेषज्ञ, टोल-फ्री किसान हेल्पलाइन 1800-AGRI-MART या ईमेल advisory@agrimart.farm.' : 'AgriMart Support & Soil Doctor, Toll-Free Kisan Helpline 1800-AGRI-MART or email advisory@agrimart.farm.'}
                         </span>
                       </div>
                     </motion.div>
@@ -820,7 +826,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                           <div className="p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200/80 flex items-center justify-between">
                             <div>
                               <span className="text-xs font-bold text-amber-900 block">
-                                Verified Customer Rating
+                                {isHindi ? 'सत्यापित किसान रेटिंग' : 'Verified Customer Rating'}
                               </span>
                               <div className="flex items-center gap-1.5 mt-0.5">
                                 <span className="font-extrabold text-base text-amber-900">

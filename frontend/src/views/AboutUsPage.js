@@ -29,6 +29,7 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { buttonTap, EASE } from '../utils/motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const stats = [
   { value: '250,000+', label: 'Kisan Families Empowered', subtext: 'Across Punjab & Uttar Pradesh' },
@@ -132,6 +133,50 @@ const certifications = [
 
 export default function AboutUsPage() {
   const [activeHub, setActiveHub] = useState('phagwara');
+  const { t, language } = useLanguage();
+  const isHindi = language === 'hi';
+
+  const localizedStats = [
+    { value: '250,000+', label: t('about.statFamilies', 'Kisan Families Empowered'), subtext: t('about.statFamiliesSub', 'Across Punjab & Uttar Pradesh') },
+    { value: '98.4%', label: t('about.statGermination', 'Certified Germination Rate'), subtext: t('about.statGerminationSub', 'Tested in Seed Act accredited labs') },
+    { value: '1,200+', label: t('about.statFpos', 'FPOs & Cooperatives'), subtext: t('about.statFposSub', 'Bulk input procurement partners') },
+    { value: '₹4.8 Cr+', label: t('about.statSavings', 'Direct Input Cost Savings'), subtext: t('about.statSavingsSub', 'Eliminating middleman markups') },
+  ];
+
+  const localizedPillars = [
+    {
+      icon: Sprout,
+      title: t('about.breederDirect', 'Breeder Direct Contracts'),
+      desc: t('about.breederDirectDesc', 'Direct agreements with ICAR institutions, National Seeds Corporation (NSC), and certified hybrid developers. Zero unverified open-market seeds.'),
+      badge: isHindi ? '100% प्रामाणिक' : '100% Genuine',
+      color: 'from-emerald-500/10 to-emerald-500/5',
+      iconColor: 'text-emerald-600',
+    },
+    {
+      icon: Microscope,
+      title: t('about.dualLabBatch', 'Dual Lab Batch Testing'),
+      desc: t('about.dualLabBatchDesc', 'Every seed and fertilizer lot undergoes rigorous physical purity, moisture (<12%), and vigor tests under Seed Act 1966 & FCO 1985 guidelines.'),
+      badge: isHindi ? 'दोहरा सत्यापित' : 'Dual Verified',
+      color: 'from-amber-500/10 to-amber-500/5',
+      iconColor: 'text-amber-600',
+    },
+    {
+      icon: Warehouse,
+      title: t('about.coldDarkHubs', 'Cold Dark Store Hubs'),
+      desc: t('about.coldDarkHubsDesc', 'Stored at controlled temperatures (<18°C) and under 45% relative humidity to preserve living seed embryos and bio-fertilizer bacterial strains.'),
+      badge: isHindi ? 'तापमान नियंत्रित' : 'Climate Controlled',
+      color: 'from-blue-500/10 to-blue-500/5',
+      iconColor: 'text-blue-600',
+    },
+    {
+      icon: Truck,
+      title: t('about.directFarmDispatch', 'Direct Farm Dispatch'),
+      desc: t('about.directFarmDispatchDesc', 'Dedicated farm delivery vehicles dispatching orders within a 30 km radius directly to village farm gates, tractor roads, and Panchayat centers.'),
+      badge: isHindi ? 'द्वार तक डिलीवरी' : 'Doorstep Delivery',
+      color: 'from-purple-500/10 to-purple-500/5',
+      iconColor: 'text-purple-600',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#FAF5EB] text-[#263449] flex flex-col selection:bg-[#FF9F43]/30">
@@ -153,7 +198,7 @@ export default function AboutUsPage() {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-6"
             >
               <Sprout className="w-4 h-4 text-[#FF9F43]" />
-              Direct-to-Farm Agricultural Revolution
+              {t('about.heroPill', 'Direct-to-Farm Agricultural Revolution')}
             </motion.div>
 
             {/* Main Headline */}
@@ -163,9 +208,9 @@ export default function AboutUsPage() {
               transition={{ duration: 0.6, delay: 0.1, ease: EASE.out }}
               className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-none mb-6 text-white"
             >
-              Protecting India's Farmers From Counterfeits.{' '}
+              {t('about.heroTitle', "Protecting India's Farmers From Counterfeits.")}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-amber-300 to-[#FF9F43]">
-                Pure Certified Inputs Direct to Farm.
+                {t('about.heroTitleHighlight', 'Pure Certified Inputs Direct to Farm.')}
               </span>
             </motion.h1>
 
@@ -176,7 +221,7 @@ export default function AboutUsPage() {
               transition={{ duration: 0.6, delay: 0.2, ease: EASE.out }}
               className="text-slate-300 text-sm sm:text-lg max-w-3xl mx-auto leading-relaxed mb-8"
             >
-              AgriMart connects certified seed breeders, FCO-accredited fertilizer producers, and agricultural research institutes directly with farmers. Operating regional dark store hubs in Phagwara and Etawah, we eliminate intermediary markups and deliver verified farm inputs within hours.
+              {t('about.heroDesc', 'AgriMart connects certified seed breeders, FCO-accredited fertilizer producers, and agricultural research institutes directly with farmers. Operating regional dark store hubs in Phagwara and Etawah, we eliminate intermediary markups and deliver verified farm inputs within hours.')}
             </motion.p>
 
             {/* CTAs */}
@@ -190,7 +235,7 @@ export default function AboutUsPage() {
                 href="/dashboard"
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#FF9F43] hover:bg-[#e68e3c] text-[#0B1B30] font-extrabold text-sm rounded-xl shadow-lg hover:shadow-xl transition-all"
               >
-                <span>Browse Certified Inputs</span>
+                <span>{t('about.browseInputs', 'Browse Certified Inputs')}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
@@ -198,7 +243,7 @@ export default function AboutUsPage() {
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-sm rounded-xl border border-white/20 backdrop-blur-md transition-colors"
               >
                 <PhoneCall className="w-4 h-4 text-emerald-400" />
-                <span>Kisan Helpline: 1800-AGRI-MART</span>
+                <span>{t('about.kisanHelpline', 'Kisan Helpline: 1800-AGRI-MART')}</span>
               </a>
             </motion.div>
           </div>
@@ -207,7 +252,7 @@ export default function AboutUsPage() {
         {/* STATS & IMPACT ROW */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-            {stats.map((s, idx) => (
+            {localizedStats.map((s, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -230,19 +275,19 @@ export default function AboutUsPage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-[#16A34A]">
                 <Leaf className="w-4 h-4" />
-                Our Origin & Agricultural Purpose
+                {t('about.originTag', 'Our Origin & Agricultural Purpose')}
               </div>
 
               <h2 className="text-2xl sm:text-4xl font-black text-[#0B1B30] leading-tight">
-                Born in the fertile soil of Punjab to solve the ₹22,000 Crore spurious input crisis.
+                {t('about.storyHeading', 'Born in the fertile soil of Punjab to solve the ₹22,000 Crore spurious input crisis.')}
               </h2>
 
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                In India, studies estimate that over <strong>30% of fertilizers and hybrid seeds</strong> distributed through unorganized rural dealers are substandard, diluted, or outright counterfeit. A single bag of unviable seed can destroy a farming family’s entire seasonal income.
+                {t('about.storyP1', 'In India, studies estimate that over 30% of fertilizers and hybrid seeds distributed through unorganized rural dealers are substandard, diluted, or outright counterfeit. A single bag of unviable seed can destroy a farming family’s entire seasonal income.')}
               </p>
 
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                AgriMart was established to build an airtight, transparent bridge between verified agricultural producers and the farmers who feed the nation. We operate temperature-controlled regional dark stores, conduct independent batch testing under Seed Act 1966 protocols, and dispatch directly to farm roads via dedicated logistics.
+                {t('about.storyP2', 'AgriMart was established to build an airtight, transparent bridge between verified agricultural producers and the farmers who feed the nation. We operate temperature-controlled regional dark stores, conduct independent batch testing under Seed Act 1966 protocols, and dispatch directly to farm roads via dedicated logistics.')}
               </p>
 
               {/* Mission & Vision Cards */}
@@ -250,20 +295,20 @@ export default function AboutUsPage() {
                 <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-xs">
                   <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1.5">
                     <Target className="w-4 h-4 text-emerald-600" />
-                    Our Mission
+                    {t('about.mission', 'Our Mission')}
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    To make every acre in India sustainably productive by guaranteeing 100% authentic, scientifically tested seeds and fertilizers at transparent fair prices.
+                    {t('about.missionDesc', 'To make every acre in India sustainably productive by guaranteeing 100% authentic, scientifically tested seeds and fertilizers at transparent fair prices.')}
                   </p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-xs">
                   <div className="flex items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider mb-1.5">
                     <Eye className="w-4 h-4 text-amber-600" />
-                    Our Vision
+                    {t('about.vision', 'Our Vision')}
                   </div>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    A digitally empowered, self-reliant Indian farming ecosystem with zero spurious inputs and seamless door-to-farm supply chain infrastructure.
+                    {t('about.visionDesc', 'A digitally empowered, self-reliant Indian farming ecosystem with zero spurious inputs and seamless door-to-farm supply chain infrastructure.')}
                   </p>
                 </div>
               </div>
@@ -280,13 +325,13 @@ export default function AboutUsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B30]/90 via-[#0B1B30]/30 to-transparent flex flex-col justify-end p-6 sm:p-8 text-white">
                   <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF9F43] uppercase tracking-wider mb-2">
                     <Award className="w-4 h-4" />
-                    Farmer First Commitment
+                    {t('about.farmerFirstCommitment', 'Farmer First Commitment')}
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold leading-snug">
-                    Lab-verified germination stand and nutrient purity in every single pack.
+                    {t('about.farmerFirstDesc', 'Lab-verified germination stand and nutrient purity in every single pack.')}
                   </h3>
                   <p className="text-xs text-slate-300 mt-2">
-                    Batch-inspected at Phagwara Kisan Hub & Etawah Regional Center.
+                    {t('about.inspectedAt', 'Batch-inspected at Phagwara Kisan Hub & Etawah Regional Center.')}
                   </p>
                 </div>
               </div>
@@ -297,8 +342,8 @@ export default function AboutUsPage() {
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="text-xs font-extrabold text-slate-900">Seed Act 1966 & FCO 1985</div>
-                  <div className="text-[11px] text-slate-500">Government Quality Certified</div>
+                  <div className="text-xs font-extrabold text-slate-900">Seed Act 1966 &amp; FCO 1985</div>
+                  <div className="text-[11px] text-slate-500">{t('about.govQualityCert', 'Government Quality Certified')}</div>
                 </div>
               </div>
             </div>
@@ -310,18 +355,18 @@ export default function AboutUsPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
               <span className="text-xs font-extrabold uppercase tracking-widest text-[#16A34A] block mb-2">
-                Traceability & Quality Promise
+                {t('about.fourPillarsTag', 'Traceability & Quality Promise')}
               </span>
               <h2 className="text-2xl sm:text-4xl font-black text-[#0B1B30]">
-                The Four Pillars of AgriMart
+                {t('about.fourPillarsTitle', 'The Four Pillars of AgriMart')}
               </h2>
               <p className="text-slate-600 text-sm mt-3">
-                How we protect farmers and ensure verified crop vigor from breeders to farm gate.
+                {t('about.fourPillarsSub', 'How we protect farmers and ensure verified crop vigor from breeders to farm gate.')}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {pillars.map((p, idx) => {
+              {localizedPillars.map((p, idx) => {
                 const Icon = p.icon;
                 return (
                   <motion.div
@@ -346,7 +391,7 @@ export default function AboutUsPage() {
 
                     <div className="mt-6 pt-4 border-t border-stone-200/60 flex items-center gap-1.5 text-xs font-bold text-slate-800">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>100% Traceable</span>
+                      <span>{t('about.traceable', '100% Traceable')}</span>
                     </div>
                   </motion.div>
                 );
@@ -359,13 +404,13 @@ export default function AboutUsPage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#FF9F43] block mb-2">
-              Micro-Fulfillment Infrastructure
+              {t('about.hubsTag', 'Micro-Fulfillment Infrastructure')}
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-[#0B1B30]">
-              Our Regional Dark Store Hubs
+              {t('about.hubsTitle', 'Our Regional Dark Store Hubs')}
             </h2>
             <p className="text-slate-600 text-sm mt-3">
-              Strategically placed dark store fulfillment centers ensuring same-day or scheduled delivery within 30 km.
+              {t('about.hubsSub', 'Strategically placed dark store fulfillment centers ensuring same-day or scheduled delivery within 30 km.')}
             </p>
           </div>
 
@@ -409,19 +454,19 @@ export default function AboutUsPage() {
                   <div className="space-y-2 text-xs sm:text-sm text-slate-700">
                     <div className="flex items-start gap-2.5">
                       <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-                      <span><strong>Address:</strong> {hub.location}, {hub.district}</span>
+                      <span><strong>{t('about.address', 'Address:')}</strong> {hub.location}, {hub.district}</span>
                     </div>
                     <div className="flex items-start gap-2.5">
                       <Truck className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-                      <span><strong>Service Radius:</strong> {hub.coverage}</span>
+                      <span><strong>{t('about.serviceRadius', 'Service Radius:')}</strong> {hub.coverage}</span>
                     </div>
                     <div className="flex items-start gap-2.5">
                       <Warehouse className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-                      <span><strong>Capacity:</strong> {hub.capacity}</span>
+                      <span><strong>{t('about.capacity', 'Capacity:')}</strong> {hub.capacity}</span>
                     </div>
                     <div className="flex items-start gap-2.5">
                       <Sprout className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-                      <span><strong>Key Categories:</strong> {hub.specialties}</span>
+                      <span><strong>{t('about.keyCategories', 'Key Categories:')}</strong> {hub.specialties}</span>
                     </div>
                   </div>
 
@@ -430,7 +475,7 @@ export default function AboutUsPage() {
                       href="/dashboard"
                       className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white font-bold text-xs shadow-xs transition-colors"
                     >
-                      <span>Check Serviceability & Order</span>
+                      <span>{t('about.checkServiceability', 'Check Serviceability & Order')}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
@@ -440,9 +485,9 @@ export default function AboutUsPage() {
                   <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-3 border border-white/20">
                     <Warehouse className="w-8 h-8 text-[#FF9F43]" />
                   </div>
-                  <h4 className="font-bold text-base mb-1">Cold Chain Seed Preservation</h4>
+                  <h4 className="font-bold text-base mb-1">{t('about.coldChainPreservation', 'Cold Chain Seed Preservation')}</h4>
                   <p className="text-xs text-slate-300 max-w-xs">
-                    Air-tight vacuum sealed storage maintains 98%+ viability until the moment of field application.
+                    {t('about.coldChainDesc', 'Air-tight vacuum sealed storage maintains 98%+ viability until the moment of field application.')}
                   </p>
                 </div>
               </motion.div>
@@ -454,10 +499,10 @@ export default function AboutUsPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <span className="text-xs font-extrabold uppercase tracking-widest text-[#16A34A] block mb-1">
-                Legal & Quality Accreditations
+                {t('about.certificationsTag', 'Legal & Quality Accreditations')}
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-[#0B1B30]">
-                Strict Adherence to Indian Agricultural Laws
+                {t('about.certificationsTitle', 'Strict Adherence to Indian Agricultural Laws')}
               </h2>
             </div>
 
@@ -481,10 +526,10 @@ export default function AboutUsPage() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#FF9F43] block mb-1">
-              Real Impact in the Field
+              {t('about.voicesTag', 'Real Impact in the Field')}
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-[#0B1B30]">
-              Voices of India's Progressive Farmers
+              {t('about.voicesTitle', "Voices of India's Progressive Farmers")}
             </h2>
           </div>
 
@@ -524,15 +569,15 @@ export default function AboutUsPage() {
           <div className="max-w-3xl mx-auto relative z-10 space-y-6">
             <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-widest">
               <Sparkles className="w-4 h-4 text-[#FF9F43]" />
-              Start Your Next Sowing Season With Confidence
+              {t('about.bottomCtaTag', 'Start Your Next Sowing Season With Confidence')}
             </span>
 
             <h2 className="text-2xl sm:text-4xl font-black text-white leading-tight">
-              Ready to Experience 100% Genuine Certified Farm Inputs?
+              {t('about.bottomCtaTitle', 'Ready to Experience 100% Genuine Certified Farm Inputs?')}
             </h2>
 
             <p className="text-slate-300 text-xs sm:text-base leading-relaxed max-w-2xl mx-auto">
-              Join over 250,000 farmers who trust AgriMart for genuine hybrid seeds, balanced NPK nutrition, and direct farm dispatch.
+              {t('about.bottomCtaSub', 'Join over 250,000 farmers who trust AgriMart for genuine hybrid seeds, balanced NPK nutrition, and direct farm dispatch.')}
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -540,13 +585,13 @@ export default function AboutUsPage() {
                 href="/dashboard"
                 className="px-6 py-3.5 bg-[#16A34A] hover:bg-[#15803D] text-white font-extrabold text-sm rounded-xl shadow-lg transition-colors"
               >
-                Shop Certified Seeds & Fertilizers
+                {t('about.shopSeedsFertilizers', 'Shop Certified Seeds & Fertilizers')}
               </Link>
               <a
                 href="tel:18002474627"
                 className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-xl border border-white/20 transition-colors"
               >
-                Toll-Free Helpline (1800-AGRI-MART)
+                {t('about.kisanHelpline', 'Toll-Free Helpline (1800-AGRI-MART)')}
               </a>
             </div>
           </div>

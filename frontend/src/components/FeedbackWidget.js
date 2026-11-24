@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, push, set } from 'firebase/database';
+import { useLanguage } from '../contexts/LanguageContext';
 import {
   backdropVariants,
   modalVariants,
@@ -38,6 +39,9 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
+  const { isHindi } = useLanguage();
+
+  const displayLabel = label === 'Feedback' ? (isHindi ? 'प्रतिक्रिया' : 'Feedback') : label;
 
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -151,7 +155,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
           title="Share your feedback or suggestions with AgriMart"
           aria-label="Open Feedback Form"
         >
-          {label}
+          {displayLabel}
         </button>
       ) : (
         <motion.button
@@ -171,7 +175,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
           >
             rate_review
           </span>
-          <span className="text-xs font-bold tracking-wide">{label}</span>
+          <span className="text-xs font-bold tracking-wide">{displayLabel}</span>
         </motion.button>
       )}
 
@@ -204,10 +208,10 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                   </div>
                   <div className="min-w-0">
                     <h2 className="font-headline font-extrabold text-sm sm:text-base text-[#0B1B30] leading-tight truncate">
-                      Share Feedback &amp; Suggestions
+                      {isHindi ? 'प्रतिक्रिया और सुझाव साझा करें' : 'Share Feedback & Suggestions'}
                     </h2>
                     <p className="text-[10px] sm:text-[11px] text-[#5A6B82] leading-tight mt-0.5 truncate">
-                      Direct to AgriMart Kisan Management Console
+                      {isHindi ? 'सीधे एग्रीमार्ट प्रबंधन केंद्र को' : 'Direct to AgriMart Kisan Management Console'}
                     </p>
                   </div>
                 </div>
@@ -232,10 +236,12 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                     </div>
                     <div>
                       <h3 className="font-headline text-lg font-bold text-slate-900">
-                        Sign In Required to Give Feedback
+                        {isHindi ? 'प्रतिक्रिया देने के लिए साइन इन आवश्यक है' : 'Sign In Required to Give Feedback'}
                       </h3>
                       <p className="text-xs text-slate-600 mt-1.5 max-w-sm mx-auto leading-relaxed">
-                        To maintain high agricultural standards and protect against spam, feedback and suggestions can only be submitted by registered users.
+                        {isHindi
+                          ? 'कृषि मानकों को बनाए रखने और स्पैम से बचाव के लिए, प्रतिक्रिया और सुझाव केवल पंजीकृत उपयोगकर्ताओं द्वारा प्रस्तुत किए जा सकते हैं।'
+                          : 'To maintain high agricultural standards and protect against spam, feedback and suggestions can only be submitted by registered users.'}
                       </p>
                     </div>
 
@@ -247,14 +253,14 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                         className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#0B1B30] hover:bg-[#152B48] text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2"
                       >
                         <LogIn size={15} />
-                        <span>Sign In to Give Feedback</span>
+                        <span>{isHindi ? 'प्रतिक्रिया देने के लिए साइन इन करें' : 'Sign In to Give Feedback'}</span>
                       </motion.button>
                       <button
                         type="button"
                         onClick={() => setIsOpen(false)}
                         className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition"
                       >
-                        Cancel
+                        {isHindi ? 'रद्द करें' : 'Cancel'}
                       </button>
                     </div>
                   </div>
@@ -276,7 +282,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                       </div>
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 shrink-0">
                         <ShieldCheck size={12} className="text-emerald-600" />
-                        Verified Account
+                        {isHindi ? 'सत्यापित खाता' : 'Verified Account'}
                       </span>
                     </div>
 
@@ -292,9 +298,9 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                         >
                           <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
                           <div>
-                            <p className="font-extrabold">Feedback Submitted Successfully!</p>
+                            <p className="font-extrabold">{isHindi ? 'प्रतिक्रिया सफलतापूर्वक भेजी गई!' : 'Feedback Submitted Successfully!'}</p>
                             <p className="text-[11px] font-medium text-emerald-700">
-                              Thank you! Your feedback is now visible in the AgriMart Kisan Hub Console.
+                              {isHindi ? 'धन्यवाद! आपकी प्रतिक्रिया अब एग्रीमार्ट किसान हब कंसोल में दिखाई देगी।' : 'Thank you! Your feedback is now visible in the AgriMart Kisan Hub Console.'}
                             </p>
                           </div>
                         </motion.div>
@@ -316,7 +322,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                     {/* Topic Chips */}
                     <div>
                       <label className="block text-xs font-bold text-slate-800 mb-1.5 uppercase tracking-wide">
-                        Feedback Topic
+                        {isHindi ? 'प्रतिक्रिया का विषय' : 'Feedback Topic'}
                       </label>
                       <div className="flex flex-wrap gap-1.5">
                         {FEEDBACK_CATEGORIES.map((cat) => (
@@ -340,7 +346,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide">
-                          Your Suggestion or Feedback *
+                          {isHindi ? 'आपका सुझाव या प्रतिक्रिया *' : 'Your Suggestion or Feedback *'}
                         </label>
                         <span
                           className={`text-[11px] font-mono font-bold ${
@@ -359,7 +365,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         maxLength={MAX_CHARS}
-                        placeholder="Type your feedback, advice, or suggestions for AgriMart (under 500 characters)..."
+                        placeholder={isHindi ? 'एग्रीमार्ट के लिए अपनी प्रतिक्रिया या सुझाव लिखें (500 अक्षरों के भीतर)...' : 'Type your feedback, advice, or suggestions for AgriMart (under 500 characters)...'}
                         className={`w-full text-xs p-3 rounded-xl border bg-white focus:outline-none focus:ring-2 leading-relaxed transition-colors ${
                           isOverLimit
                             ? 'border-rose-400 focus:ring-rose-200'
@@ -368,7 +374,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                         required
                       />
                       <p className="text-[11px] text-slate-400 mt-1">
-                        Keep your suggestions under 500 characters. Help us serve your farm better!
+                        {isHindi ? 'अपने सुझाव 500 अक्षरों के भीतर रखें। आपके खेत की बेहतर सेवा करने में हमारी सहायता करें!' : 'Keep your suggestions under 500 characters. Help us serve your farm better!'}
                       </p>
                     </div>
 
@@ -380,7 +386,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                         disabled={submitting}
                         className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
                       >
-                        Cancel
+                        {isHindi ? 'रद्द करें' : 'Cancel'}
                       </button>
                       <motion.button
                         type="submit"
@@ -389,7 +395,7 @@ export default function FeedbackWidget({ className = '', label = 'Feedback', asL
                         className="px-5 py-2.5 rounded-xl bg-[#0B1B30] hover:bg-[#152B48] text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Send size={14} className="text-[#FF9F43]" />
-                        <span>{submitting ? 'Submitting...' : 'Submit Feedback'}</span>
+                        <span>{submitting ? (isHindi ? 'जमा हो रहा है...' : 'Submitting...') : (isHindi ? 'प्रतिक्रिया भेजें' : 'Submit Feedback')}</span>
                       </motion.button>
                     </div>
                   </form>
