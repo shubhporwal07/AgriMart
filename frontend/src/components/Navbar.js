@@ -437,6 +437,14 @@ export default function Navbar() {
                           </span>
                         )}
                       </Link>
+                      <Link
+                        href="/about-us"
+                        prefetch={true}
+                        className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0B1B30] transition-colors duration-150"
+                      >
+                        <span className="material-symbols-outlined text-[17px] text-[#5A6B82]">info</span>
+                        <span>About AgriMart</span>
+                      </Link>
                       {isAdmin && (
                         <Link
                           href="/admin/panel"
