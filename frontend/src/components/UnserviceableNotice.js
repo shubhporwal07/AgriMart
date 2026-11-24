@@ -45,13 +45,11 @@ export default function UnserviceableNotice({ className = '' }) {
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
-                  AgriMart farm dispatch is currently live within a <strong>30 km radius</strong> of our{' '}
-                  <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong> (Express &le;10 km, Standard &le;30 km).
-                  Your current selection is{' '}
-                  <span className="font-semibold text-rose-900 underline">
-                    {location.name || location.area || 'Outside Area'}
-                  </span>{' '}
-                  {location.distanceKm ? `(~${location.distanceKm} km away)` : ''}.
+                  {isHindi ? (
+                    <>एग्रीमार्ट फ़ार्म डिलीवरी वर्तमान में हमारे <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong> के <strong>30 किमी के दायरे</strong> में चालू है (एक्सप्रेस ≤10 किमी, मानक ≤30 किमी)। आपका वर्तमान चयनित स्थान <span className="font-semibold text-rose-900 underline">{location.name || location.area || 'दायरे से बाहर'}</span> है {location.distanceKm ? `(~${location.distanceKm} किमी दूर)` : ''}।</>
+                  ) : (
+                    <>AgriMart farm dispatch is currently live within a <strong>30 km radius</strong> of our <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong> (Express &le;10 km, Standard &le;30 km). Your current selection is <span className="font-semibold text-rose-900 underline">{location.name || location.area || 'Outside Area'}</span> {location.distanceKm ? `(~${location.distanceKm} km away)` : ''}.</>
+                  )}
                 </p>
               </div>
             </div>
@@ -95,7 +93,7 @@ export default function UnserviceableNotice({ className = '' }) {
                       type="text"
                       value={notifyInput}
                       onChange={(e) => setNotifyInput(e.target.value)}
-                      placeholder="Phone or Email"
+                      placeholder={isHindi ? 'फ़ोन या ईमेल' : 'Phone or Email'}
                       className="bg-white border border-slate-300 px-3 py-2 rounded-xl text-xs text-slate-800 outline-none w-32 sm:w-36 focus:border-[#142B4A] focus:ring-2 focus:ring-[#142B4A]/15 transition-all duration-150"
                     />
                     <motion.button
@@ -103,7 +101,7 @@ export default function UnserviceableNotice({ className = '' }) {
                       whileTap={buttonTap}
                       className="bg-white hover:bg-slate-100 text-[#142B4A] border border-slate-300 text-xs font-bold px-3 py-2 rounded-xl transition-colors duration-150 whitespace-nowrap shadow-sm"
                     >
-                      Notify Me
+                      {isHindi ? 'सूचित करें' : 'Notify Me'}
                     </motion.button>
                   </motion.form>
                 )}

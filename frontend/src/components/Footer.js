@@ -109,7 +109,7 @@ export default function Footer() {
                 <Link href="/terms-of-service">{isHindi ? 'नियम एवं एफसीओ शर्तें' : 'Terms & FCO Conditions'}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/about-us">Rural & Farm Delivery Centers</Link>
+                <Link href="/about-us">{isHindi ? 'ग्रामीण एवं फ़ार्म डिलीवरी केंद्र' : 'Rural & Farm Delivery Centers'}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
                 <button
@@ -121,7 +121,7 @@ export default function Footer() {
                   }}
                   className="hover:underline text-left text-sm text-[#5A6B82] hover:text-[#142B4A] transition-colors cursor-pointer"
                 >
-                  Give Feedback
+                  {isHindi ? 'प्रतिक्रिया दें' : 'Give Feedback'}
                 </button>
               </li>
             </ul>
@@ -130,21 +130,21 @@ export default function Footer() {
           {/* Kisan Advisory, Updates & Payments */}
           <div className="flex flex-col gap-4">
             <h4 className="font-headline text-base text-[#142B4A] font-extrabold">
-              Kisan Advisory & Updates
+              {isHindi ? 'किसान सलाह एवं अपडेट' : 'Kisan Advisory & Updates'}
             </h4>
             <div className="p-3 bg-white rounded-2xl border border-[#CBD5E1]/50 shadow-sm flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#FFE8D6] text-[#E27B12] flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-[24px]">support_agent</span>
               </div>
               <div>
-                <p className="text-xs font-bold text-[#142B4A]">Free Kisan Advisory Desk</p>
-                <p className="text-[11px] text-[#5A6B82]">Call 1800-AGRI-MART for crop & dosage advice</p>
+                <p className="text-xs font-bold text-[#142B4A]">{isHindi ? 'निःशुल्क किसान सलाह डेस्क' : 'Free Kisan Advisory Desk'}</p>
+                <p className="text-[11px] text-[#5A6B82]">{isHindi ? 'फसल एवं सही मात्रा की सलाह के लिए 1800-AGRI-MART पर कॉल करें' : 'Call 1800-AGRI-MART for crop & dosage advice'}</p>
               </div>
             </div>
 
             {/* Newsletter */}
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs font-bold text-[#263449]">Receive Weekly Mandi Rates & Offers</span>
+              <span className="text-xs font-bold text-[#263449]">{isHindi ? 'साप्ताहिक मंडी भाव और विशेष छूट प्राप्त करें' : 'Receive Weekly Mandi Rates & Offers'}</span>
               <AnimatePresence mode="wait" initial={false}>
                 {subscribed ? (
                   <motion.div
@@ -156,7 +156,7 @@ export default function Footer() {
                     className="bg-emerald-50 text-emerald-700 text-xs p-2 rounded-lg font-semibold flex items-center gap-1.5"
                   >
                     <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                    <span>Subscription confirmed! Weekly alerts enabled.</span>
+                    <span>{isHindi ? 'सदस्यता की पुष्टि हो गई! साप्ताहिक अलर्ट सक्रिय।' : 'Subscription confirmed! Weekly alerts enabled.'}</span>
                   </motion.div>
                 ) : (
                   <motion.form
@@ -172,7 +172,7 @@ export default function Footer() {
                       type="text"
                       value={contact}
                       onChange={(e) => setContact(e.target.value)}
-                      placeholder="Enter mobile or email"
+                      placeholder={isHindi ? 'मोबाइल नंबर या ईमेल दर्ज करें' : 'Enter mobile or email'}
                       required
                       className="bg-white border border-[#CBD5E1] px-3 py-1.5 rounded-lg text-xs text-[#263449] outline-none w-full focus:border-[#142B4A] focus:ring-2 focus:ring-[#142B4A]/15 transition-all duration-150"
                     />
@@ -181,7 +181,7 @@ export default function Footer() {
                       whileTap={buttonTap}
                       className="bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs px-3 py-1.5 rounded-lg font-bold shrink-0 transition-colors duration-150 shadow-sm"
                     >
-                      Subscribe
+                      {isHindi ? 'सब्सक्राइब करें' : 'Subscribe'}
                     </motion.button>
                   </motion.form>
                 )}
@@ -191,17 +191,17 @@ export default function Footer() {
             {/* Accepted Payments */}
             <div>
               <span className="text-[10px] text-[#5A6B82] block mb-1 uppercase font-bold tracking-wider">
-                Accepted Kisan Payment Modes
+                {isHindi ? 'स्वीकृत किसान भुगतान माध्यम' : 'Accepted Kisan Payment Modes'}
               </span>
               <div className="flex flex-wrap gap-1 text-[11px] text-[#5A6B82]">
                 <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-[#CBD5E1]/40 font-semibold">
-                  Kisan Credit Card (KCC)
+                  {isHindi ? 'किसान क्रेडिट कार्ड (KCC)' : 'Kisan Credit Card (KCC)'}
                 </span>
                 <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-[#CBD5E1]/40 font-semibold">UPI</span>
                 <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-[#CBD5E1]/40 font-semibold">RuPay</span>
                 <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-[#CBD5E1]/40 font-semibold">NetBanking</span>
                 <span className="bg-white px-2 py-0.5 rounded shadow-sm border border-[#CBD5E1]/40 font-semibold">
-                  Cash on Delivery
+                  {isHindi ? 'कैश ऑन डिलीवरी (COD)' : 'Cash on Delivery'}
                 </span>
               </div>
             </div>
@@ -211,25 +211,25 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-6 mt-4 border-t border-[#E5DFD3]/70 flex flex-col md:flex-row items-center justify-between gap-4 text-[#5A6B82] text-xs">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center md:text-left">
-            <p>© 2025 AgriMart Agritech Solutions Pvt Ltd. All rights reserved.</p>
+            <p>{isHindi ? '© 2025 एग्रीमार्ट एग्रीटेक सॉल्यूशंस प्राइवेट लिमिटेड। सर्वाधिकार सुरक्षित।' : '© 2025 AgriMart Agritech Solutions Pvt Ltd. All rights reserved.'}</p>
             <span className="hidden lg:inline text-slate-300">|</span>
             <span className="hidden lg:inline-flex items-center gap-1 font-medium text-slate-600">
               <span className="material-symbols-outlined text-[15px] text-emerald-700">verified</span>
-              Seed License No: AGRI/SEED/DL-8841 • FCO/CR/2021/409
+              {isHindi ? 'बीज लाइसेंस सं.: AGRI/SEED/DL-8841 • FCO/CR/2021/409' : 'Seed License No: AGRI/SEED/DL-8841 • FCO/CR/2021/409'}
             </span>
           </div>
 
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-5 sm:gap-6">
             <Link href="/privacy-policy" className="hover:text-[#142B4A] hover:underline transition-colors">
-              Privacy Policy
+              {isHindi ? 'गोपनीयता नीति' : 'Privacy Policy'}
             </Link>
             <Link href="/terms-of-service" className="hover:text-[#142B4A] hover:underline transition-colors">
-              Terms of Service
+              {isHindi ? 'सेवा की शर्तें' : 'Terms of Service'}
             </Link>
             <Link href="/return-policy" className="hover:text-[#142B4A] hover:underline transition-colors">
-              Return Policy
+              {isHindi ? 'वापसी नीति' : 'Return Policy'}
             </Link>
-            <FeedbackWidget asLink label="Give Feedback" />
+            <FeedbackWidget asLink label={isHindi ? 'प्रतिक्रिया दें' : 'Give Feedback'} />
           </div>
         </div>
       </div>

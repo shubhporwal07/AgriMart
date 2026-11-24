@@ -49,7 +49,7 @@ export default function WishlistPage() {
           {!storageHydrated ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-10 h-10 rounded-full border-3 border-[#142B4A] border-t-transparent animate-spin mb-4" />
-              <p className="text-sm font-bold text-[#5A6B82]">Loading your wishlist...</p>
+              <p className="text-sm font-bold text-[#5A6B82]">{isHindi ? 'आपकी विशलिस्ट लोड हो रही है...' : 'Loading your wishlist...'}</p>
             </div>
           ) : wishlistItems.length === 0 ? (
             /* Empty State */
@@ -126,7 +126,7 @@ export default function WishlistPage() {
                           </span>
                         ) : (
                           <span className="bg-[#EDF2F7] text-[#142B4A] text-[10px] px-2 py-0.5 rounded-full font-bold">
-                            Fresh
+                            {isHindi ? 'ताज़ा लॉट' : 'Fresh'}
                           </span>
                         )}
                         <motion.button
@@ -220,7 +220,7 @@ export default function WishlistPage() {
                               transition={{ duration: 0.12 }}
                               className="inline-block"
                             >
-                              {isAdded ? '✓ ADDED' : 'ADD'}
+                              {isAdded ? (isHindi ? '✓ जोड़ा गया' : '✓ ADDED') : (isHindi ? 'जोड़ें' : 'ADD')}
                             </motion.span>
                           </AnimatePresence>
                         </motion.button>
