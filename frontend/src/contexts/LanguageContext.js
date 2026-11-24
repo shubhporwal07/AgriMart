@@ -104,13 +104,37 @@ export function LanguageProvider({ children }) {
   );
 
   /**
-   * Helper specifically for Category names
+   * Helper specifically for Category names and category slugs
    */
   const translateCategory = useCallback(
     (categoryName) => {
-      if (!categoryName) return '';
-      if (language === 'en') return categoryName;
-      return t(`categories.${categoryName}`, categoryName);
+      if (!categoryName || typeof categoryName !== 'string') return '';
+
+      const trimmed = categoryName.trim();
+      const slugOrAliasMap = {
+        'field-crop-seeds': 'Grain & Crop Seeds',
+        'grain-crop-seeds': 'Grain & Crop Seeds',
+        'vegetable-seeds': 'Vegetable Seeds',
+        'organic-fertilizers': 'Organic Manure & Compost',
+        'chemical-npk': 'NPK & Water Soluble',
+        'micronutrients': 'Micronutrients & Growth',
+        'bio-pesticides': 'Bio-Pesticides & Fungicides',
+        'sprayers-tools': 'Farm Tools & Sprayers',
+        'soil-kits': 'Soil Health Kits',
+        'Grain & Field Crop Seeds': 'Grain & Crop Seeds',
+        'NPK & Water Soluble Fertilizers': 'NPK & Water Soluble',
+        'Micronutrients & Plant Growth': 'Micronutrients & Growth',
+        'Farm Sprayers & Agri Tools': 'Farm Tools & Sprayers',
+        'Soil Health & Testing Kits': 'Soil Health Kits',
+      };
+
+      const canonical = slugOrAliasMap[trimmed] || trimmed;
+
+      if (language === 'en') {
+        return canonical;
+      }
+
+      return t(`categories.${canonical}`, t(`categories.${trimmed}`, canonical));
     },
     [language, t]
   );

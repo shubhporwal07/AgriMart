@@ -33,7 +33,7 @@ export default function DashboardPage() {
     deliveryTime,
     setLocationModalOpen,
   } = useLocationContext();
-  const { t, isHindi } = useLanguage();
+  const { t, isHindi, translateCategory } = useLanguage();
 
   const {
     applyNavCategorySlug,
@@ -155,7 +155,7 @@ export default function DashboardPage() {
               <span className="hover:text-[#142B4A] transition-colors">{isHindi ? 'कृषि इनपुट्स' : 'Agri Inputs'}</span>
               <span className="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
               <span className="font-bold text-[#142B4A]">
-                {filters.category?.length > 0 ? filters.category.join(', ') : (isHindi ? 'बीज एवं उर्वरक' : 'Seeds & Fertilizers')}
+                {filters.category?.length > 0 ? filters.category.map(translateCategory).join(', ') : (isHindi ? 'बीज एवं उर्वरक' : 'Seeds & Fertilizers')}
               </span>
             </nav>
 
@@ -164,7 +164,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center gap-3">
                   <h1 className="font-headline text-2xl sm:text-3xl text-[#142B4A] font-extrabold tracking-tight">
-                    {filters.category?.length > 0 ? filters.category[0] : (isHindi ? 'बीज, पौध पोषण एवं उर्वरक' : 'Seeds, Plant Nutrients & Fertilizers')}
+                    {filters.category?.length > 0 ? translateCategory(filters.category[0]) : (isHindi ? 'बीज, पौध पोषण एवं उर्वरक' : 'Seeds, Plant Nutrients & Fertilizers')}
                   </h1>
                   <span className="bg-[#D5E3FF] text-[#142B4A] text-xs px-2.5 py-1 rounded-full font-bold">
                     {isHindi ? `${filteredProducts.length} प्रमाणित इनपुट्स` : `${filteredProducts.length} Certified Inputs`}

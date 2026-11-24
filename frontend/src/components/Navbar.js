@@ -285,7 +285,7 @@ export default function Navbar() {
                         <span className="material-symbols-outlined text-[16px] text-slate-400 shrink-0">search</span>
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-[#0B1B30] truncate">{item.name}</p>
-                          <p className="text-[10px] text-[#5A6B82] truncate">{item.category}</p>
+                          <p className="text-[10px] text-[#5A6B82] truncate">{translateCategory(item.category)}</p>
                         </div>
                       </div>
                       <span className="font-price text-xs font-extrabold text-[#0B1B30] shrink-0">

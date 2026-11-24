@@ -32,7 +32,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
     removeFromWishlist,
   } = useProducts();
   const { isServiceable, location: userLocation, setLocationModalOpen } = useLocationContext();
-  const { t, isHindi } = useLanguage();
+  const { t, isHindi, translateCategory } = useLanguage();
 
   const [activeTab, setActiveTab] = useState('highlights');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -261,7 +261,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
         <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-slate-100 bg-[#F7F9FC]">
           <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
             <span className="bg-[#142B4A] text-white text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 rounded-full whitespace-nowrap shrink-0 max-w-[150px] sm:max-w-none truncate shadow-xs">
-              {product.category}
+              {translateCategory(product.category)}
             </span>
             <span className="text-[11px] sm:text-xs text-[#5A6B82] font-semibold flex items-center gap-1 shrink min-w-0 whitespace-nowrap truncate">
               <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#FF9F43] shrink-0">local_shipping</span>
@@ -940,7 +940,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
           {related.length > 0 && (
             <div className="mt-8 pt-6 border-t border-slate-200">
               <h3 className="font-headline font-extrabold text-base text-[#142B4A] mb-4">
-                Customers Also Bought from {product.category}
+                {isHindi ? `${translateCategory(product.category)} से अन्य लोकप्रिय उत्पाद` : `Customers Also Bought from ${product.category}`}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {related.map((item) => (

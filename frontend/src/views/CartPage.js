@@ -55,7 +55,7 @@ export default function CartPage() {
     setLocationModalOpen,
     primaryHub,
   } = useLocationContext();
-  const { t, isHindi } = useLanguage();
+  const { t, isHindi, translateCategory } = useLanguage();
 
   const [deliveryType, setDeliveryType] = useState('express'); // 'express' | 'standard'
   const [deliveryInstruction, setDeliveryInstruction] = useState('');
@@ -964,7 +964,7 @@ export default function CartPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                              {item.category?.replace('-', ' ') || 'Fresh'}
+                              {translateCategory(item.category) || (isHindi ? 'ताज़ा लॉट' : 'Fresh')}
                             </span>
                             <span className="text-xs text-slate-400 font-medium">{item.packSize || item.weight || '1 unit'}</span>
                           </div>

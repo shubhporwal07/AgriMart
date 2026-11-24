@@ -269,7 +269,7 @@ export default function LandingPage() {
                           suppressHydrationWarning
                           className="text-[11px] font-bold text-[#5A6B82] uppercase tracking-wider truncate"
                         >
-                          {item.category || (isFirst ? 'All-in-One Sowing Kit' : 'Soil Regeneration')}
+                          {translateCategory(item.category) || (isFirst ? (isHindi ? 'ऑल-इन-वन बुवाई किट' : 'All-in-One Sowing Kit') : (isHindi ? 'मृदा सुधार' : 'Soil Regeneration'))}
                         </span>
                         <h3
                           suppressHydrationWarning
@@ -389,7 +389,18 @@ export default function LandingPage() {
                 <h4 className="font-headline text-xs font-bold text-[#142B4A] leading-tight">
                   {translateCategory(tile.name)}
                 </h4>
-                <span className="text-[10px] text-[#5A6B82] mt-0.5">{tile.count}</span>
+                <span className="text-[10px] text-[#5A6B82] mt-0.5">
+                  {isHindi ? (
+                    tile.slug === 'vegetable-seeds' ? '320+ किस्में' :
+                    tile.slug === 'field-crop-seeds' ? '140+ फसलें' :
+                    tile.slug === 'organic-fertilizers' ? '85+ बायो मिश्रण' :
+                    tile.slug === 'chemical-npk' ? '110+ फ़ॉर्मूलेशन' :
+                    tile.slug === 'micronutrients' ? '90+ टॉनिक' :
+                    tile.slug === 'bio-pesticides' ? '65+ बायो समाधान' :
+                    tile.slug === 'sprayers-tools' ? '130+ उपकरण' :
+                    tile.slug === 'soil-kits' ? 'टेस्टिंग एवं पीएच किट' : tile.count
+                  ) : tile.count}
+                </span>
               </Link>
             ))}
           </div>

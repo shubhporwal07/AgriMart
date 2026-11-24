@@ -47,7 +47,10 @@ describe('LanguageContext & Hindi i18n System', () => {
     expect(result.current.t('nav.helpline')).toBe('किसान हेल्पलाइन: 1800-AGRI-MART');
     expect(result.current.t('filters.title')).toBe('फ़िल्टर');
     expect(result.current.translateCategory('Vegetable Seeds')).toBe('सब्जी के बीज');
+    expect(result.current.translateCategory('Grain & Crop Seeds')).toBe('अनाज एवं फसल के बीज');
+    expect(result.current.translateCategory('field-crop-seeds')).toBe('अनाज एवं फसल के बीज');
     expect(result.current.translateCategory('Organic Manure & Compost')).toBe('जैविक खाद एवं कम्पोस्ट');
+    expect(result.current.t('filters.germinationShieldTitle')).toBe('एग्रीमार्ट अंकुरण सुरक्षा शील्ड');
   });
 
   it('interpolates parameters correctly in translation strings', () => {

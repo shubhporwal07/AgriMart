@@ -150,7 +150,7 @@ export default function SidebarFilters({ className = '' }) {
             aria-expanded={expandedSections.categories}
           >
             <h3 className="font-headline text-xs font-bold text-[#142B4A] uppercase tracking-wider group-hover:text-[#E27B12] transition-colors duration-150">
-              Agri Categories & Inputs
+              {t('filters.categoriesTitle', 'Agri Categories & Inputs')}
             </h3>
             <motion.span
               animate={{ rotate: expandedSections.categories ? 180 : 0 }}
@@ -392,10 +392,12 @@ export default function SidebarFilters({ className = '' }) {
           <span className="material-symbols-outlined text-[#FF9F43] text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
             verified_user
           </span>
-          <span className="font-headline text-xs font-bold text-white">AgriMart Germination Shield</span>
+          <span className="font-headline text-xs font-bold text-white">
+            {t('filters.germinationShieldTitle', 'AgriMart Germination Shield')}
+          </span>
         </div>
         <p className="text-[11px] text-slate-200 leading-relaxed">
-          Minimum 85%-95% guaranteed germination on all seed batches with lab test certificates. 100% FCO & Seed Act compliant.
+          {t('filters.germinationShieldDesc', 'Minimum 85%-95% guaranteed germination on all seed batches with lab test certificates. 100% FCO & Seed Act compliant.')}
         </p>
       </div>
     </aside>
