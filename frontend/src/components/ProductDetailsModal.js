@@ -744,7 +744,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                       </div>
                       <p className="text-[10px] text-[#74777E] mt-2 italic">
                         {isHindi
-                          ? '*बीज अधिनियम १९६६ और उर्वरक नियंत्रण आदेश (एफसीओ) १९८५ के तहत सत्यापित गारंटीकृत प्रयोगशाला विश्लेषण।'
+                          ? '*बीज अधिनियम 1966 और उर्वरक नियंत्रण आदेश (एफसीओ) 1985 के तहत सत्यापित गारंटीकृत प्रयोगशाला विश्लेषण।'
                           : '*Guaranteed laboratory analysis verified under Seed Act 1966 & Fertilizer Control Order (FCO) 1985.'}
                       </p>
                     </motion.div>

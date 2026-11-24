@@ -832,7 +832,7 @@ export default function CartPage() {
                         </div>
                         <div>
                           <span className="text-[11px] font-bold uppercase tracking-wider text-[#E27B12]">
-                            {isHindi ? 'त्वरित प्रेषण (≤१० किमी)' : 'Fast Dispatch (≤10 km)'}
+                            {isHindi ? 'त्वरित प्रेषण (≤10 किमी)' : 'Fast Dispatch (≤10 km)'}
                           </span>
                           <h4 className="text-sm font-extrabold text-[#142B4A]">{isHindi ? 'एक्सप्रेस डिलीवरी' : 'Express Delivery'}</h4>
                         </div>
@@ -845,10 +845,10 @@ export default function CartPage() {
                       {isHindi ? 'एग्रीमार्ट हब @ एलपीयू से त्वरित पार्सल प्रेषण।' : 'Immediate parcel dispatch from AgriMart Hub @ LPU.'}
                       <span className="block text-[11px] text-slate-500 mt-1 font-medium">
                         {distanceKm <= 5.0
-                          ? (isHindi ? `₹50 अतिरिक्त (५ किमी दायरे में • आपका: ${distanceKm} किमी)` : `₹50 extra (within 5 km radius • you: ${distanceKm} km)`)
+                          ? (isHindi ? `₹50 अतिरिक्त (5 किमी दायरे में • आपका: ${distanceKm} किमी)` : `₹50 extra (within 5 km radius • you: ${distanceKm} km)`)
                           : distanceKm <= 7.5
-                          ? (isHindi ? `₹100 अतिरिक्त (५.१–७.५ किमी दायरा • आपका: ${distanceKm} किमी)` : `₹100 extra (5.1–7.5 km radius • you: ${distanceKm} km)`)
-                          : (isHindi ? `₹150 अतिरिक्त (७.६–१० किमी दायरा • आपका: ${distanceKm} किमी)` : `₹150 extra (7.6–10 km radius • you: ${distanceKm} km)`)}
+                          ? (isHindi ? `₹100 अतिरिक्त (5.1–7.5 किमी दायरा • आपका: ${distanceKm} किमी)` : `₹100 extra (5.1–7.5 km radius • you: ${distanceKm} km)`)
+                          : (isHindi ? `₹150 अतिरिक्त (7.6–10 किमी दायरा • आपका: ${distanceKm} किमी)` : `₹150 extra (7.6–10 km radius • you: ${distanceKm} km)`)}
                       </span>
                     </p>
                   </button>
@@ -863,7 +863,7 @@ export default function CartPage() {
                           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                             {isHindi ? 'एक्सप्रेस डिलीवरी' : 'Express Delivery'}
                           </span>
-                          <h4 className="text-sm font-extrabold text-slate-500">{isHindi ? 'केवल १० किमी के भीतर' : 'Under 10 km Only'}</h4>
+                          <h4 className="text-sm font-extrabold text-slate-500">{isHindi ? 'केवल 10 किमी के भीतर' : 'Under 10 km Only'}</h4>
                         </div>
                       </div>
                       <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-200 text-slate-500">
@@ -871,7 +871,7 @@ export default function CartPage() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 leading-snug">
-                      {isHindi ? `एक्सप्रेस डिलीवरी एलपीयू हब के १० किमी तक सीमित है। आपका पता ${distanceKm} किमी दूर है। मानक डिलीवरी लागू।` : `Express delivery is limited to 10 km of LPU Hub. Address is ${distanceKm} km away. Standard delivery auto-applied.`}
+                      {isHindi ? `एक्सप्रेस डिलीवरी एलपीयू हब के 10 किमी तक सीमित है। आपका पता ${distanceKm} किमी दूर है। मानक डिलीवरी लागू।` : `Express delivery is limited to 10 km of LPU Hub. Address is ${distanceKm} km away. Standard delivery auto-applied.`}
                     </p>
                   </div>
                 )}
@@ -894,7 +894,7 @@ export default function CartPage() {
                       </div>
                       <div>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                          {isHindi ? 'शाम ८ बजे वाहन प्रेषण' : 'Evening 8 PM Vehicle'}
+                          {isHindi ? 'शाम 8 बजे वाहन प्रेषण' : 'Evening 8 PM Vehicle'}
                         </span>
                         <h4 className="text-sm font-extrabold text-[#142B4A]">{isHindi ? 'मानक डिलीवरी' : 'Standard Delivery'}</h4>
                       </div>
@@ -911,11 +911,11 @@ export default function CartPage() {
                     <p>
                       {distanceKm > 15.0
                         ? (isHindi ? `₹${standardDistanceSurcharge} दूरी अधिभार लागू (>15 किमी एलपीयू हब से • ${distanceKm} किमी)।` : `₹${standardDistanceSurcharge} distance surcharge applied (>15 km from LPU hub • ${distanceKm} km).`)
-                        : (itemTotal >= 1000 ? (isHindi ? '🎉 मुफ़्त डिलीवरी अनलॉक (ऑर्डर ≥ ₹१,०००)' : '🎉 FREE delivery unlocked (Order ≥ ₹1,000)') : (isHindi ? '₹१,००० से कम के ऑर्डर पर ₹20 शुल्क (₹१,०००+ पर मुफ़्त)' : '₹20 fee on orders under ₹1,000 (Free on ₹1,000+)'))}
+                        : (itemTotal >= 1000 ? (isHindi ? '🎉 मुफ़्त डिलीवरी अनलॉक (ऑर्डर ≥ ₹1,000)' : '🎉 FREE delivery unlocked (Order ≥ ₹1,000)') : (isHindi ? '₹1,000 से कम के ऑर्डर पर ₹20 शुल्क (₹1,000+ पर मुफ़्त)' : '₹20 fee on orders under ₹1,000 (Free on ₹1,000+)'))}
                     </p>
                     <div className="p-1.5 bg-amber-50 rounded-lg text-[11px] text-amber-900 font-semibold flex items-center gap-1">
                       <span>🚚</span>
-                      <span>{isHindi ? 'प्रतिदिन शाम ८:०० बजे प्रेषण। रात ८ बजे के बाद का ऑर्डर कल शाम ८ बजे के बाद डिलीवर होगा।' : 'Dispatches daily at 8:00 PM. Order after 8 PM delivered tomorrow after 8 PM.'}</span>
+                      <span>{isHindi ? 'प्रतिदिन शाम 8:00 बजे प्रेषण। रात 8 बजे के बाद का ऑर्डर कल शाम 8 बजे के बाद डिलीवर होगा।' : 'Dispatches daily at 8:00 PM. Order after 8 PM delivered tomorrow after 8 PM.'}</span>
                     </div>
                   </div>
                 </button>
@@ -1307,7 +1307,7 @@ export default function CartPage() {
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-center gap-4 text-slate-400 text-xs">
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> {isHindi ? '१००% सुरक्षित चेकआउट' : '100% Safe Checkout'}
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> {isHindi ? '100% सुरक्षित चेकआउट' : '100% Safe Checkout'}
                 </span>
                 <span>•</span>
                 <span>{isHindi ? '💵 कैश ऑन डिलीवरी उपलब्ध' : '💵 Cash on Delivery Available'}</span>
@@ -1350,7 +1350,7 @@ export default function CartPage() {
                     <p className="text-xs text-slate-300">
                       {activeDeliveryType === 'express'
                         ? (isHindi ? `⚡ एक्सप्रेस पार्सल प्रेषण (एलपीयू हब से ${distanceKm} किमी दायरा)` : `⚡ Express Parcel Dispatch (${distanceKm} km radius from LPU Hub)`)
-                        : (isHindi ? '🚚 मानक कृषि वाहन (प्रतिदिन शाम ८:०० बजे प्रेषण)' : '🚚 Standard Farm Vehicle (Daily 8:00 PM Dispatch)')}
+                        : (isHindi ? '🚚 मानक कृषि वाहन (प्रतिदिन शाम 8:00 बजे प्रेषण)' : '🚚 Standard Farm Vehicle (Daily 8:00 PM Dispatch)')}
                     </p>
                   </div>
                 </div>
@@ -1472,7 +1472,7 @@ export default function CartPage() {
                     type="tel"
                     value={shippingAddress.phone}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder={isHindi ? '१०-अंकीय मोबाइल नंबर' : '10-digit mobile number'}
+                    placeholder={isHindi ? '10-अंकीय मोबाइल नंबर' : '10-digit mobile number'}
                     maxLength={10}
                     className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.phone ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
@@ -1530,7 +1530,7 @@ export default function CartPage() {
                       type="text"
                       value={shippingAddress.pincode}
                       onChange={(e) => setShippingAddress(prev => ({ ...prev, pincode: e.target.value }))}
-                      placeholder={isHindi ? '६-अंकीय पिन' : '6-digit PIN'}
+                      placeholder={isHindi ? '6-अंकीय पिन' : '6-digit PIN'}
                       maxLength={6}
                       className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.pincode ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                     />
@@ -1551,7 +1551,7 @@ export default function CartPage() {
                   {activeDeliveryType === 'express' ? (
                     <>⚡ <strong>{isHindi ? 'एक्सप्रेस पार्सल प्रेषण:' : 'Express Parcel Dispatch:'}</strong> {isHindi ? `एग्रीमार्ट हब @ एलपीयू से तत्काल प्रेषण निर्धारित: ${shippingAddress.addressLine1 || 'फगवाड़ा'}, ${shippingAddress.pincode} (${distanceKm} किमी दायरा)।` : `Immediate dispatch scheduled from AgriMart Hub @ LPU to ${shippingAddress.addressLine1 || 'Phagwara'}, ${shippingAddress.pincode} (${distanceKm} km radius).`}</>
                   ) : (
-                    <>🚚 <strong>{isHindi ? 'मानक डिलीवरी:' : 'Standard Delivery:'}</strong> {isHindi ? `एग्रीमार्ट हब @ एलपीयू से शाम ८:०० बजे कृषि वाहन द्वारा प्रेषित: ${shippingAddress.addressLine1 || 'फगवाड़ा'}, ${shippingAddress.pincode} (${distanceKm} किमी दूर${distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} दूरी अधिभार` : ''})।` : `Dispatched via evening 8:00 PM farm vehicle from AgriMart Hub @ LPU to ${shippingAddress.addressLine1 || 'Phagwara'}, ${shippingAddress.pincode} (${distanceKm} km away${distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} distance surcharge` : ''}).`}</>
+                    <>🚚 <strong>{isHindi ? 'मानक डिलीवरी:' : 'Standard Delivery:'}</strong> {isHindi ? `एग्रीमार्ट हब @ एलपीयू से शाम 8:00 बजे कृषि वाहन द्वारा प्रेषित: ${shippingAddress.addressLine1 || 'फगवाड़ा'}, ${shippingAddress.pincode} (${distanceKm} किमी दूर${distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} दूरी अधिभार` : ''})।` : `Dispatched via evening 8:00 PM farm vehicle from AgriMart Hub @ LPU to ${shippingAddress.addressLine1 || 'Phagwara'}, ${shippingAddress.pincode} (${distanceKm} km away${distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} distance surcharge` : ''}).`}</>
                   )}
                 </div>
               </div>

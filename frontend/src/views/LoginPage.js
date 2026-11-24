@@ -426,7 +426,7 @@ export default function LoginPage({ onAdminLogin }) {
                 <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <span><strong>{isHindi ? '१००% गुणवत्ता की गारंटी:' : '100% Quality Guaranteed:'}</strong> {isHindi ? 'मान्यता प्राप्त लैब अंकुरण और एफसीओ प्रमाणीकरण।' : 'Accredited lab germination and FCO certification.'}</span>
+                <span><strong>{isHindi ? '100% गुणवत्ता की गारंटी:' : '100% Quality Guaranteed:'}</strong> {isHindi ? 'मान्यता प्राप्त लैब अंकुरण और एफसीओ प्रमाणीकरण।' : 'Accredited lab germination and FCO certification.'}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-slate-200">
                 <div className="w-8 h-8 rounded-full bg-[#FF9F43]/20 text-[#FF9F43] flex items-center justify-center flex-shrink-0">
@@ -686,7 +686,7 @@ export default function LoginPage({ onAdminLogin }) {
 
               <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-xs text-slate-400">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>{isHindi ? 'एग्रीमार्ट सुरक्षित २५६-बिट एन्क्रिप्शन द्वारा सुरक्षित' : 'Protected by AgriMart Secure 256-bit encryption'}</span>
+                <span>{isHindi ? 'एग्रीमार्ट सुरक्षित 256-बिट एन्क्रिप्शन द्वारा सुरक्षित' : 'Protected by AgriMart Secure 256-bit encryption'}</span>
               </div>
             </div>
           </div>

@@ -203,7 +203,7 @@ export default function LocationSelectorModal() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  {isHindi ? 'फगवाड़ा एक्सप्रेस हब (१० किमी के भीतर)' : 'Phagwara Express Hub (Within 10 km)'}
+                  {isHindi ? 'फगवाड़ा एक्सप्रेस हब (10 किमी के भीतर)' : 'Phagwara Express Hub (Within 10 km)'}
                 </span>
                 <span className="text-[10px] bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-bold">
                   {isHindi ? '⚡ एक्सप्रेस एवं मानक डिलीवरी' : '⚡ Express & Standard Delivery'}
@@ -252,7 +252,7 @@ export default function LocationSelectorModal() {
                   <span className="material-symbols-outlined text-[15px] text-rose-500">
                     cancel
                   </span>
-                  {isHindi ? '१० किमी दायरे से बाहर (असेवा योग्य परीक्षण मोड)' : 'Outside 10 km Radius (Test Unserviceable Mode)'}
+                  {isHindi ? '10 किमी दायरे से बाहर (असेवा योग्य परीक्षण मोड)' : 'Outside 10 km Radius (Test Unserviceable Mode)'}
                 </span>
                 <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold">
                   {isHindi ? 'परीक्षण एवं डेमो' : 'Test & Demo'}
@@ -298,7 +298,7 @@ export default function LocationSelectorModal() {
             <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
               <span className="flex items-center gap-1 font-medium">
                 <span className="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
-                {isHindi ? 'फगवाड़ा हब से सख्त १० किमी जियोफेंसिंग' : 'Strict 10 km geofencing from Phagwara hub'}
+                {isHindi ? 'फगवाड़ा हब से सख्त 10 किमी जियोफेंसिंग' : 'Strict 10 km geofencing from Phagwara hub'}
               </span>
               <motion.button
                 type="button"

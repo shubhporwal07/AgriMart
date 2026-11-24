@@ -199,7 +199,7 @@ export default function LandingPage() {
                   <span className="material-symbols-outlined text-[#FF9F43] text-[18px] sm:text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     verified
                   </span>
-                  <span className="text-slate-100 font-semibold">{isHindi ? '९५%+ प्रमाणित अंकुरण' : '95%+ Certified Germination'}</span>
+                  <span className="text-slate-100 font-semibold">{isHindi ? '95%+ प्रमाणित अंकुरण' : '95%+ Certified Germination'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[#FF9F43] text-[18px] sm:text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -367,7 +367,7 @@ export default function LandingPage() {
               href="/dashboard?category=all"
               className="text-xs font-bold text-[#142B4A] hover:text-[#E27B12] flex items-center gap-1 group"
             >
-              <span>{isHindi ? 'सभी १,२००+ कृषि इनपुट्स देखें' : 'View all 1,200+ farm inputs'}</span>
+              <span>{isHindi ? 'सभी 1,200+ कृषि इनपुट्स देखें' : 'View all 1,200+ farm inputs'}</span>
               <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">
                 east
               </span>
@@ -589,7 +589,7 @@ export default function LandingPage() {
               {isHindi ? 'सख्त गुणवत्ता और अटूट विश्वास' : 'Uncompromising Quality & Trust'}
             </span>
             <h2 className="font-headline text-xl sm:text-3xl text-[#142B4A] font-extrabold mt-1">
-              {isHindi ? '२,५०,०००+ से अधिक किसान एग्रीमार्ट पर क्यों भरोसा करते हैं' : 'Why Over 250,000+ Farmers Trust AgriMart'}
+              {isHindi ? '2,50,000+ से अधिक किसान एग्रीमार्ट पर क्यों भरोसा करते हैं' : 'Why Over 250,000+ Farmers Trust AgriMart'}
             </h2>
             <p className="text-xs sm:text-sm text-[#5A6B82] mt-2">
               {isHindi ? 'प्रमाणित कृषि इनपुट्स के साथ नकली बीज, मिलावटी रसायनों और बिचौलियों के अनुचित मुनाफे को समाप्त करना।' : 'Eliminating fake seeds, spurious chemicals, and predatory mandi middle-commissions with certified farm inputs.'}
@@ -605,14 +605,14 @@ export default function LandingPage() {
                     biotech
                   </span>
                 </div>
-                <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? '९५%+ लैब अंकुरण' : '95%+ Lab Germination'}</h3>
+                <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? '95%+ लैब अंकुरण' : '95%+ Lab Germination'}</h3>
                 <p className="text-xs text-[#5A6B82] mt-2 leading-relaxed">
                   {isHindi ? 'फसल की एकरूपता सुनिश्चित करने के लिए प्रेषण से पहले प्रत्येक बीज बैच का आईसीएआर से मान्यता प्राप्त प्रयोगशालाओं में परीक्षण किया जाता है।' : 'Every seed batch undergoes seed moisture and vigor analysis in accredited ICAR labs before dispatch to guarantee stand uniformity.'}
                 </p>
               </div>
               <div className="mt-6 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[#142B4A] text-xs font-bold">
                 <span className="material-symbols-outlined text-[16px] text-emerald-600">verified</span>
-                <span>{isHindi ? 'बीज अधिनियम १९६६ प्रमाणित' : 'Seed Act 1966 Certified'}</span>
+                <span>{isHindi ? 'बीज अधिनियम 1966 प्रमाणित' : 'Seed Act 1966 Certified'}</span>
               </div>
             </div>
 
@@ -626,7 +626,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? 'सीधे फ़ैक्टरी की दरें' : 'Direct Factory Rates'}</h3>
                 <p className="text-xs text-[#5A6B82] mt-2 leading-relaxed">
-                  {isHindi ? 'क्षेत्रीय वितरकों और डीलरों को हटाकर, हम थोक निर्माता दरें प्रदान करते हैं जिससे आपको प्रत्येक बुवाई एकड़ पर २०-३५% की बचत होती है।' : 'By bypassing regional distributors and sub-dealers, we provide wholesale manufacturer rates that save you 20-35% on every sowing acre.'}
+                  {isHindi ? 'क्षेत्रीय वितरकों और डीलरों को हटाकर, हम थोक निर्माता दरें प्रदान करते हैं जिससे आपको प्रत्येक बुवाई एकड़ पर 20-35% की बचत होती है।' : 'By bypassing regional distributors and sub-dealers, we provide wholesale manufacturer rates that save you 20-35% on every sowing acre.'}
                 </p>
               </div>
               <div className="mt-6 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[#A74E00] text-xs font-bold">
@@ -664,7 +664,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="font-headline text-base font-bold text-[#142B4A]">{isHindi ? 'अखिल भारतीय ग्रामीण डिलीवरी' : 'Pan-India Village Delivery'}</h3>
                 <p className="text-xs text-[#5A6B82] mt-2 leading-relaxed">
-                  {isHindi ? '१८,०००+ पिन कोड तक पहुंच। सीधे आपके खेत, ग्राम पंचायत या निकटतम तहसील डिपो तक डिलीवरी।' : 'Reaching 18,000+ pin codes. Doorstep delivery directly to your farm gate, village gram panchayat point, or nearest taluka depot.'}
+                  {isHindi ? '18,000+ पिन कोड तक पहुंच। सीधे आपके खेत, ग्राम पंचायत या निकटतम तहसील डिपो तक डिलीवरी।' : 'Reaching 18,000+ pin codes. Doorstep delivery directly to your farm gate, village gram panchayat point, or nearest taluka depot.'}
                 </p>
               </div>
               <div className="mt-6 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[#142B4A] text-xs font-bold">
@@ -770,7 +770,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h3 className="font-headline text-lg sm:text-xl font-bold text-slate-900">
-                {isHindi ? '१००% वास्तविक, डिलीवरी उपरांत समीक्षाएं' : '100% Genuine, Post-Delivery Reviews'}
+                {isHindi ? '100% वास्तविक, डिलीवरी उपरांत समीक्षाएं' : '100% Genuine, Post-Delivery Reviews'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed max-w-lg mx-auto">
                 {isHindi ? 'एग्रीमार्ट केवल सत्यापित खेत-वितरण के बाद किसानों द्वारा दी गई वास्तविक प्रतिक्रिया दिखाता है। कोई नकली या स्वतः-निर्मित समीक्षा नहीं।' : 'AgriMart only features authentic feedback submitted by farmers after verified farm-gate order delivery. No fake or auto-generated testimonials.'}
