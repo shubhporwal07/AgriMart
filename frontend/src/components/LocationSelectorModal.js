@@ -53,7 +53,7 @@ export default function LocationSelectorModal() {
     return null;
   }
 
-  const filteredLocations = presetLocations.filter(
+  const filteredLocations = (presetLocations || []).filter(
     (loc) =>
       loc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       loc.area.toLowerCase().includes(searchQuery.toLowerCase())

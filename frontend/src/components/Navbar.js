@@ -34,7 +34,7 @@ export default function Navbar() {
   useEffect(() => {
     setMounted(true);
     // Proactively prefetch common routes so user clicks navigate instantly
-    const commonRoutes = ['/dashboard', '/cart', '/orders', '/wishlist', '/login', '/about-us'];
+    const commonRoutes = ['/dashboard', '/cart', '/orders', '/wishlist', '/profile', '/login', '/about-us'];
     commonRoutes.forEach((route) => {
       try {
         router.prefetch(route);
@@ -380,13 +380,40 @@ export default function Navbar() {
                     className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-1.5 z-50 origin-top-right overflow-hidden ring-1 ring-black/5"
                     onClick={() => setUserDropdownOpen(false)}
                   >
-                    <div className="px-4 py-3 border-b border-slate-100 bg-[#FAF5EB]/60">
-                      <p className="text-xs font-bold text-slate-900 truncate">
-                        {user?.displayName || 'AgriMart Customer'}
-                      </p>
+                    <Link
+                      href="/profile"
+                      prefetch={true}
+                      className="block px-4 py-3 border-b border-slate-100 bg-[#FAF5EB]/60 hover:bg-[#FAF5EB] transition-colors group cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-bold text-slate-900 truncate group-hover:text-[#16A34A] transition-colors">
+                          {user?.displayName || 'AgriMart Customer'}
+                        </p>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                          <span className="material-symbols-outlined text-[11px]">verified</span>
+                          Kisan
+                        </span>
+                      </div>
                       <p className="text-[11px] text-slate-500 truncate mt-0.5">{user?.email}</p>
-                    </div>
+                      <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-emerald-700">
+                        <span>View Kisan Profile</span>
+                        <span className="material-symbols-outlined text-[12px]">arrow_forward</span>
+                      </div>
+                    </Link>
                     <div className="py-1">
+                      <Link
+                        href="/profile"
+                        prefetch={true}
+                        className="flex items-center justify-between px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#0B1B30] transition-colors duration-150"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <span className="material-symbols-outlined text-[17px] text-[#16A34A]">badge</span>
+                          <span>My Kisan Profile</span>
+                        </span>
+                        <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1 py-0.2 rounded">
+                          ID
+                        </span>
+                      </Link>
                       <Link
                         href="/orders"
                         prefetch={true}
@@ -679,6 +706,19 @@ export default function Navbar() {
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 space-y-1.5">
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-between text-sm font-semibold text-slate-800 px-2 py-1.5 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[18px] text-[#16A34A]">badge</span>
+                      <span>My Kisan Profile</span>
+                    </span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                      ID Card
+                    </span>
+                  </Link>
                   <Link
                     href="/wishlist"
                     onClick={() => setMobileMenuOpen(false)}
