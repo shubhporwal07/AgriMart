@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { DURATION, EASE, buttonTap, iconTap, qtyNumberVariants } from '../utils/motion';
 
 export default function ProductCard({
@@ -15,6 +16,7 @@ export default function ProductCard({
 }) {
   const { addToCart, updateCartQuantity, getItemQuantity, wishlistItems, addToWishlist, removeFromWishlist } = useProducts();
   const { isServiceable, setLocationModalOpen } = useLocationContext();
+  const { isHindi, t } = useLanguage();
 
   // Defer wishlist state to client-only to prevent SSR/localStorage hydration mismatch
   const [mounted, setMounted] = useState(false);
@@ -123,7 +125,7 @@ export default function ProductCard({
           </span>
         ) : (
           <span className="bg-[#EDF2F7] text-[#142B4A] text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full font-bold">
-            Fresh
+            {isHindi ? 'ताज़ा लॉट' : 'Fresh'}
           </span>
         )}
 
@@ -134,14 +136,14 @@ export default function ProductCard({
               onClick={handleEditClick}
               className="bg-[#142B4A] text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded hover:bg-[#1B385D] transition-colors duration-150"
             >
-              Edit
+              {isHindi ? 'संपादित करें' : 'Edit'}
             </motion.button>
             <motion.button
               whileTap={buttonTap}
               onClick={handleDelete}
               className="bg-rose-600 text-white text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded hover:bg-rose-700 transition-colors duration-150"
             >
-              Delete
+              {isHindi ? 'हटाएं' : 'Delete'}
             </motion.button>
           </div>
         ) : (
@@ -275,7 +277,7 @@ export default function ProductCard({
               key="soldout"
               className="text-[9px] sm:text-[11px] font-bold text-slate-400 bg-slate-100 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg cursor-not-allowed shrink-0"
             >
-              OUT
+              {isHindi ? 'समाप्त' : 'OUT'}
             </span>
           ) : justAdded ? (
             <motion.span
@@ -286,7 +288,7 @@ export default function ProductCard({
               transition={{ duration: DURATION.fast, ease: EASE.out }}
               className="bg-emerald-600 text-white font-headline text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg font-bold shadow-sm inline-flex items-center gap-1 shrink-0"
             >
-              <span>✓ ADDED</span>
+              <span>✓ {isHindi ? 'जोड़ा गया' : 'ADDED'}</span>
             </motion.span>
           ) : qty > 0 ? (
             <motion.div
@@ -341,7 +343,7 @@ export default function ProductCard({
               className="bg-rose-50 border border-rose-300 text-rose-700 hover:bg-rose-100 font-headline text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm flex items-center gap-0.5 sm:gap-1 shrink-0"
               title="Outside 10 km hub. Tap to change location."
             >
-              <span>Unavailable</span>
+              <span>{isHindi ? 'अनुपलब्ध' : 'Unavailable'}</span>
               <span className="material-symbols-outlined text-[12px] sm:text-[13px]">pin_drop</span>
             </motion.button>
           ) : (
@@ -354,10 +356,10 @@ export default function ProductCard({
               whileTap={buttonTap}
               transition={{ duration: DURATION.fast, ease: EASE.out }}
               onClick={handleAdd}
-              aria-label="Add to Cart"
+              aria-label={isHindi ? 'कार्ट में जोड़ें' : 'Add to Cart'}
               className="bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white font-headline text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm shrink-0"
             >
-              ADD
+              {isHindi ? 'जोड़ें' : 'ADD'}
             </motion.button>
           )}
         </AnimatePresence>

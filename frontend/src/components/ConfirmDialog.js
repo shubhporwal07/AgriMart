@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, X } from 'lucide-react';
 import { backdropVariants, modalVariants, buttonTap, iconTap } from '../utils/motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function ConfirmDialog({
   isOpen,
@@ -14,6 +15,9 @@ export default function ConfirmDialog({
   isLoading = false,
   isDangerous = false,
 }) {
+  const { isHindi } = useLanguage();
+  const finalCancel = cancelText === 'Cancel' ? (isHindi ? 'रद्द करें' : 'Cancel') : cancelText;
+  const finalConfirm = confirmText === 'Delete' ? (isHindi ? 'हटाएं' : 'Delete') : confirmText;
   return (
     <AnimatePresence>
       {isOpen && (
@@ -77,7 +81,7 @@ export default function ConfirmDialog({
                   disabled={isLoading}
                   className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-150 disabled:opacity-50"
                 >
-                  {cancelText}
+                  {finalCancel}
                 </motion.button>
 
                 <motion.button
@@ -91,7 +95,7 @@ export default function ConfirmDialog({
                       : 'bg-slate-900 hover:bg-slate-800'
                   }`}
                 >
-                  {isLoading ? 'Deleting...' : confirmText}
+                  {isLoading ? (isHindi ? 'हटाया जा रहा है...' : 'Deleting...') : finalConfirm}
                 </motion.button>
               </div>
             </div>

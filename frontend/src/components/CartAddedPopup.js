@@ -3,8 +3,10 @@ import { forwardRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ShoppingBag, X } from 'lucide-react';
 import { toastVariants, iconTap } from '../utils/motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const CartAddedPopup = forwardRef(function CartAddedPopup({ productName, onClose, stacked = false }, ref) {
+  const { isHindi } = useLanguage();
   useEffect(() => {
     const timer = setTimeout(onClose, 2400);
     return () => clearTimeout(timer);
@@ -51,7 +53,7 @@ const CartAddedPopup = forwardRef(function CartAddedPopup({ productName, onClose
           <div className="min-w-0 pr-5">
             <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-900">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
-              Added to bag
+              {isHindi ? 'थैले में जोड़ा गया' : 'Added to bag'}
             </p>
             <p className="mt-1 line-clamp-2 text-sm text-emerald-900/90">{productName}</p>
           </div>

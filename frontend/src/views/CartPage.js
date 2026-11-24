@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
 import { useCoupons } from '../contexts/CouponContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import Footer from '../components/Footer';
 import Toast from '../components/Toast';
 import RazorpaySandboxModal from '../components/RazorpaySandboxModal';
@@ -54,6 +55,7 @@ export default function CartPage() {
     setLocationModalOpen,
     primaryHub,
   } = useLocationContext();
+  const { t, isHindi, translateCategory } = useLanguage();
 
   const [deliveryType, setDeliveryType] = useState('express'); // 'express' | 'standard'
   const [deliveryInstruction, setDeliveryInstruction] = useState('');
@@ -734,9 +736,11 @@ export default function CartPage() {
           <div className="w-24 h-24 rounded-full bg-[#FF9F43]/15 text-[#E27B12] flex items-center justify-center mx-auto mb-6">
             <ShoppingBag className="w-12 h-12" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#142B4A] mb-3">Your Farm Basket is Empty</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#142B4A] mb-3">
+            {isHindi ? 'आपकी कार्ट खाली है' : 'Your Farm Basket is Empty'}
+          </h2>
           <p className="text-slate-600 text-sm sm:text-base mb-8 max-w-md mx-auto">
-            You haven't added any certified hybrid seeds, fertilizers, or farm inputs to your basket yet.
+            {isHindi ? 'आपने अभी तक अपनी टोकरी में कोई प्रमाणित हाइब्रिड बीज, उर्वरक या कृषि उत्पाद नहीं जोड़े हैं।' : "You haven't added any certified hybrid seeds, fertilizers, or farm inputs to your basket yet."}
           </p>
           <Link
             href="/dashboard"
@@ -744,7 +748,7 @@ export default function CartPage() {
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-bold rounded-xl transition-all duration-150 shadow-lg shadow-[#FF9F43]/20 active:scale-95"
           >
             <Zap className="w-4 h-4 fill-current" />
-            Explore Certified Farm Inputs
+            {isHindi ? 'प्रमाणित कृषि उत्पाद देखें' : 'Explore Certified Farm Inputs'}
           </Link>
         </motion.div>
         <Footer />
@@ -802,10 +806,10 @@ export default function CartPage() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2 text-sm font-bold text-[#142B4A]">
                   <Truck className="w-4 h-4 text-[#FF9F43]" />
-                  Select Delivery Mode
+                  {isHindi ? 'डिलीवरी मोड चुनें' : 'Select Delivery Mode'}
                 </div>
                 <span className="text-xs text-slate-500 font-medium">
-                  Hub: {primaryHub?.name || 'AgriMart Kisan Hub @ LPU'} ({distanceKm} km away)
+                  {isHindi ? 'केंद्र:' : 'Hub:'} {primaryHub?.name || 'AgriMart Kisan Hub @ LPU'} ({distanceKm} km away)
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -828,9 +832,9 @@ export default function CartPage() {
                         </div>
                         <div>
                           <span className="text-[11px] font-bold uppercase tracking-wider text-[#E27B12]">
-                            Fast Dispatch (&le;10 km)
+                            {isHindi ? 'त्वरित प्रेषण (≤10 किमी)' : 'Fast Dispatch (≤10 km)'}
                           </span>
-                          <h4 className="text-sm font-extrabold text-[#142B4A]">Express Delivery</h4>
+                          <h4 className="text-sm font-extrabold text-[#142B4A]">{isHindi ? 'एक्सप्रेस डिलीवरी' : 'Express Delivery'}</h4>
                         </div>
                       </div>
                       <span className="px-2.5 py-1 rounded-full text-xs font-black bg-[#FF9F43] text-slate-950">
@@ -838,13 +842,13 @@ export default function CartPage() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 leading-snug">
-                      Immediate parcel dispatch from AgriMart Hub @ LPU.
+                      {isHindi ? 'एग्रीमार्ट हब @ एलपीयू से त्वरित पार्सल प्रेषण।' : 'Immediate parcel dispatch from AgriMart Hub @ LPU.'}
                       <span className="block text-[11px] text-slate-500 mt-1 font-medium">
                         {distanceKm <= 5.0
-                          ? `₹50 extra (within 5 km radius • you: ${distanceKm} km)`
+                          ? (isHindi ? `₹50 अतिरिक्त (5 किमी दायरे में • आपका: ${distanceKm} किमी)` : `₹50 extra (within 5 km radius • you: ${distanceKm} km)`)
                           : distanceKm <= 7.5
-                          ? `₹100 extra (5.1–7.5 km radius • you: ${distanceKm} km)`
-                          : `₹150 extra (7.6–10 km radius • you: ${distanceKm} km)`}
+                          ? (isHindi ? `₹100 अतिरिक्त (5.1–7.5 किमी दायरा • आपका: ${distanceKm} किमी)` : `₹100 extra (5.1–7.5 km radius • you: ${distanceKm} km)`)
+                          : (isHindi ? `₹150 अतिरिक्त (7.6–10 किमी दायरा • आपका: ${distanceKm} किमी)` : `₹150 extra (7.6–10 km radius • you: ${distanceKm} km)`)}
                       </span>
                     </p>
                   </button>
@@ -857,17 +861,17 @@ export default function CartPage() {
                         </div>
                         <div>
                           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                            Express Delivery
+                            {isHindi ? 'एक्सप्रेस डिलीवरी' : 'Express Delivery'}
                           </span>
-                          <h4 className="text-sm font-extrabold text-slate-500">Under 10 km Only</h4>
+                          <h4 className="text-sm font-extrabold text-slate-500">{isHindi ? 'केवल 10 किमी के भीतर' : 'Under 10 km Only'}</h4>
                         </div>
                       </div>
                       <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-200 text-slate-500">
-                        Unavailable
+                        {isHindi ? 'अनुपलब्ध' : 'Unavailable'}
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 leading-snug">
-                      Express delivery is limited to 10 km of LPU Hub. Address is {distanceKm} km away. Standard delivery auto-applied.
+                      {isHindi ? `एक्सप्रेस डिलीवरी एलपीयू हब के 10 किमी तक सीमित है। आपका पता ${distanceKm} किमी दूर है। मानक डिलीवरी लागू।` : `Express delivery is limited to 10 km of LPU Hub. Address is ${distanceKm} km away. Standard delivery auto-applied.`}
                     </p>
                   </div>
                 )}
@@ -890,9 +894,9 @@ export default function CartPage() {
                       </div>
                       <div>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                          Evening 8 PM Vehicle
+                          {isHindi ? 'शाम 8 बजे वाहन प्रेषण' : 'Evening 8 PM Vehicle'}
                         </span>
-                        <h4 className="text-sm font-extrabold text-[#142B4A]">Standard Delivery</h4>
+                        <h4 className="text-sm font-extrabold text-[#142B4A]">{isHindi ? 'मानक डिलीवरी' : 'Standard Delivery'}</h4>
                       </div>
                     </div>
                     <span className={`px-2.5 py-1 rounded-full text-xs font-black ${
@@ -900,18 +904,18 @@ export default function CartPage() {
                         ? 'bg-emerald-100 text-emerald-800'
                         : 'bg-slate-100 text-slate-700'
                     }`}>
-                      {itemTotal >= 1000 && standardDistanceSurcharge === 0 ? 'FREE' : `₹${standardFee}`}
+                      {itemTotal >= 1000 && standardDistanceSurcharge === 0 ? (isHindi ? 'निःशुल्क' : 'FREE') : `₹${standardFee}`}
                     </span>
                   </div>
                   <div className="text-xs text-slate-600 leading-snug space-y-1">
                     <p>
                       {distanceKm > 15.0
-                        ? `₹${standardDistanceSurcharge} distance surcharge applied (>15 km from LPU hub • ${distanceKm} km).`
-                        : (itemTotal >= 1000 ? '🎉 FREE delivery unlocked (Order ≥ ₹1,000)' : '₹20 fee on orders under ₹1,000 (Free on ₹1,000+)')}
+                        ? (isHindi ? `₹${standardDistanceSurcharge} दूरी अधिभार लागू (>15 किमी एलपीयू हब से • ${distanceKm} किमी)।` : `₹${standardDistanceSurcharge} distance surcharge applied (>15 km from LPU hub • ${distanceKm} km).`)
+                        : (itemTotal >= 1000 ? (isHindi ? '🎉 मुफ़्त डिलीवरी अनलॉक (ऑर्डर ≥ ₹1,000)' : '🎉 FREE delivery unlocked (Order ≥ ₹1,000)') : (isHindi ? '₹1,000 से कम के ऑर्डर पर ₹20 शुल्क (₹1,000+ पर मुफ़्त)' : '₹20 fee on orders under ₹1,000 (Free on ₹1,000+)'))}
                     </p>
                     <div className="p-1.5 bg-amber-50 rounded-lg text-[11px] text-amber-900 font-semibold flex items-center gap-1">
                       <span>🚚</span>
-                      <span>Dispatches daily at 8:00 PM. Order after 8 PM delivered tomorrow after 8 PM.</span>
+                      <span>{isHindi ? 'प्रतिदिन शाम 8:00 बजे प्रेषण। रात 8 बजे के बाद का ऑर्डर कल शाम 8 बजे के बाद डिलीवर होगा।' : 'Dispatches daily at 8:00 PM. Order after 8 PM delivered tomorrow after 8 PM.'}</span>
                     </div>
                   </div>
                 </button>
@@ -923,14 +927,14 @@ export default function CartPage() {
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
                 <h1 className="text-xl font-extrabold text-[#142B4A] flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-[#FF9F43]" />
-                  Your Farm Basket
-                  <span className="text-xs font-normal text-slate-500">({cartItems.length} items)</span>
+                  {isHindi ? 'आपकी कृषि टोकरी' : 'Your Farm Basket'}
+                  <span className="text-xs font-normal text-slate-500">({cartItems.length} {isHindi ? 'उत्पाद' : 'items'})</span>
                 </h1>
                 <button
                   onClick={clearCart}
                   className="text-xs font-semibold text-rose-500 hover:text-rose-700 transition"
                 >
-                  Clear All
+                  {isHindi ? 'सभी हटाएं' : 'Clear All'}
                 </button>
               </div>
 
@@ -960,7 +964,7 @@ export default function CartPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                              {item.category?.replace('-', ' ') || 'Fresh'}
+                              {translateCategory(item.category) || (isHindi ? 'ताज़ा लॉट' : 'Fresh')}
                             </span>
                             <span className="text-xs text-slate-400 font-medium">{item.packSize || item.weight || '1 unit'}</span>
                           </div>
@@ -1029,13 +1033,13 @@ export default function CartPage() {
               {/* Delivery Note */}
               <div className="mt-6 pt-5 border-t border-slate-100">
                 <label className="block text-xs font-bold text-slate-700 mb-2">
-                  Delivery instructions (optional)
+                  {isHindi ? 'डिलीवरी निर्देश (वैकल्पिक)' : 'Delivery instructions (optional)'}
                 </label>
                 <input
                   type="text"
                   value={deliveryInstruction}
                   onChange={(e) => setDeliveryInstruction(e.target.value)}
-                  placeholder="e.g. Leave with security guard, don't ring the bell..."
+                  placeholder={isHindi ? 'उदा. सुरक्षा गार्ड के पास छोड़ दें, बेल न बजाएं...' : "e.g. Leave with security guard, don't ring the bell..."}
                   className="w-full px-4 py-2.5 bg-[#F7F9FC] border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A]"
                 />
               </div>
@@ -1052,8 +1056,8 @@ export default function CartPage() {
                     <Percent className="w-4 h-4 text-[#FF9F43]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-extrabold text-[#142B4A]">Coupons &amp; Offers</h3>
-                    <p className="text-[11px] text-slate-500">Apply promo code or price band discounts</p>
+                    <h3 className="text-sm font-extrabold text-[#142B4A]">{isHindi ? 'कूपन और ऑफ़र' : 'Coupons & Offers'}</h3>
+                    <p className="text-[11px] text-slate-500">{isHindi ? 'प्रोमो कोड या छूट लागू करें' : 'Apply promo code or price band discounts'}</p>
                   </div>
                 </div>
                 {activeCoupons.length > 0 && (
@@ -1062,7 +1066,7 @@ export default function CartPage() {
                     onClick={() => setShowCouponsList(!showCouponsList)}
                     className="text-xs font-bold text-blue-600 hover:text-blue-800 transition"
                   >
-                    {showCouponsList ? 'Hide Offers' : `View All (${activeCoupons.length})`}
+                    {showCouponsList ? (isHindi ? 'ऑफ़र छुपाएं' : 'Hide Offers') : (isHindi ? `सभी देखें (${activeCoupons.length})` : `View All (${activeCoupons.length})`)}
                   </button>
                 )}
               </div>
@@ -1081,7 +1085,7 @@ export default function CartPage() {
                           setCouponError('');
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
-                        placeholder="Enter coupon code (e.g. KISAN200)"
+                        placeholder={isHindi ? 'कूपन कोड दर्ज करें (उदा. KISAN200)' : 'Enter coupon code (e.g. KISAN200)'}
                         className="w-full pl-9 pr-3 py-2 text-xs font-mono font-bold uppercase border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#142B4A]"
                       />
                     </div>
@@ -1090,7 +1094,7 @@ export default function CartPage() {
                       onClick={() => handleApplyCoupon()}
                       className="px-4 py-2 bg-[#142B4A] hover:bg-[#1D3E6B] text-white font-bold text-xs rounded-xl transition shadow-xs"
                     >
-                      Apply
+                      {isHindi ? 'लागू करें' : 'Apply'}
                     </button>
                   </div>
                   {couponError && (
@@ -1115,7 +1119,7 @@ export default function CartPage() {
                         </span>
                       </div>
                       <p className="text-[11px] text-emerald-700 font-semibold">
-                        Saved {formatPrice(couponDiscountAmount)} on this order
+                        {isHindi ? `इस ऑर्डर पर ${formatPrice(couponDiscountAmount)} की बचत` : `Saved ${formatPrice(couponDiscountAmount)} on this order`}
                       </p>
                     </div>
                   </div>
@@ -1124,7 +1128,7 @@ export default function CartPage() {
                     onClick={handleRemoveCoupon}
                     className="text-xs font-bold text-rose-600 hover:text-rose-800 underline px-1"
                   >
-                    Remove
+                    {isHindi ? 'हटाएं' : 'Remove'}
                   </button>
                 </div>
               )}
@@ -1202,18 +1206,18 @@ export default function CartPage() {
             {/* Bill Details Card */}
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
               <h2 className="text-lg font-extrabold text-[#142B4A] pb-3 border-b border-slate-100">
-                Bill Details
+                {t('cart.orderSummary', 'Bill Details')}
               </h2>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-slate-600">
-                  <span>Items Total (MRP)</span>
+                  <span>{t('cart.mrpTotal', 'Items Total (MRP)')}</span>
                   <span className="font-medium text-slate-800">{formatPrice(mrpTotal)}</span>
                 </div>
 
                 {savings > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
-                    <span>Product Discount</span>
+                    <span>{isHindi ? 'उत्पाद छूट' : 'Product Discount'}</span>
                     <span>− {formatPrice(savings)}</span>
                   </div>
                 )}
@@ -1247,14 +1251,14 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex justify-between text-slate-600">
-                  <span>Handling &amp; Eco Bag</span>
+                  <span>{isHindi ? 'हैंडलिंग और इको बैग' : 'Handling & Eco Bag'}</span>
                   <span className="font-medium text-slate-800">{formatPrice(handlingFee)}</span>
                 </div>
 
                 <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
                   <div>
-                    <span className="text-base font-extrabold text-[#142B4A]">To Pay</span>
-                    <p className="text-[11px] text-slate-400">Inclusive of all taxes</p>
+                    <span className="text-base font-extrabold text-[#142B4A]">{t('cart.grandTotal', 'To Pay')}</span>
+                    <p className="text-[11px] text-slate-400">{isHindi ? 'सभी कर सहित' : 'Inclusive of all taxes'}</p>
                   </div>
                   <span className="text-2xl font-black text-[#142B4A]">{formatPrice(grandTotal)}</span>
                 </div>
@@ -1263,7 +1267,9 @@ export default function CartPage() {
               {(savings + couponDiscountAmount) > 0 && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-xs text-emerald-800 font-bold">
                   <Sparkles className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  Yay! You saved {formatPrice(savings + couponDiscountAmount)} on this certified farm input order.
+                  {isHindi
+                    ? `बधाई हो! आपने इस प्रमाणित कृषि इनपुट ऑर्डर पर ${formatPrice(savings + couponDiscountAmount)} की बचत की।`
+                    : `Yay! You saved ${formatPrice(savings + couponDiscountAmount)} on this certified farm input order.`}
                 </div>
               )}
 
@@ -1294,19 +1300,19 @@ export default function CartPage() {
                   disabled={paymentLoading}
                   className="w-full py-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-black rounded-2xl transition shadow-lg shadow-[#FF9F43]/25 flex items-center justify-center gap-2 text-base"
                 >
-                  Proceed to Delivery &amp; Payment
+                  {isHindi ? 'डिलीवरी एवं भुगतान के लिए आगे बढ़ें' : 'Proceed to Delivery & Payment'}
                   <Zap className="w-4 h-4 fill-current" />
                 </button>
               )}
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-center gap-4 text-slate-400 text-xs">
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> 100% Safe Checkout
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" /> {isHindi ? '100% सुरक्षित चेकआउट' : '100% Safe Checkout'}
                 </span>
                 <span>•</span>
-                <span>💵 Cash on Delivery Available</span>
+                <span>{isHindi ? '💵 कैश ऑन डिलीवरी उपलब्ध' : '💵 Cash on Delivery Available'}</span>
                 <span>•</span>
-                <span>⚡ Express &amp; Standard Dispatch</span>
+                <span>{isHindi ? '⚡ एक्सप्रेस और मानक प्रेषण' : '⚡ Express & Standard Dispatch'}</span>
               </div>
             </div>
           </div>
@@ -1340,11 +1346,11 @@ export default function CartPage() {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-lg">Delivery &amp; Payment</h3>
+                    <h3 className="font-extrabold text-lg">{isHindi ? 'डिलीवरी और भुगतान' : 'Delivery & Payment'}</h3>
                     <p className="text-xs text-slate-300">
                       {activeDeliveryType === 'express'
-                        ? `⚡ Express Parcel Dispatch (${distanceKm} km radius from LPU Hub)`
-                        : '🚚 Standard Farm Vehicle (Daily 8:00 PM Dispatch)'}
+                        ? (isHindi ? `⚡ एक्सप्रेस पार्सल प्रेषण (एलपीयू हब से ${distanceKm} किमी दायरा)` : `⚡ Express Parcel Dispatch (${distanceKm} km radius from LPU Hub)`)
+                        : (isHindi ? '🚚 मानक कृषि वाहन (प्रतिदिन शाम 8:00 बजे प्रेषण)' : '🚚 Standard Farm Vehicle (Daily 8:00 PM Dispatch)')}
                     </p>
                   </div>
                 </div>
@@ -1362,10 +1368,10 @@ export default function CartPage() {
                   <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs text-emerald-900 animate-fadeIn">
                     <div className="flex items-center gap-2 font-bold">
                       <BookmarkCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>Saved Delivery Address Loaded</span>
+                      <span>{isHindi ? 'सहेजा गया डिलीवरी पता लोड हुआ' : 'Saved Delivery Address Loaded'}</span>
                     </div>
                     <span className="text-[10px] text-emerald-800 font-bold bg-emerald-200/60 px-2 py-0.5 rounded-full">
-                      Saved in Profile
+                      {isHindi ? 'प्रोफ़ाइल में सहेजा गया' : 'Saved in Profile'}
                     </span>
                   </div>
                 )}
@@ -1373,7 +1379,7 @@ export default function CartPage() {
                 {/* Payment Method Selector */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-2">
-                    Payment Method *
+                    {isHindi ? 'भुगतान विधि *' : 'Payment Method *'}
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {/* Cash on Delivery (COD) */}
@@ -1397,13 +1403,13 @@ export default function CartPage() {
                       />
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-extrabold text-[#142B4A]">Cash on Delivery</span>
+                          <span className="text-xs font-extrabold text-[#142B4A]">{isHindi ? 'कैश ऑन डिलीवरी' : 'Cash on Delivery'}</span>
                           <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full">
                             COD
                           </span>
                         </div>
                         <span className="text-[10px] text-[#5A6B82] mt-0.5 leading-snug">
-                          Pay cash or UPI on doorstep. No advance payment.
+                          {isHindi ? 'दरवाजे पर नकद या यूपीआई से भुगतान करें। कोई अग्रिम भुगतान नहीं।' : 'Pay cash or UPI on doorstep. No advance payment.'}
                         </span>
                       </div>
                     </button>
@@ -1429,13 +1435,13 @@ export default function CartPage() {
                       />
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-extrabold text-[#142B4A]">Online Payment</span>
+                          <span className="text-xs font-extrabold text-[#142B4A]">{isHindi ? 'ऑनलाइन भुगतान' : 'Online Payment'}</span>
                           <span className="bg-blue-100 text-blue-800 text-[9px] font-bold px-1.5 py-0.2 rounded-full">
                             UPI/Card
                           </span>
                         </div>
                         <span className="text-[10px] text-[#5A6B82] mt-0.5 leading-snug">
-                          Pay instantly via UPI QR, Cards, or NetBanking.
+                          {isHindi ? 'UPI QR, कार्ड या नेटबैंकिंग से तुरंत भुगतान करें।' : 'Pay instantly via UPI QR, Cards, or NetBanking.'}
                         </span>
                       </div>
                     </button>
@@ -1443,12 +1449,12 @@ export default function CartPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">{isHindi ? 'पूरा नाम *' : 'Full Name *'}</label>
                   <input
                     type="text"
                     value={shippingAddress.fullName}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, fullName: e.target.value }))}
-                    placeholder="Enter your full name"
+                    placeholder={isHindi ? 'अपना पूरा नाम दर्ज करें' : 'Enter your full name'}
                     className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.fullName ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
                   <AnimatePresence>
@@ -1461,12 +1467,12 @@ export default function CartPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Mobile Phone (for delivery call &amp; OTP) *</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">{isHindi ? 'मोबाइल फोन (डिलीवरी कॉल एवं ओटीपी के लिए) *' : 'Mobile Phone (for delivery call & OTP) *'}</label>
                   <input
                     type="tel"
                     value={shippingAddress.phone}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="10-digit mobile number"
+                    placeholder={isHindi ? '10-अंकीय मोबाइल नंबर' : '10-digit mobile number'}
                     maxLength={10}
                     className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.phone ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
@@ -1480,23 +1486,23 @@ export default function CartPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">House / Flat / Landmark</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">{isHindi ? 'मकान / खेत / लैंडमार्क' : 'House / Flat / Landmark'}</label>
                   <input
                     type="text"
                     value={shippingAddress.flatBuilding}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, flatBuilding: e.target.value }))}
-                    placeholder="e.g. House #14, Near Model Town Park"
+                    placeholder={isHindi ? 'उदा. मकान नं. 14, मॉडल टाउन पार्क के पास' : 'e.g. House #14, Near Model Town Park'}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#142B4A]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Street Address &amp; Area (Phagwara) *</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">{isHindi ? 'सड़क का पता और क्षेत्र (फगवाड़ा) *' : 'Street Address & Area (Phagwara) *'}</label>
                   <input
                     type="text"
                     value={shippingAddress.addressLine1}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine1: e.target.value }))}
-                    placeholder="e.g. Model Town, Phagwara"
+                    placeholder={isHindi ? 'उदा. मॉडल टाउन, फगवाड़ा' : 'e.g. Model Town, Phagwara'}
                     className={`w-full px-4 py-2.5 rounded-xl border text-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.addressLine1 ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                   />
                   <AnimatePresence>
@@ -1510,7 +1516,7 @@ export default function CartPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">City</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">{isHindi ? 'शहर' : 'City'}</label>
                     <input
                       type="text"
                       value={shippingAddress.city}
@@ -1519,12 +1525,12 @@ export default function CartPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Pincode *</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">{isHindi ? 'पिनकोड *' : 'Pincode *'}</label>
                     <input
                       type="text"
                       value={shippingAddress.pincode}
                       onChange={(e) => setShippingAddress(prev => ({ ...prev, pincode: e.target.value }))}
-                      placeholder="6-digit PIN"
+                      placeholder={isHindi ? '6-अंकीय पिन' : '6-digit PIN'}
                       maxLength={6}
                       className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-[#142B4A] ${addressErrors.pincode ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                     />
@@ -1543,9 +1549,9 @@ export default function CartPage() {
 
                 <div className="p-3 bg-amber-50 rounded-xl text-xs text-amber-800 font-medium">
                   {activeDeliveryType === 'express' ? (
-                    <>⚡ <strong>Express Parcel Dispatch:</strong> Immediate dispatch scheduled from AgriMart Hub @ LPU to <strong>{shippingAddress.addressLine1 || 'Phagwara'}, {shippingAddress.pincode}</strong> ({distanceKm} km radius).</>
+                    <>⚡ <strong>{isHindi ? 'एक्सप्रेस पार्सल प्रेषण:' : 'Express Parcel Dispatch:'}</strong> {isHindi ? `एग्रीमार्ट हब @ एलपीयू से तत्काल प्रेषण निर्धारित: ${shippingAddress.addressLine1 || 'फगवाड़ा'}, ${shippingAddress.pincode} (${distanceKm} किमी दायरा)।` : `Immediate dispatch scheduled from AgriMart Hub @ LPU to ${shippingAddress.addressLine1 || 'Phagwara'}, ${shippingAddress.pincode} (${distanceKm} km radius).`}</>
                   ) : (
-                    <>🚚 <strong>Standard Delivery:</strong> Dispatched via evening 8:00 PM farm vehicle from AgriMart Hub @ LPU to <strong>{shippingAddress.addressLine1 || 'Phagwara'}, {shippingAddress.pincode}</strong> ({distanceKm} km away{distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} distance surcharge` : ''}).</>
+                    <>🚚 <strong>{isHindi ? 'मानक डिलीवरी:' : 'Standard Delivery:'}</strong> {isHindi ? `एग्रीमार्ट हब @ एलपीयू से शाम 8:00 बजे कृषि वाहन द्वारा प्रेषित: ${shippingAddress.addressLine1 || 'फगवाड़ा'}, ${shippingAddress.pincode} (${distanceKm} किमी दूर${distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} दूरी अधिभार` : ''})।` : `Dispatched via evening 8:00 PM farm vehicle from AgriMart Hub @ LPU to ${shippingAddress.addressLine1 || 'Phagwara'}, ${shippingAddress.pincode} (${distanceKm} km away${distanceKm > 15.0 ? ` • +₹${standardDistanceSurcharge} distance surcharge` : ''}).`}</>
                   )}
                 </div>
               </div>
@@ -1557,7 +1563,7 @@ export default function CartPage() {
                   onClick={() => setCheckoutStep('cart')}
                   className="flex-1 py-3 px-4 border border-slate-300 rounded-xl text-slate-700 font-bold text-sm hover:bg-slate-100 transition-colors duration-150"
                 >
-                  Back to Basket
+                  {isHindi ? 'टोकरी में वापस जाएं' : 'Back to Basket'}
                 </motion.button>
                 <motion.button
                   type="button"
@@ -1568,10 +1574,10 @@ export default function CartPage() {
                   className="flex-1 py-3 px-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 rounded-xl font-black text-sm transition-colors duration-150 shadow-md disabled:opacity-50"
                 >
                   {paymentLoading
-                    ? 'Placing Order...'
+                    ? (isHindi ? 'ऑर्डर दिया जा रहा है...' : 'Placing Order...')
                     : paymentMethod === 'cod'
-                    ? `Place COD Order • ${formatPrice(grandTotal)}`
-                    : `Pay Online • ${formatPrice(grandTotal)}`}
+                    ? (isHindi ? `सीओडी ऑर्डर दें • ${formatPrice(grandTotal)}` : `Place COD Order • ${formatPrice(grandTotal)}`)
+                    : (isHindi ? `ऑनलाइन भुगतान करें • ${formatPrice(grandTotal)}` : `Pay Online • ${formatPrice(grandTotal)}`)}
                 </motion.button>
               </div>
             </motion.div>

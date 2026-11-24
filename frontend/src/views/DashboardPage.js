@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import Navbar from '../components/Navbar';
 import UnserviceableNotice from '../components/UnserviceableNotice';
 import SidebarFilters from '../components/SidebarFilters';
@@ -32,6 +33,7 @@ export default function DashboardPage() {
     deliveryTime,
     setLocationModalOpen,
   } = useLocationContext();
+  const { t, isHindi, translateCategory } = useLanguage();
 
   const {
     applyNavCategorySlug,
@@ -116,10 +118,10 @@ export default function DashboardPage() {
                     </span>
                   </span>
                   <span className="text-xs text-[#263449]">
-                    <strong className="font-extrabold text-[#A74E00]">KISAN200 Active:</strong> Extra ₹200 subsidy savings on certified seeds and organic bio-fertilizers above ₹999
+                    <strong className="font-extrabold text-[#A74E00]">{isHindi ? 'KISAN200 सक्रिय:' : 'KISAN200 Active:'}</strong> {isHindi ? '₹999 से अधिक के प्रमाणित बीज एवं जैविक उर्वरकों पर ₹200 की अतिरिक्त बचत' : 'Extra ₹200 subsidy savings on certified seeds and organic bio-fertilizers above ₹999'}
                   </span>
                   <span className="hidden sm:inline-flex items-center text-[#5A6B82] text-xs">
-                    • Direct dispatch from accredited research centers
+                    {isHindi ? '• मान्यता प्राप्त अनुसंधान केंद्रों से सीधा प्रेषण' : '• Direct dispatch from accredited research centers'}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -132,7 +134,7 @@ export default function DashboardPage() {
                     onClick={() => setBannerDismissed(true)}
                     className="text-xs text-[#142B4A] hover:text-[#E27B12] font-bold underline transition-colors duration-150"
                   >
-                    Dismiss
+                    {isHindi ? 'हटाएं' : 'Dismiss'}
                   </motion.button>
                 </div>
               </div>
@@ -147,13 +149,13 @@ export default function DashboardPage() {
             <nav className="flex items-center gap-2 text-xs text-[#5A6B82] mb-3 font-semibold">
               <Link href="/" className="hover:text-[#142B4A] transition-colors flex items-center gap-1">
                 <span className="material-symbols-outlined text-[16px]">home</span>
-                <span>Home</span>
+                <span>{isHindi ? 'होम' : 'Home'}</span>
               </Link>
               <span className="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
-              <span className="hover:text-[#142B4A] transition-colors">Agri Inputs</span>
+              <span className="hover:text-[#142B4A] transition-colors">{isHindi ? 'कृषि इनपुट्स' : 'Agri Inputs'}</span>
               <span className="material-symbols-outlined text-[14px] text-slate-400">chevron_right</span>
               <span className="font-bold text-[#142B4A]">
-                {filters.category?.length > 0 ? filters.category.join(', ') : 'Seeds & Fertilizers'}
+                {filters.category?.length > 0 ? filters.category.map(translateCategory).join(', ') : (isHindi ? 'बीज एवं उर्वरक' : 'Seeds & Fertilizers')}
               </span>
             </nav>
 
@@ -162,10 +164,10 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center gap-3">
                   <h1 className="font-headline text-2xl sm:text-3xl text-[#142B4A] font-extrabold tracking-tight">
-                    {filters.category?.length > 0 ? filters.category[0] : 'Seeds, Plant Nutrients & Fertilizers'}
+                    {filters.category?.length > 0 ? translateCategory(filters.category[0]) : (isHindi ? 'बीज, पौध पोषण एवं उर्वरक' : 'Seeds, Plant Nutrients & Fertilizers')}
                   </h1>
                   <span className="bg-[#D5E3FF] text-[#142B4A] text-xs px-2.5 py-1 rounded-full font-bold">
-                    {filteredProducts.length} Certified Inputs
+                    {isHindi ? `${filteredProducts.length} प्रमाणित इनपुट्स` : `${filteredProducts.length} Certified Inputs`}
                   </span>
                   {isAdmin && (
                     <button
@@ -181,7 +183,7 @@ export default function DashboardPage() {
                   )}
                 </div>
                 <p className="text-xs sm:text-sm text-[#5A6B82] mt-1 max-w-2xl leading-relaxed">
-                  Certified high-yield hybrid seeds, pure organic vermicompost, water-soluble NPK fertilizers, bio-fungicides, and foliar crop stimulants shipped straight to your farmland.
+                  {isHindi ? 'प्रमाणित उच्च-उत्पादन हाइब्रिड बीज, शुद्ध जैविक वर्मीकम्पोस्ट, घुलनशील एनपीके उर्वरक, जैव-कवकनाशी और फसल वर्धक सीधे आपके खेत तक पहुंचाए जाते हैं।' : 'Certified high-yield hybrid seeds, pure organic vermicompost, water-soluble NPK fertilizers, bio-fungicides, and foliar crop stimulants shipped straight to your farmland.'}
                 </p>
               </div>
 
@@ -206,7 +208,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[11px] text-[#5A6B82] leading-tight font-semibold">
-                    {isServiceable ? 'Farm Delivery to' : 'Selected Hub'}
+                    {isServiceable ? (isHindi ? 'खेत डिलीवरी गंतव्य' : 'Farm Delivery to') : (isHindi ? 'चयनित केंद्र' : 'Selected Hub')}
                   </span>
                   <span
                     className={`text-xs font-extrabold flex items-center gap-1 ${
@@ -219,7 +221,7 @@ export default function DashboardPage() {
                         isServiceable ? 'text-[#E27B12]' : 'text-rose-600 text-[11px]'
                       }`}
                     >
-                      ({isServiceable ? 'Direct Dispatch' : 'Outside Reach'})
+                      ({isServiceable ? (isHindi ? 'सीधा प्रेषण' : 'Direct Dispatch') : (isHindi ? 'पहुंच से बाहर' : 'Outside Reach')})
                     </span>
                   </span>
                 </div>
@@ -240,7 +242,7 @@ export default function DashboardPage() {
             className="mb-4 sm:mb-6 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 text-xs font-bold text-[#142B4A] shadow-sm lg:hidden"
           >
             <span className="material-symbols-outlined text-[18px]">tune</span>
-            <span>Filter &amp; Sort Seeds &amp; Fertilizers</span>
+            <span>{isHindi ? 'बीज और उर्वरक फ़िल्टर एवं क्रमबद्ध करें' : 'Filter & Sort Seeds & Fertilizers'}</span>
           </button>
 
           <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -271,7 +273,7 @@ export default function DashboardPage() {
                     <div>
                       <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
                         <span className="font-headline font-bold text-base text-[#142B4A]">
-                          Filters
+                          {isHindi ? 'फ़िल्टर' : 'Filters'}
                         </span>
                         <motion.button
                           type="button"
@@ -291,7 +293,7 @@ export default function DashboardPage() {
                         onClick={() => setFiltersOpen(false)}
                         className="w-full bg-[#142B4A] text-white py-3 rounded-xl text-xs font-bold hover:bg-[#1B385D] transition-colors duration-150"
                       >
-                        View {filteredProducts.length} Results
+                        {isHindi ? `${filteredProducts.length} परिणाम देखें` : `View ${filteredProducts.length} Results`}
                       </motion.button>
                     </div>
                   </motion.div>
@@ -327,7 +329,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[22px] text-[#FF9F43]">shopping_bag</span>
                   <span className="font-headline text-xs font-bold">
-                    {cartCount === 1 ? '1 Item in Cart' : `${cartCount} Items in Cart`}
+                    {cartCount === 1 ? (isHindi ? '1 उत्पाद कार्ट में' : '1 Item in Cart') : (isHindi ? `${cartCount} उत्पाद कार्ट में` : `${cartCount} Items in Cart`)}
                   </span>
                 </div>
                 <span className="text-slate-400">|</span>

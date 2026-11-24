@@ -18,6 +18,7 @@ import {
   Info,
   Check,
 } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function RazorpaySandboxModal({
   isOpen,
@@ -33,6 +34,7 @@ export default function RazorpaySandboxModal({
   currentKey = 'rzp_test_1DP5mmOlF5G5ag',
   initialView = 'gateway',
 }) {
+  const { isHindi } = useLanguage();
   const [activeTab, setActiveTab] = useState('upi'); // 'upi' | 'card' | 'netbanking'
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState(1);
@@ -212,11 +214,11 @@ export default function RazorpaySandboxModal({
           <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
             <div className="flex items-center gap-1.5 font-medium">
               <Smartphone className="w-3.5 h-3.5 text-slate-400" />
-              <span>Paying as: <strong>{customerPhone}</strong> ({customerName})</span>
+              <span>{isHindi ? 'भुगतानकर्ता:' : 'Paying as:'} <strong>{customerPhone}</strong> ({customerName})</span>
             </div>
             <div className="flex items-center gap-1 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>256-Bit Test Sandbox</span>
+              <span>{isHindi ? '256-बिट टेस्ट सैंडबॉक्स' : '256-Bit Test Sandbox'}</span>
             </div>
           </div>
 
@@ -355,12 +357,12 @@ export default function RazorpaySandboxModal({
 
                   <div className="space-y-1">
                     <h4 className="font-extrabold text-base text-[#142B4A]">
-                      {processingStep === 1 && 'Authorizing Payment Token...'}
-                      {processingStep === 2 && 'Connecting to Kisan Bank Gateway...'}
-                      {processingStep === 3 && 'Confirming Certified Order Dispatch...'}
+                      {processingStep === 1 && (isHindi ? 'भुगतान टोकन अधिकृत किया जा रहा है...' : 'Authorizing Payment Token...')}
+                      {processingStep === 2 && (isHindi ? 'किसान बैंक गेटवे से कनेक्ट किया जा रहा है...' : 'Connecting to Kisan Bank Gateway...')}
+                      {processingStep === 3 && (isHindi ? 'प्रमाणित ऑर्डर प्रेषण की पुष्टि की जा रही है...' : 'Confirming Certified Order Dispatch...')}
                     </h4>
                     <p className="text-xs text-slate-500">
-                      Simulated 256-Bit SSL Encrypted Verification • Do not close
+                      {isHindi ? 'सिम्युलेटेड 256-बिट एसएसएल एन्क्रिप्टेड सत्यापन • विंडो बंद न करें' : 'Simulated 256-Bit SSL Encrypted Verification • Do not close'}
                     </p>
                   </div>
 
@@ -385,7 +387,7 @@ export default function RazorpaySandboxModal({
                       }`}
                     >
                       <QrCode className="w-4 h-4 text-[#FF9F43]" />
-                      <span>UPI &amp; QR</span>
+                      <span>{isHindi ? 'UPI एवं QR' : 'UPI & QR'}</span>
                     </button>
 
                     <button
@@ -398,7 +400,7 @@ export default function RazorpaySandboxModal({
                       }`}
                     >
                       <CreditCard className="w-4 h-4 text-[#FF9F43]" />
-                      <span>Cards</span>
+                      <span>{isHindi ? 'कार्ड' : 'Cards'}</span>
                     </button>
 
                     <button
@@ -411,7 +413,7 @@ export default function RazorpaySandboxModal({
                       }`}
                     >
                       <Building2 className="w-4 h-4 text-[#FF9F43]" />
-                      <span>NetBanking</span>
+                      <span>{isHindi ? 'नेटबैंकिंग' : 'NetBanking'}</span>
                     </button>
                   </div>
 
@@ -648,8 +650,9 @@ export default function RazorpaySandboxModal({
                     >
                       <Lock className="w-4 h-4 text-slate-950" />
                       <span>
-                        Pay ₹{displayAmount.toLocaleString('en-IN')} via{' '}
-                        {activeTab === 'upi' ? 'UPI' : activeTab === 'card' ? 'Card' : selectedBank}
+                        {isHindi
+                          ? `${activeTab === 'upi' ? 'UPI' : activeTab === 'card' ? 'कार्ड' : selectedBank} द्वारा ₹${displayAmount.toLocaleString('en-IN')} का भुगतान करें`
+                          : `Pay ₹${displayAmount.toLocaleString('en-IN')} via ${activeTab === 'upi' ? 'UPI' : activeTab === 'card' ? 'Card' : selectedBank}`}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-950" />
                     </button>

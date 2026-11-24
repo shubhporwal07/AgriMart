@@ -4,11 +4,13 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, LogOut, ShieldCheck, Sparkles, UserCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { buttonTap, iconTap } from '../utils/motion';
 
 export default function AuthAnimationPopup() {
   const pathname = usePathname();
   const { authModal, closeAuthNotice } = useAuth();
+  const { isHindi } = useLanguage();
   const [toastNotice, setToastNotice] = useState(null);
 
   // Check for post-navigation auth notices stored in sessionStorage (e.g., after login/logout redirect)
@@ -169,13 +171,13 @@ export default function AuthAnimationPopup() {
                 id="auth-modal-title"
                 className="font-headline font-black text-lg text-[#0B1B30] mb-1.5 leading-snug"
               >
-                {authModal?.title || (isDuringLogout ? 'Signing Out...' : 'Signing You In...')}
+                {authModal?.title || (isDuringLogout ? (isHindi ? 'लॉग आउट हो रहे हैं...' : 'Signing Out...') : (isHindi ? 'लॉग इन हो रहे हैं...' : 'Signing You In...'))}
               </h3>
               <p className="text-xs text-[#5A6B82] leading-relaxed max-w-xs mx-auto">
                 {authModal?.message ||
                   (isDuringLogout
-                    ? 'Securing your AgriMart account & disconnecting safely...'
-                    : 'Connecting to AgriMart Kisan Hub & securing session...')}
+                    ? (isHindi ? 'आपके एग्रीमार्ट खाते को सुरक्षित किया जा रहा है...' : 'Securing your AgriMart account & disconnecting safely...')
+                    : (isHindi ? 'एग्रीमार्ट किसान हब से सुरक्षित रूप से कनेक्ट किया जा रहा है...' : 'Connecting to AgriMart Kisan Hub & securing session...'))}
               </p>
 
               {/* Animated Progress Bar */}
@@ -197,7 +199,7 @@ export default function AuthAnimationPopup() {
               {/* Security Badge */}
               <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-[#5A6B82] font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Protected by AgriMart Secure Auth</span>
+                <span>{isHindi ? 'एग्रीमार्ट सुरक्षित प्रमाणीकरण द्वारा सुरक्षित' : 'Protected by AgriMart Secure Auth'}</span>
               </div>
             </motion.div>
           </motion.div>
@@ -249,20 +251,20 @@ export default function AuthAnimationPopup() {
                         : 'bg-[#FF9F43]/20 text-[#FF9F43]'
                     }`}
                   >
-                    {toastNotice.type === 'logout' ? '👋 Session Ended' : '🌾 Authenticated'}
+                    {toastNotice.type === 'logout' ? (isHindi ? '👋 सत्र समाप्त' : '👋 Session Ended') : (isHindi ? '🌾 प्रमाणित' : '🌾 Authenticated')}
                   </span>
                 </div>
                 <h4 className="font-headline font-bold text-sm text-white leading-tight truncate">
                   {toastNotice.title ||
                     (toastNotice.type === 'logout'
-                      ? 'Logged Out Successfully'
-                      : 'Welcome Back!')}
+                      ? (isHindi ? 'सफलतापूर्वक लॉग आउट हुए' : 'Logged Out Successfully')
+                      : (isHindi ? 'पुनः स्वागत है!' : 'Welcome Back!'))}
                 </h4>
                 <p className="text-xs text-slate-300 leading-normal line-clamp-1 mt-0.5">
                   {toastNotice.message ||
                     (toastNotice.type === 'logout'
-                      ? 'You have safely signed out of AgriMart. See you again!'
-                      : 'You are now securely signed in to AgriMart.')}
+                      ? (isHindi ? 'आप सुरक्षित रूप से एग्रीमार्ट से बाहर निकल चुके हैं।' : 'You have safely signed out of AgriMart. See you again!')
+                      : (isHindi ? 'अब आप सुरक्षित रूप से एग्रीमार्ट में साइन इन हैं।' : 'You are now securely signed in to AgriMart.'))}
                 </p>
               </div>
 

@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { accordionVariants, buttonTap, EASE } from '../utils/motion';
 
 export default function UnserviceableNotice({ className = '' }) {
   const { location, isServiceable, setLocationModalOpen, primaryHub } = useLocationContext();
+  const { t, isHindi } = useLanguage();
   const [notified, setNotified] = useState(false);
   const [notifyInput, setNotifyInput] = useState('');
 
@@ -36,20 +38,18 @@ export default function UnserviceableNotice({ className = '' }) {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <h2 className="text-xs sm:text-base font-extrabold text-slate-900">
-                    Currently Not Available in Your Area
+                    {t('unserviceable.title', 'Currently Not Available in Your Area')}
                   </h2>
                   <span className="text-[10px] sm:text-[11px] bg-rose-100 text-rose-700 font-extrabold px-2 py-0.5 rounded-full border border-rose-200">
-                    Outside 30 km Hub Zone
+                    {t('unserviceable.badge', 'Outside 30 km Hub Zone')}
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-600 mt-1 max-w-2xl leading-relaxed">
-                  AgriMart farm dispatch is currently live within a <strong>30 km radius</strong> of our{' '}
-                  <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong> (Express &le;10 km, Standard &le;30 km).
-                  Your current selection is{' '}
-                  <span className="font-semibold text-rose-900 underline">
-                    {location.name || location.area || 'Outside Area'}
-                  </span>{' '}
-                  {location.distanceKm ? `(~${location.distanceKm} km away)` : ''}.
+                  {isHindi ? (
+                    <>एग्रीमार्ट फ़ार्म डिलीवरी वर्तमान में हमारे <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong> के <strong>30 किमी के दायरे</strong> में चालू है (एक्सप्रेस ≤10 किमी, मानक ≤30 किमी)। आपका वर्तमान चयनित स्थान <span className="font-semibold text-rose-900 underline">{location.name || location.area || 'दायरे से बाहर'}</span> है {location.distanceKm ? `(~${location.distanceKm} किमी दूर)` : ''}।</>
+                  ) : (
+                    <>AgriMart farm dispatch is currently live within a <strong>30 km radius</strong> of our <strong className="text-[#142B4A]">{primaryHub.name} ({primaryHub.area})</strong> (Express &le;10 km, Standard &le;30 km). Your current selection is <span className="font-semibold text-rose-900 underline">{location.name || location.area || 'Outside Area'}</span> {location.distanceKm ? `(~${location.distanceKm} km away)` : ''}.</>
+                  )}
                 </p>
               </div>
             </div>
@@ -63,7 +63,7 @@ export default function UnserviceableNotice({ className = '' }) {
                 className="flex-1 sm:flex-none bg-[#142B4A] hover:bg-[#1B385D] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-150 flex items-center justify-center gap-1.5"
               >
                 <span className="material-symbols-outlined text-[16px]">edit_location_alt</span>
-                <span>Select Phagwara Address</span>
+                <span>{isHindi ? 'सेवा क्षेत्र का पता चुनें' : 'Select Phagwara Address'}</span>
               </motion.button>
 
               <AnimatePresence mode="wait" initial={false}>
@@ -77,7 +77,7 @@ export default function UnserviceableNotice({ className = '' }) {
                     className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-2.5 rounded-xl flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                    <span>We will notify you!</span>
+                    <span>{isHindi ? 'हम आपको सूचित करेंगे!' : 'We will notify you!'}</span>
                   </motion.div>
                 ) : (
                   <motion.form
@@ -93,7 +93,7 @@ export default function UnserviceableNotice({ className = '' }) {
                       type="text"
                       value={notifyInput}
                       onChange={(e) => setNotifyInput(e.target.value)}
-                      placeholder="Phone or Email"
+                      placeholder={isHindi ? 'फ़ोन या ईमेल' : 'Phone or Email'}
                       className="bg-white border border-slate-300 px-3 py-2 rounded-xl text-xs text-slate-800 outline-none w-32 sm:w-36 focus:border-[#142B4A] focus:ring-2 focus:ring-[#142B4A]/15 transition-all duration-150"
                     />
                     <motion.button
@@ -101,7 +101,7 @@ export default function UnserviceableNotice({ className = '' }) {
                       whileTap={buttonTap}
                       className="bg-white hover:bg-slate-100 text-[#142B4A] border border-slate-300 text-xs font-bold px-3 py-2 rounded-xl transition-colors duration-150 whitespace-nowrap shadow-sm"
                     >
-                      Notify Me
+                      {isHindi ? 'सूचित करें' : 'Notify Me'}
                     </motion.button>
                   </motion.form>
                 )}

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import {
   backdropVariants,
   modalVariants,
@@ -22,6 +23,7 @@ export default function LocationSelectorModal() {
     gpsError,
     presetLocations,
   } = useLocationContext();
+  const { t, isHindi } = useLanguage();
 
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,10 +91,10 @@ export default function LocationSelectorModal() {
                 <span className="material-symbols-outlined text-[#142B4A] text-[26px]">pin_drop</span>
                 <div>
                   <h3 className="font-headline font-extrabold text-lg text-slate-900 leading-tight">
-                    Select Delivery Location
+                    {t('locationModal.title', 'Select Delivery Location')}
                   </h3>
                   <p className="text-[11px] text-[#5A6B82] leading-tight mt-0.5">
-                    Express (&le;10 km) &amp; Standard (&le;30 km) delivery from AgriMart Hub @ LPU
+                    {t('locationModal.sub', 'Express (≤10 km) & Standard (≤30 km) delivery from AgriMart Hub @ LPU')}
                   </p>
                 </div>
               </div>
@@ -118,7 +120,7 @@ export default function LocationSelectorModal() {
                   {location.isServiceable ? 'check_circle' : 'error'}
                 </span>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[11px] font-bold text-[#5A6B82]">Current Selected Area</span>
+                  <span className="text-[11px] font-bold text-[#5A6B82]">{t('locationModal.currentArea', 'Current Selected Area')}</span>
                   <span className="text-xs font-extrabold text-[#142B4A] truncate max-w-[160px] sm:max-w-[260px]">
                     {location.name || location.area}
                   </span>
@@ -131,7 +133,7 @@ export default function LocationSelectorModal() {
                     : 'bg-rose-100 text-rose-800'
                 }`}
               >
-                {location.isServiceable ? 'In 30km Zone' : 'Outside 30km'}
+                {location.isServiceable ? t('locationModal.in30km', 'In 30km Zone') : t('locationModal.outside30km', 'Outside 30km')}
               </span>
             </div>
 
@@ -154,10 +156,10 @@ export default function LocationSelectorModal() {
                   </span>
                   <div className="flex flex-col text-left">
                     <span className="text-xs font-extrabold text-white">
-                      {calculatingGPS ? 'Detecting Your GPS Location...' : 'Detect My Exact Location'}
+                      {calculatingGPS ? t('locationModal.detectingGps', 'Detecting Your GPS Location...') : t('locationModal.detectGps', 'Detect My Exact Location')}
                     </span>
                     <span className="text-[10px] text-slate-300 font-normal">
-                      Automatic GPS coordinates with LPU 30 km serviceability check
+                      {t('locationModal.gpsHint', 'Automatic GPS coordinates with LPU 30 km serviceability check')}
                     </span>
                   </div>
                 </div>
@@ -201,10 +203,10 @@ export default function LocationSelectorModal() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Phagwara Express Hub (Within 10 km)
+                  {isHindi ? 'फगवाड़ा एक्सप्रेस हब (10 किमी के भीतर)' : 'Phagwara Express Hub (Within 10 km)'}
                 </span>
                 <span className="text-[10px] bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded font-bold">
-                  ⚡ Express &amp; Standard Delivery
+                  {isHindi ? '⚡ एक्सप्रेस एवं मानक डिलीवरी' : '⚡ Express & Standard Delivery'}
                 </span>
               </div>
 
@@ -250,10 +252,10 @@ export default function LocationSelectorModal() {
                   <span className="material-symbols-outlined text-[15px] text-rose-500">
                     cancel
                   </span>
-                  Outside 10 km Radius (Test Unserviceable Mode)
+                  {isHindi ? '10 किमी दायरे से बाहर (असेवा योग्य परीक्षण मोड)' : 'Outside 10 km Radius (Test Unserviceable Mode)'}
                 </span>
                 <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold">
-                  Test & Demo
+                  {isHindi ? 'परीक्षण एवं डेमो' : 'Test & Demo'}
                 </span>
               </div>
 
@@ -296,7 +298,7 @@ export default function LocationSelectorModal() {
             <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
               <span className="flex items-center gap-1 font-medium">
                 <span className="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
-                Strict 10 km geofencing from Phagwara hub
+                {isHindi ? 'फगवाड़ा हब से सख्त 10 किमी जियोफेंसिंग' : 'Strict 10 km geofencing from Phagwara hub'}
               </span>
               <motion.button
                 type="button"
@@ -304,7 +306,7 @@ export default function LocationSelectorModal() {
                 onClick={() => setLocationModalOpen(false)}
                 className="text-[#142B4A] hover:underline font-bold"
               >
-                Confirm
+                {isHindi ? 'पुष्टि करें' : 'Confirm'}
               </motion.button>
             </div>
           </motion.div>

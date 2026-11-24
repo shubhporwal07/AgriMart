@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import LocationSelectorModal from './LocationSelectorModal';
 import { ChevronDown } from 'lucide-react';
 import { dropdownVariants, backdropVariants, EASE, buttonTap, iconTap } from '../utils/motion';
@@ -19,6 +20,7 @@ export default function Navbar() {
     deliveryTime,
     setLocationModalOpen,
   } = useLocationContext();
+  const { language, setLanguage, toggleLanguage, isHindi, t, translateCategory } = useLanguage();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -141,8 +143,8 @@ export default function Navbar() {
               <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 truncate">
                 <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#FF9F43] shrink-0">local_shipping</span>
                 <span className="truncate">
-                  <span className="hidden sm:inline">Express Farm Delivery & Certified Inputs | </span>
-                  Flat ₹200 OFF on orders &gt; ₹999 | Code:{' '}
+                  <span className="hidden sm:inline">{isHindi ? 'एक्सप्रेस फ़ार्म डिलीवरी एवं प्रमाणित इनपुट्स | ' : 'Express Farm Delivery & Certified Inputs | '}</span>
+                  {isHindi ? '₹999 से अधिक पर फ्लैट ₹200 की छूट | कोड: ' : 'Flat ₹200 OFF on orders > ₹999 | Code: '}
                   <span className="font-bold tracking-wider text-[#FF9F43] bg-white/10 px-1.5 py-0.5 rounded text-[10px]">
                     KISAN200
                   </span>
@@ -151,15 +153,15 @@ export default function Navbar() {
               <div className="hidden md:flex items-center gap-4 text-slate-200 shrink-0">
                 <a href="tel:18002474627" className="hover:text-white transition-colors duration-150 flex items-center gap-1">
                   <span className="material-symbols-outlined text-[14px] text-[#FF9F43]">support_agent</span>
-                  Kisan Helpline: 1800-AGRI-MART
+                  {t('nav.helpline', 'Kisan Helpline: 1800-AGRI-MART')}
                 </a>
                 <span className="opacity-30">|</span>
                 <Link href="/about-us" className="hover:text-white transition-colors duration-150">
-                  Dealer & FPO Inquiries
+                  {t('nav.dealerInquiries', 'Dealer & FPO Inquiries')}
                 </Link>
                 <span className="opacity-30">|</span>
                 <Link href="/dashboard?category=soil-kits" className="hover:text-white transition-colors duration-150">
-                  Soil Testing Lab
+                  {t('nav.soilLab', 'Soil Testing Lab')}
                 </Link>
               </div>
             </div>
@@ -199,7 +201,7 @@ export default function Navbar() {
               </span>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-semibold text-[#5A6B82]">Farm Dispatch to</span>
+                  <span className="text-[11px] font-semibold text-[#5A6B82]">{t('nav.farmDispatchTo', 'Farm Dispatch to')}</span>
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                       isServiceable
@@ -207,7 +209,7 @@ export default function Navbar() {
                         : 'bg-rose-600 text-white'
                     }`}
                   >
-                    {isServiceable ? '⚡ Rural Express' : 'Outside Reach'}
+                    {isServiceable ? t('nav.ruralExpress', '⚡ Rural Express') : t('nav.outsideReach', 'Outside Reach')}
                   </span>
                 </div>
                 <span className="text-[13px] text-[#263449] font-bold max-w-[170px] truncate">
@@ -228,7 +230,7 @@ export default function Navbar() {
                   value={searchInput}
                   onFocus={() => setSearchFocused(true)}
                   onChange={handleSearchChange}
-                  placeholder="Search hybrid seeds, NPK fertilizers, vermicompost, bio-nutrients..."
+                  placeholder={t('nav.searchPlaceholder', 'Search hybrid seeds, NPK fertilizers, vermicompost, bio-nutrients...')}
                   className="w-full bg-transparent border-none outline-none text-sm text-[#263449] placeholder:text-[#74777E] py-1 pr-20 font-sans"
                 />
                 <AnimatePresence>
@@ -257,7 +259,7 @@ export default function Navbar() {
                   whileTap={buttonTap}
                   className="text-xs bg-[#0B1B30] text-white px-3.5 py-1.5 rounded-lg font-bold hover:bg-[#152B48] transition-colors duration-150 shrink-0 shadow-sm"
                 >
-                  Search
+                  {t('common.search', 'Search')}
                 </motion.button>
               </div>
             </form>
@@ -283,7 +285,7 @@ export default function Navbar() {
                         <span className="material-symbols-outlined text-[16px] text-slate-400 shrink-0">search</span>
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-[#0B1B30] truncate">{item.name}</p>
-                          <p className="text-[10px] text-[#5A6B82] truncate">{item.category}</p>
+                          <p className="text-[10px] text-[#5A6B82] truncate">{translateCategory(item.category)}</p>
                         </div>
                       </div>
                       <span className="font-price text-xs font-extrabold text-[#0B1B30] shrink-0">
@@ -297,7 +299,20 @@ export default function Navbar() {
           </div>
 
           {/* Right Navigation Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            {/* Language Switcher Button */}
+            <motion.button
+              type="button"
+              whileTap={buttonTap}
+              onClick={toggleLanguage}
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl border border-[#CBD5E1]/60 hover:border-[#0B1B30]/30 bg-[#FAF5EB] hover:bg-[#F3ECE0] text-[#0B1B30] transition-all text-xs font-bold"
+              title={isHindi ? 'Switch to English' : 'हिंदी में बदलें'}
+              aria-label={isHindi ? 'Switch to English' : 'Switch to Hindi'}
+            >
+              <span className="material-symbols-outlined text-[16px] sm:text-[18px] text-[#FF9F43]">translate</span>
+              <span className="font-extrabold text-[11px] sm:text-xs">{isHindi ? 'EN' : 'हिंदी'}</span>
+            </motion.button>
+
             {/* Wishlist / Favorites */}
             <Link
               href="/wishlist"
@@ -365,7 +380,7 @@ export default function Navbar() {
                   title="Sign In"
                 >
                   <span className="material-symbols-outlined text-[20px] sm:text-[18px]">account_circle</span>
-                  <span className="hidden sm:inline">Sign In</span>
+                  <span className="hidden sm:inline">{t('nav.login', 'Sign In')}</span>
                 </Link>
               )}
 
@@ -396,7 +411,7 @@ export default function Navbar() {
                       </div>
                       <p className="text-[11px] text-slate-500 truncate mt-0.5">{user?.email}</p>
                       <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-emerald-700">
-                        <span>View Kisan Profile</span>
+                        <span>{t('profile.title', 'View Kisan Profile')}</span>
                         <span className="material-symbols-outlined text-[12px]">arrow_forward</span>
                       </div>
                     </Link>
@@ -408,7 +423,7 @@ export default function Navbar() {
                       >
                         <span className="flex items-center gap-2.5">
                           <span className="material-symbols-outlined text-[17px] text-[#16A34A]">badge</span>
-                          <span>My Kisan Profile</span>
+                          <span>{t('profile.title', 'My Kisan Profile')}</span>
                         </span>
                         <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1 py-0.2 rounded">
                           ID
@@ -420,7 +435,7 @@ export default function Navbar() {
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0B1B30] transition-colors duration-150"
                       >
                         <span className="material-symbols-outlined text-[17px] text-[#5A6B82]">local_shipping</span>
-                        <span>My Orders</span>
+                        <span>{t('nav.myOrders', 'My Orders')}</span>
                       </Link>
                       <Link
                         href="/wishlist"
@@ -503,7 +518,9 @@ export default function Navbar() {
               </div>
               <div className="hidden sm:flex flex-col text-left">
                 <span className="text-[10px] text-slate-300 leading-tight">
-                  {safeCartCount === 1 ? '1 item' : `${safeCartCount} items`}
+                  {safeCartCount === 1
+                    ? (isHindi ? '1 उत्पाद' : '1 item')
+                    : (isHindi ? `${safeCartCount} उत्पाद` : `${safeCartCount} items`)}
                 </span>
                 <span className="font-price text-xs text-white leading-tight font-extrabold">
                   ₹{safeCartTotal}
@@ -587,7 +604,7 @@ export default function Navbar() {
                 className="flex items-center gap-1 text-xs font-extrabold text-[#0B1B30] shrink-0 hover:text-[#E27B12] transition-colors duration-150"
               >
                 <span className="material-symbols-outlined text-[17px]">grid_view</span>
-                <span>All Agri Products</span>
+                <span>{t('nav.allCategories', 'All Agri Products')}</span>
               </Link>
               <span className="text-slate-300">|</span>
 
@@ -598,7 +615,7 @@ export default function Navbar() {
                   prefetch={true}
                   className="text-xs font-semibold text-[#5A6B82] hover:text-[#0B1B30] whitespace-nowrap transition-colors duration-150 shrink-0"
                 >
-                  {cat.label}
+                  {translateCategory(cat.label)}
                 </Link>
               ))}
             </nav>
@@ -675,6 +692,34 @@ export default function Navbar() {
                   </Link>
                 )}
 
+                {/* Mobile Language Switcher */}
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[#FF9F43]">translate</span>
+                    <span className="text-xs font-bold text-[#0B1B30]">{t('nav.changeLanguage', 'Language / भाषा')}</span>
+                  </div>
+                  <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200">
+                    <button
+                      type="button"
+                      onClick={() => setLanguage('en')}
+                      className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
+                        !isHindi ? 'bg-[#0B1B30] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      EN
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setLanguage('hi')}
+                      className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
+                        isHindi ? 'bg-[#0B1B30] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      हिंदी
+                    </button>
+                  </div>
+                </div>
+
                 <div className="pb-2 border-b border-slate-100 flex items-center justify-between">
                   <button
                     type="button"
@@ -700,7 +745,7 @@ export default function Navbar() {
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#5A6B82] block px-1">Agri Input Aisles</span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#5A6B82] block px-1">{t('nav.allCategories', 'Agri Input Aisles')}</span>
                   {categories.map((cat) => (
                     <Link
                       key={cat.slug}
@@ -708,7 +753,7 @@ export default function Navbar() {
                       onClick={() => setMobileMenuOpen(false)}
                       className="block px-2 py-1.5 text-sm font-medium text-slate-800 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
                     >
-                      {cat.label}
+                      {translateCategory(cat.label)}
                     </Link>
                   ))}
                 </div>
