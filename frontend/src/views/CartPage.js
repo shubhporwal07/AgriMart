@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProducts } from '../contexts/ProductContext';
 import { useLocationContext } from '../contexts/LocationContext';
 import { useCoupons } from '../contexts/CouponContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import Footer from '../components/Footer';
 import Toast from '../components/Toast';
 import RazorpaySandboxModal from '../components/RazorpaySandboxModal';
@@ -54,6 +55,7 @@ export default function CartPage() {
     setLocationModalOpen,
     primaryHub,
   } = useLocationContext();
+  const { t, isHindi } = useLanguage();
 
   const [deliveryType, setDeliveryType] = useState('express'); // 'express' | 'standard'
   const [deliveryInstruction, setDeliveryInstruction] = useState('');
@@ -734,9 +736,11 @@ export default function CartPage() {
           <div className="w-24 h-24 rounded-full bg-[#FF9F43]/15 text-[#E27B12] flex items-center justify-center mx-auto mb-6">
             <ShoppingBag className="w-12 h-12" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#142B4A] mb-3">Your Farm Basket is Empty</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#142B4A] mb-3">
+            {isHindi ? 'आपकी कार्ट खाली है' : 'Your Farm Basket is Empty'}
+          </h2>
           <p className="text-slate-600 text-sm sm:text-base mb-8 max-w-md mx-auto">
-            You haven't added any certified hybrid seeds, fertilizers, or farm inputs to your basket yet.
+            {isHindi ? 'आपने अभी तक अपनी टोकरी में कोई प्रमाणित हाइब्रिड बीज, उर्वरक या कृषि उत्पाद नहीं जोड़े हैं।' : "You haven't added any certified hybrid seeds, fertilizers, or farm inputs to your basket yet."}
           </p>
           <Link
             href="/dashboard"
@@ -744,7 +748,7 @@ export default function CartPage() {
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-bold rounded-xl transition-all duration-150 shadow-lg shadow-[#FF9F43]/20 active:scale-95"
           >
             <Zap className="w-4 h-4 fill-current" />
-            Explore Certified Farm Inputs
+            {isHindi ? 'प्रमाणित कृषि उत्पाद देखें' : 'Explore Certified Farm Inputs'}
           </Link>
         </motion.div>
         <Footer />
@@ -1202,18 +1206,18 @@ export default function CartPage() {
             {/* Bill Details Card */}
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
               <h2 className="text-lg font-extrabold text-[#142B4A] pb-3 border-b border-slate-100">
-                Bill Details
+                {t('cart.orderSummary', 'Bill Details')}
               </h2>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between text-slate-600">
-                  <span>Items Total (MRP)</span>
+                  <span>{t('cart.mrpTotal', 'Items Total (MRP)')}</span>
                   <span className="font-medium text-slate-800">{formatPrice(mrpTotal)}</span>
                 </div>
 
                 {savings > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
-                    <span>Product Discount</span>
+                    <span>{isHindi ? 'उत्पाद छूट' : 'Product Discount'}</span>
                     <span>− {formatPrice(savings)}</span>
                   </div>
                 )}
@@ -1253,8 +1257,8 @@ export default function CartPage() {
 
                 <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
                   <div>
-                    <span className="text-base font-extrabold text-[#142B4A]">To Pay</span>
-                    <p className="text-[11px] text-slate-400">Inclusive of all taxes</p>
+                    <span className="text-base font-extrabold text-[#142B4A]">{t('cart.grandTotal', 'To Pay')}</span>
+                    <p className="text-[11px] text-slate-400">{isHindi ? 'सभी कर सहित' : 'Inclusive of all taxes'}</p>
                   </div>
                   <span className="text-2xl font-black text-[#142B4A]">{formatPrice(grandTotal)}</span>
                 </div>
@@ -1294,7 +1298,7 @@ export default function CartPage() {
                   disabled={paymentLoading}
                   className="w-full py-4 bg-[#FF9F43] hover:bg-[#E27B12] text-slate-950 font-black rounded-2xl transition shadow-lg shadow-[#FF9F43]/25 flex items-center justify-center gap-2 text-base"
                 >
-                  Proceed to Delivery &amp; Payment
+                  {isHindi ? 'डिलीवरी एवं भुगतान के लिए आगे बढ़ें' : 'Proceed to Delivery & Payment'}
                   <Zap className="w-4 h-4 fill-current" />
                 </button>
               )}

@@ -3,9 +3,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { buttonTap, EASE } from '../utils/motion';
+import { useLanguage } from '../contexts/LanguageContext';
 import FeedbackWidget from './FeedbackWidget';
 
 export default function Footer() {
+  const { t, isHindi } = useLanguage();
   const [contact, setContact] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -32,24 +34,24 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-[#5A6B82] leading-relaxed">
-              High-Yield Seeds, Certified Fertilizers & Farm Inputs. Empowering Indian agriculture with lab-verified inputs direct to your farm gate.
+              {t('footer.tagline', 'High-Yield Seeds, Certified Fertilizers & Farm Inputs. Empowering Indian agriculture with lab-verified inputs direct to your farm gate.')}
             </p>
 
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="inline-flex items-center gap-1 bg-white text-[#142B4A] px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-[#CBD5E1]/30">
                 <span className="material-symbols-outlined text-[16px] text-[#FF9F43]">verified</span>
-                Seed Act 1966 Certified
+                {t('footer.seedActNotice', 'Seed Act 1966 Certified')}
               </span>
               <span className="inline-flex items-center gap-1 bg-white text-[#A74E00] px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-[#CBD5E1]/30">
                 <span className="material-symbols-outlined text-[16px]">eco</span>
-                FCO 1985 Compliant
+                {t('footer.fcoNotice', 'FCO 1985 Compliant')}
               </span>
             </div>
 
             <div className="flex flex-col gap-1.5 text-[#5A6B82] text-xs pt-2">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px] text-[#142B4A]">call</span>
-                <span className="font-semibold">1800-AGRI-MART (Toll-Free Kisan Help)</span>
+                <span className="font-semibold">{t('footer.tollFreeHelp', '1800-AGRI-MART (Toll-Free Kisan Help)')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[16px] text-[#142B4A]">mail</span>
@@ -61,26 +63,26 @@ export default function Footer() {
           {/* Kisan Advisory & Services */}
           <div>
             <h4 className="font-headline text-base text-[#142B4A] font-extrabold mb-4">
-              Kisan Advisory & Services
+              {t('footer.advisoryServices', 'Kisan Advisory & Services')}
             </h4>
             <ul className="flex flex-col gap-2.5 text-sm text-[#5A6B82]">
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/about-us">Consult Crop Agronomist</Link>
+                <Link href="/about-us">{t('footer.cropAgronomist', 'Consult Crop Agronomist')}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/dashboard?category=soil-kits">Soil Health Card Diagnostic</Link>
+                <Link href="/dashboard?category=soil-kits">{t('footer.soilCardDiagnostic', 'Soil Health Card Diagnostic')}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/dashboard?category=chemical-npk">Fertilizer Dosage Calculator</Link>
+                <Link href="/dashboard?category=chemical-npk">{t('footer.fertilizerDosageCalc', 'Fertilizer Dosage Calculator')}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/about-us">FPO & Bulk Mandi Supply</Link>
+                <Link href="/about-us">{t('footer.fpoSupply', 'FPO & Bulk Mandi Supply')}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/dashboard?category=bio-pesticides">Seasonal Pest & Crop Guide</Link>
+                <Link href="/dashboard?category=bio-pesticides">{t('footer.pestGuide', 'Seasonal Pest & Crop Guide')}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/about-us">Our Agritech Mission</Link>
+                <Link href="/about-us">{t('footer.mission', 'Our Agritech Mission')}</Link>
               </li>
             </ul>
           </div>
@@ -88,23 +90,23 @@ export default function Footer() {
           {/* Customer & Village Care */}
           <div>
             <h4 className="font-headline text-base text-[#142B4A] font-extrabold mb-4">
-              Customer & Village Care
+              {t('footer.customerCare', 'Customer & Village Care')}
             </h4>
             <ul className="flex flex-col gap-2.5 text-sm text-[#5A6B82]">
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/wishlist">My Wishlist & Saved Inputs</Link>
+                <Link href="/wishlist">{isHindi ? 'मेरी विशलिस्ट एवं सुरक्षित उत्पाद' : 'My Wishlist & Saved Inputs'}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/orders">Track Dispatch & Logistics</Link>
+                <Link href="/orders">{isHindi ? 'डिलीवरी एवं ट्रैकिंग' : 'Track Dispatch & Logistics'}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/return-policy">Return & Seed Replacement Policy</Link>
+                <Link href="/return-policy">{isHindi ? 'बीज वापसी एवं प्रतिस्थापन नीति' : 'Return & Seed Replacement Policy'}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/privacy-policy">Privacy & Farmer Data Security</Link>
+                <Link href="/privacy-policy">{isHindi ? 'गोपनीयता एवं किसान डेटा सुरक्षा' : 'Privacy & Farmer Data Security'}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
-                <Link href="/terms-of-service">Terms & FCO Conditions</Link>
+                <Link href="/terms-of-service">{isHindi ? 'नियम एवं एफसीओ शर्तें' : 'Terms & FCO Conditions'}</Link>
               </li>
               <li className="hover:text-[#142B4A] transition-colors">
                 <Link href="/about-us">Rural & Farm Delivery Centers</Link>

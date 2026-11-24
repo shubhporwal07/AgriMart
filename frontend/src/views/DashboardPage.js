@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocationContext } from '../contexts/LocationContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import Navbar from '../components/Navbar';
 import UnserviceableNotice from '../components/UnserviceableNotice';
 import SidebarFilters from '../components/SidebarFilters';
@@ -32,6 +33,7 @@ export default function DashboardPage() {
     deliveryTime,
     setLocationModalOpen,
   } = useLocationContext();
+  const { t, isHindi } = useLanguage();
 
   const {
     applyNavCategorySlug,
@@ -116,7 +118,7 @@ export default function DashboardPage() {
                     </span>
                   </span>
                   <span className="text-xs text-[#263449]">
-                    <strong className="font-extrabold text-[#A74E00]">KISAN200 Active:</strong> Extra ₹200 subsidy savings on certified seeds and organic bio-fertilizers above ₹999
+                    <strong className="font-extrabold text-[#A74E00]">{isHindi ? 'KISAN200 सक्रिय:' : 'KISAN200 Active:'}</strong> {isHindi ? '₹999 से अधिक के प्रमाणित बीज एवं जैविक उर्वरकों पर ₹200 की अतिरिक्त बचत' : 'Extra ₹200 subsidy savings on certified seeds and organic bio-fertilizers above ₹999'}
                   </span>
                   <span className="hidden sm:inline-flex items-center text-[#5A6B82] text-xs">
                     • Direct dispatch from accredited research centers

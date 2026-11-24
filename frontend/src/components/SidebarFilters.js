@@ -2,10 +2,12 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../contexts/ProductContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { accordionVariants, buttonTap, EASE } from '../utils/motion';
 
 export default function SidebarFilters({ className = '' }) {
   const { filters, updateFilter, clearAllFilters, products, categories: contextCategories } = useProducts();
+  const { t, translateCategory, isHindi } = useLanguage();
 
   const [expandedSections, setExpandedSections] = useState({
     categories: true,
@@ -56,17 +58,17 @@ export default function SidebarFilters({ className = '' }) {
   }, [activeCategoryNames, products]);
 
   const pricePresets = [
-    { id: 'under-200', label: 'Under ₹200' },
-    { id: '200-500', label: '₹200–₹500' },
-    { id: '500-1000', label: '₹500–₹1,000' },
-    { id: 'above-1000', label: '₹1,000+' },
+    { id: 'under-200', label: isHindi ? '₹200 से कम' : 'Under ₹200' },
+    { id: '200-500', label: isHindi ? '₹200–₹500' : '₹200–₹500' },
+    { id: '500-1000', label: isHindi ? '₹500–₹1,000' : '₹500–₹1,000' },
+    { id: 'above-1000', label: isHindi ? '₹1,000+' : '₹1,000+' },
   ];
 
   const dietaryTags = [
-    { id: 'icar', label: 'ICAR & NSC Certified', icon: 'verified' },
-    { id: 'npop', label: 'NPOP 100% Organic', icon: 'eco' },
-    { id: 'water-soluble', label: '100% Water Soluble (Drip)', icon: 'water_drop' },
-    { id: 'bio-certified', label: 'FCO 1985 Compliant', icon: 'shield' },
+    { id: 'icar', label: isHindi ? 'आईसीएआर एवं एनएससी प्रमाणित' : 'ICAR & NSC Certified', icon: 'verified' },
+    { id: 'npop', label: isHindi ? 'एनपीओपी 100% जैविक' : 'NPOP 100% Organic', icon: 'eco' },
+    { id: 'water-soluble', label: isHindi ? '100% जल में घुलनशील (ड्रिप)' : '100% Water Soluble (Drip)', icon: 'water_drop' },
+    { id: 'bio-certified', label: isHindi ? 'एफसीओ 1985 अनुपालन' : 'FCO 1985 Compliant', icon: 'shield' },
   ];
 
   const selectedCategories = Array.isArray(filters.category) ? filters.category : [];
@@ -88,7 +90,7 @@ export default function SidebarFilters({ className = '' }) {
       <div className="flex items-center justify-between pb-4 border-b border-slate-100">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-[#142B4A] text-[20px]">tune</span>
-          <h2 className="font-headline text-base text-[#142B4A] font-extrabold">Filters</h2>
+          <h2 className="font-headline text-base text-[#142B4A] font-extrabold">{t('filters.title', 'Filters')}</h2>
           <AnimatePresence>
             {activeCount > 0 && (
               <motion.span
@@ -99,7 +101,7 @@ export default function SidebarFilters({ className = '' }) {
                 transition={{ duration: 0.15, ease: EASE.out }}
                 className="bg-[#FFE8D6] text-[#A74E00] text-[11px] font-bold px-2 py-0.5 rounded-full"
               >
-                {activeCount} Active
+                {activeCount} {isHindi ? 'सक्रिय' : 'Active'}
               </motion.span>
             )}
           </AnimatePresence>
@@ -115,7 +117,7 @@ export default function SidebarFilters({ className = '' }) {
               onClick={clearAllFilters}
               className="text-xs text-[#E27B12] hover:text-[#A74E00] font-bold tracking-wide transition-colors duration-150"
             >
-              Clear All
+              {t('filters.clearAll', 'Clear All')}
             </motion.button>
           )}
         </AnimatePresence>
@@ -124,8 +126,8 @@ export default function SidebarFilters({ className = '' }) {
       {/* In Stock Only Switch */}
       <div className="my-4 p-3 bg-[#F7F9FC] rounded-xl flex items-center justify-between border border-[#CBD5E1]/40 transition-colors duration-150 hover:border-[#CBD5E1]">
         <div className="flex flex-col">
-          <span className="text-xs text-[#142B4A] font-bold">In Stock Only</span>
-          <span className="text-[11px] text-[#5A6B82]">Hide sold-out essentials</span>
+          <span className="text-xs text-[#142B4A] font-bold">{t('filters.inStockOnly', 'In Stock Only')}</span>
+          <span className="text-[11px] text-[#5A6B82]">{isHindi ? 'स्टॉक से बाहर उत्पाद छुपाएं' : 'Hide sold-out essentials'}</span>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -184,7 +186,7 @@ export default function SidebarFilters({ className = '' }) {
                             className="w-4 h-4 rounded text-[#142B4A] focus:ring-[#142B4A] border-slate-300 transition-colors duration-150 cursor-pointer"
                           />
                           <span className={`transition-colors duration-150 ${isChecked ? 'font-bold text-[#142B4A]' : ''}`}>
-                            {cat.name}
+                            {translateCategory(cat.name)}
                           </span>
                         </span>
                         <span className="text-[10px] text-[#5A6B82] bg-slate-100 px-1.5 py-0.2 rounded-full">
@@ -208,7 +210,7 @@ export default function SidebarFilters({ className = '' }) {
             aria-expanded={expandedSections.price}
           >
             <h3 className="font-headline text-xs font-bold text-[#142B4A] uppercase tracking-wider group-hover:text-[#E27B12] transition-colors duration-150">
-              Price Range
+              {t('filters.priceTitle', 'Price Range')}
             </h3>
             <motion.span
               animate={{ rotate: expandedSections.price ? 180 : 0 }}
@@ -367,7 +369,7 @@ export default function SidebarFilters({ className = '' }) {
                               star
                             </span>
                             <span className={`font-bold ${isSelected ? 'text-[#142B4A]' : 'text-[#263449]'}`}>
-                              {r.toFixed(1)} & above
+                              {r.toFixed(1)} {isHindi ? 'एवं अधिक' : '& above'}
                             </span>
                           </span>
                         </span>

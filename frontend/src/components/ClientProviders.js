@@ -6,6 +6,7 @@ import { AuthProvider } from '../contexts/AuthContext';
 import { LocationProvider } from '../contexts/LocationContext';
 import { ProductProvider, useProducts } from '../contexts/ProductContext';
 import { CouponProvider } from '../contexts/CouponContext';
+import { LanguageProvider } from '../contexts/LanguageContext';
 import { PageSkeletonLoader } from './SkeletonLoader';
 import CartAddedPopup from './CartAddedPopup';
 import NavigationProgressBar from './NavigationProgressBar';
@@ -93,21 +94,23 @@ function NoticeRenderer() {
 export default function ClientProviders({ children }) {
   return (
     <MotionConfig reducedMotion="user">
-      <AuthProvider>
-        <LocationProvider>
-          <ProductProvider>
-            <CouponProvider>
-              <NavigationProgressBar />
-              <NoticeRenderer />
-              <AuthAnimationPopup />
-              <AnnouncementPopup />
-              <Suspense fallback={<PageSkeletonLoader />}>
-                {children}
-              </Suspense>
-            </CouponProvider>
-          </ProductProvider>
-        </LocationProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <LocationProvider>
+            <ProductProvider>
+              <CouponProvider>
+                <NavigationProgressBar />
+                <NoticeRenderer />
+                <AuthAnimationPopup />
+                <AnnouncementPopup />
+                <Suspense fallback={<PageSkeletonLoader />}>
+                  {children}
+                </Suspense>
+              </CouponProvider>
+            </ProductProvider>
+          </LocationProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </MotionConfig>
   );
 }

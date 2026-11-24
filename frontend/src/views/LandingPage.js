@@ -9,6 +9,7 @@ import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import ProductDetailsModal from '../components/ProductDetailsModal';
 import { useProducts } from '../contexts/ProductContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { floatingBarVariants, sectionRevealProps, buttonTap, iconTap, EASE } from '../utils/motion';
 import { realtimeDb } from '../config/firebase';
 import { ref as rtdbRef, onValue } from 'firebase/database';
@@ -25,6 +26,7 @@ export default function LandingPage() {
     removeFromWishlist,
     homeShowcase,
   } = useProducts();
+  const { t, isHindi, translateCategory } = useLanguage();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [verifiedReviews, setVerifiedReviews] = useState([]);
   const [mounted, setMounted] = useState(false);
@@ -158,13 +160,13 @@ export default function LandingPage() {
               {/* Center Typography */}
               <div className="relative z-10 my-4 sm:my-6 max-w-xl">
                 <p className="text-[11px] sm:text-xs uppercase tracking-widest text-[#FF9F43] font-extrabold mb-1.5 sm:mb-2">
-                  High-Yield Seeds, Certified Fertilizers & Farm Inputs
+                  {isHindi ? 'उच्च-उत्पादन बीज, प्रमाणित उर्वरक एवं कृषि इनपुट्स' : 'High-Yield Seeds, Certified Fertilizers & Farm Inputs'}
                 </p>
                 <h1 className="font-headline text-2xl sm:text-4xl lg:text-5xl text-white leading-tight font-extrabold tracking-tight">
-                  Certified Seeds & High-Grade Fertilizers, Delivered Direct to Your Farm
+                  {isHindi ? 'प्रमाणित बीज एवं उच्च गुणवत्ता वाले उर्वरक, सीधे आपके खेत तक' : 'Certified Seeds & High-Grade Fertilizers, Delivered Direct to Your Farm'}
                 </h1>
                 <p className="text-xs sm:text-base text-slate-200 mt-2 sm:mt-3 leading-relaxed max-w-lg">
-                  Government-certified hybrid seeds, organic compost, NPK blends, and soil nutrition solutions trusted by 250,000+ farmers across India.
+                  {isHindi ? 'सरकारी प्रमाणित हाइब्रिड बीज, जैविक खाद, एनपीके मिश्रण और मृदा पोषण समाधान, पूरे भारत में 2,50,000+ किसानों का विश्वास।' : 'Government-certified hybrid seeds, organic compost, NPK blends, and soil nutrition solutions trusted by 250,000+ farmers across India.'}
                 </p>
 
                 {/* CTAs */}
@@ -174,7 +176,7 @@ export default function LandingPage() {
                     prefetch={true}
                     className="bg-[#FF9F43] text-[#142B4A] hover:bg-[#ffb067] text-xs sm:text-sm px-5 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all flex items-center justify-center gap-1.5 shadow-lg font-headline font-extrabold transform active:scale-95 group text-center"
                   >
-                    <span>Shop High-Yield Seeds</span>
+                    <span>{isHindi ? 'प्रमाणित बीज खरीदें' : 'Shop High-Yield Seeds'}</span>
                     <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
                       arrow_forward
                     </span>
@@ -183,9 +185,9 @@ export default function LandingPage() {
                     href="#flash-deals"
                     className="inline-flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-full transition-all border border-white/15 font-semibold text-center"
                   >
-                    <span>Explore Fertilizers</span>
+                    <span>{isHindi ? 'उर्वरक एवं खाद देखें' : 'Explore Fertilizers'}</span>
                     <span className="bg-[#FF9F43] text-[#142B4A] text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0">
-                      Subsidized & Bulk
+                      {isHindi ? 'सब्सिडी एवं थोक' : 'Subsidized & Bulk'}
                     </span>
                   </a>
                 </div>
@@ -385,7 +387,7 @@ export default function LandingPage() {
                   </span>
                 </div>
                 <h4 className="font-headline text-xs font-bold text-[#142B4A] leading-tight">
-                  {tile.name}
+                  {translateCategory(tile.name)}
                 </h4>
                 <span className="text-[10px] text-[#5A6B82] mt-0.5">{tile.count}</span>
               </Link>
