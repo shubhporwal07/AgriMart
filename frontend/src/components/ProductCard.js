@@ -200,12 +200,16 @@ export default function ProductCard({
 
         {/* Delivery Serviceability Badge */}
         {isServiceable ? (
-          <span className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 bg-white/95 text-[#142B4A] text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md flex items-center gap-0.5 sm:gap-1 shadow-sm border border-slate-100 transition-opacity duration-200 max-w-[calc(100%-12px)] truncate">
+          <span className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 bg-white/95 text-[#142B4A] text-[8.5px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md flex items-center gap-0.5 sm:gap-1 shadow-sm border border-slate-100 transition-opacity duration-200 max-w-[calc(100%-10px)]">
             <span className="material-symbols-outlined text-[11px] sm:text-[13px] text-[#FF9F43] shrink-0">local_shipping</span>
-            <span className="truncate">{product.deliveryTime || '⚡ Fast Dispatch'}</span>
+            <span className="truncate">
+              {product.deliveryTime
+                ? product.deliveryTime.replace('Fast Farm Dispatch', 'Fast Dispatch')
+                : '⚡ Fast Dispatch'}
+            </span>
           </span>
         ) : (
-          <span className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 bg-rose-600/95 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md flex items-center gap-0.5 sm:gap-1 shadow-sm max-w-[calc(100%-12px)] truncate">
+          <span className="absolute bottom-1.5 sm:bottom-2 left-1.5 sm:left-2 bg-rose-600/95 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-md flex items-center gap-0.5 sm:gap-1 shadow-sm max-w-[calc(100%-10px)] truncate">
             <span className="material-symbols-outlined text-[10px] sm:text-[11px] shrink-0">location_off</span>
             <span className="truncate">Unavailable</span>
           </span>
@@ -231,7 +235,7 @@ export default function ProductCard({
             <span className="text-[#74777E] text-[10px] sm:text-[11px] hidden xs:inline sm:inline">({product.reviewCount})</span>
           )}
         </div>
-        <span className="text-[10px] sm:text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-1.5 sm:px-2 py-0.5 rounded-md max-w-[95px] sm:max-w-[130px] flex items-center gap-0.5 sm:gap-1 shrink-0 overflow-hidden">
+        <span className="text-[10px] sm:text-[11px] font-bold text-[#142B4A] bg-amber-50/80 border border-amber-200/60 px-1.5 sm:px-2 py-0.5 rounded-md max-w-[110px] sm:max-w-[135px] flex items-center gap-0.5 sm:gap-1 shrink-0 overflow-hidden">
           <span className="shrink-0 text-[10px] sm:text-xs">
             {/\b(ml|l|ltr|litres?|liters?)\b/i.test(product.unit || product.packSize || '')
               ? '🧪'
@@ -357,7 +361,7 @@ export default function ProductCard({
               transition={{ duration: DURATION.fast, ease: EASE.out }}
               onClick={handleAdd}
               aria-label={isHindi ? 'कार्ट में जोड़ें' : 'Add to Cart'}
-              className="bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white font-headline text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm shrink-0"
+              className="bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white font-headline text-[10px] sm:text-xs px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm shrink-0"
             >
               {isHindi ? 'जोड़ें' : 'ADD'}
             </motion.button>
