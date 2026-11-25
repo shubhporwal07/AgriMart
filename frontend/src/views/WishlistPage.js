@@ -205,7 +205,7 @@ export default function WishlistPage() {
                           type="button"
                           whileTap={buttonTap}
                           onClick={() => handleAddToCart(product)}
-                          className={`font-headline text-xs px-3.5 py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm ${
+                          className={`font-headline text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg font-bold transition-colors duration-150 shadow-sm ${
                             isAdded
                               ? 'bg-emerald-600 text-white border-2 border-emerald-600'
                               : 'bg-white border-2 border-[#142B4A] text-[#142B4A] hover:bg-[#142B4A] hover:text-white'
