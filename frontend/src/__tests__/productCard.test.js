@@ -50,4 +50,14 @@ describe('ProductCard Component', () => {
     const addButton = screen.getByRole('button', { name: /add to cart/i });
     expect(addButton).toBeInTheDocument();
   });
+
+  it('compacts long delivery time labels on mobile cards to avoid truncation', () => {
+    const longDeliveryProduct = {
+      ...sampleProduct,
+      deliveryTime: '⚡ Fast Farm Dispatch',
+    };
+    render(<ProductCard product={longDeliveryProduct} onSelectProduct={vi.fn()} />);
+
+    expect(screen.getByText('⚡ Fast Dispatch')).toBeInTheDocument();
+  });
 });

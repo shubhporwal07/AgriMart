@@ -379,7 +379,7 @@ export default function LandingPage() {
               <Link
                 key={tile.name}
                 href={`/dashboard?category=${tile.slug}`}
-                className={`group flex flex-col items-center text-center p-4 rounded-2xl ${tile.bg} hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 ease-out border border-[#CBD5E1]/30`}
+                className={`group flex flex-col items-center justify-between text-center p-3.5 sm:p-4 rounded-2xl ${tile.bg} hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 ease-out border border-[#CBD5E1]/30 min-h-[145px] sm:min-h-[155px]`}
               >
                 <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 shadow-inner group-hover:scale-105 transition-transform duration-200 ease-out">
                   <span className={`material-symbols-outlined ${tile.text} text-[28px]`}>
@@ -417,15 +417,15 @@ export default function LandingPage() {
                 </span>
               </div>
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-headline text-lg sm:text-2xl font-extrabold text-[#142B4A] truncate">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="font-headline text-lg sm:text-2xl font-extrabold text-[#142B4A]">
                     {t('landing.flashDealsTitle', "Today's Kisan Sowing Deals")}
                   </h2>
                   <span className="bg-[#FF9F43] text-[#142B4A] text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider animate-pulse shrink-0">
                     Live
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-[#5A6B82] mt-0.5 truncate">
+                <p className="text-[11px] sm:text-xs text-[#5A6B82] mt-0.5 leading-snug">
                   {t('landing.flashDealsSub', 'Subsidized direct-to-farm inputs with batch lab reports')}
                 </p>
               </div>
@@ -520,72 +520,70 @@ export default function LandingPage() {
                   onClick={() => setSelectedProduct(item)}
                   className="bg-white text-[#263449] rounded-xl sm:rounded-2xl p-2.5 sm:p-4 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 ease-out flex flex-col justify-between group border border-[#CBD5E1]/30 cursor-pointer min-w-0"
                 >
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#EDF2F7] mb-3">
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#EDF2F7] mb-2 sm:mb-3">
                     <img
                       src={item.imageUrl}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
                     />
-                    <span className="absolute top-2 left-2 bg-[#142B4A] text-white text-[9px] px-2 py-0.5 rounded font-bold uppercase">
+                    <span className="absolute top-2 left-2 bg-[#142B4A] text-white text-[9px] px-2 py-0.5 rounded font-bold uppercase shadow-sm">
                       {isHindi ? 'एफसीओ प्रमाणित' : 'FCO Certified'}
                     </span>
+                    <motion.button
+                      type="button"
+                      whileTap={iconTap}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isInWishlist(item.id)) {
+                          removeFromWishlist(item.id);
+                        } else {
+                          addToWishlist(item);
+                        }
+                      }}
+                      className={`absolute top-2 right-2 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-150 shadow-xs border z-10 ${
+                        isInWishlist(item.id)
+                          ? 'bg-rose-50 border-rose-200 text-rose-500 hover:bg-rose-100'
+                          : 'bg-white/90 border-slate-200/80 text-slate-400 hover:text-rose-500 hover:bg-white hover:border-rose-200'
+                      }`}
+                      title={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                      aria-label={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
+                    >
+                      <motion.span
+                        key={isInWishlist(item.id) ? 'filled' : 'outline'}
+                        animate={{ scale: isInWishlist(item.id) ? [1, 1.25, 1] : 1 }}
+                        transition={{ duration: 0.22, ease: EASE.out }}
+                        className="material-symbols-outlined text-[16px] sm:text-[18px] flex items-center justify-center leading-none"
+                        style={isInWishlist(item.id) ? { fontVariationSettings: "'FILL' 1" } : {}}
+                      >
+                        favorite
+                      </motion.span>
+                    </motion.button>
                   </div>
-                  <div>
-                    <span className="text-[11px] text-[#5A6B82]">{item.unit}</span>
-                    <h4 className="font-headline text-sm font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 mt-0.5 line-clamp-1">
+                  <div className="flex-1 flex flex-col">
+                    <span className="text-[10px] sm:text-[11px] text-[#5A6B82] font-semibold">{item.unit}</span>
+                    <h4 className="font-headline text-xs sm:text-sm font-bold text-[#142B4A] group-hover:text-[#E27B12] transition-colors duration-150 mt-0.5 line-clamp-2 min-h-[32px] sm:min-h-[38px] leading-snug">
                       {item.name}
                     </h4>
-                    <p className="text-[11px] text-[#74777E] line-clamp-1">{item.description}</p>
+                    <p className="text-[10px] sm:text-[11px] text-[#74777E] line-clamp-1 sm:line-clamp-2 mt-0.5">{item.description}</p>
                   </div>
-                  <div className="flex items-center justify-between mt-4 pt-2 border-t border-slate-100">
-                    <span className="font-price text-base font-extrabold text-[#142B4A]">
+                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 gap-2">
+                    <span className="font-price text-sm sm:text-base font-extrabold text-[#142B4A] shrink-0">
                       ₹{item.price}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <motion.button
-                        type="button"
-                        whileTap={iconTap}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isInWishlist(item.id)) {
-                            removeFromWishlist(item.id);
-                          } else {
-                            addToWishlist(item);
-                          }
-                        }}
-                        className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-colors duration-150 shadow-xs ${
-                          isInWishlist(item.id)
-                            ? 'bg-rose-50 border-rose-300 text-rose-500 hover:bg-rose-100'
-                            : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50/40'
-                        }`}
-                        title={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
-                        aria-label={isInWishlist(item.id) ? 'Remove from Wishlist' : 'Save to Wishlist'}
-                      >
-                        <motion.span
-                          key={isInWishlist(item.id) ? 'filled' : 'outline'}
-                          animate={{ scale: isInWishlist(item.id) ? [1, 1.25, 1] : 1 }}
-                          transition={{ duration: 0.22, ease: EASE.out }}
-                          className="material-symbols-outlined text-[18px] flex items-center justify-center leading-none"
-                          style={isInWishlist(item.id) ? { fontVariationSettings: "'FILL' 1" } : {}}
-                        >
-                          favorite
-                        </motion.span>
-                      </motion.button>
-                      <motion.button
-                        type="button"
-                        whileTap={iconTap}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart(item, 1);
-                        }}
-                        className="h-9 px-3 bg-[#142B4A] hover:bg-[#1B385D] text-white rounded-xl text-xs font-bold transition-colors duration-150 shadow-sm flex items-center justify-center gap-1 shrink-0"
-                        title="Add to Farm Cart"
-                        aria-label="Add to Farm Cart"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">add</span>
-                        <span>{isHindi ? 'जोड़ें' : 'ADD'}</span>
-                      </motion.button>
-                    </div>
+                    <motion.button
+                      type="button"
+                      whileTap={iconTap}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(item, 1);
+                      }}
+                      className="h-8 sm:h-9 px-2.5 sm:px-3.5 bg-[#142B4A] hover:bg-[#1B385D] text-white rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-colors duration-150 shadow-sm flex items-center justify-center gap-1 shrink-0"
+                      title="Add to Farm Cart"
+                      aria-label="Add to Farm Cart"
+                    >
+                      <span className="material-symbols-outlined text-[15px] sm:text-[16px]">add</span>
+                      <span>{isHindi ? 'जोड़ें' : 'ADD'}</span>
+                    </motion.button>
                   </div>
                 </div>
               ))}

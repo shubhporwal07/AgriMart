@@ -232,7 +232,7 @@ function OrderCard({ order, onOpenReview, t = (k, f) => f || k, isHindi = false 
                             }}
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</p>
+                            <p className="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2 leading-snug">{item.name}</p>
                             <div className="text-[11px] text-stone-500 flex items-center gap-2 mt-0.5">
                               <span className="font-semibold text-slate-700">{t('orders.qty', 'Qty:')} {item.quantity}</span>
                               {(item.packSize || item.weight) && (

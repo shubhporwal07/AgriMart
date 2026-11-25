@@ -124,7 +124,7 @@ export default function DashboardPage() {
                     {isHindi ? '• मान्यता प्राप्त अनुसंधान केंद्रों से सीधा प्रेषण' : '• Direct dispatch from accredited research centers'}
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   <span className="text-[11px] bg-white px-2.5 py-0.5 rounded shadow-sm text-[#A74E00] font-bold tracking-wider border border-[#FFDCC2]">
                     KISAN200
                   </span>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
             {/* Title & Live Meta Info */}
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
               <div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   <h1 className="font-headline text-2xl sm:text-3xl text-[#142B4A] font-extrabold tracking-tight">
                     {filters.category?.length > 0 ? translateCategory(filters.category[0]) : (isHindi ? 'बीज, पौध पोषण एवं उर्वरक' : 'Seeds, Plant Nutrients & Fertilizers')}
                   </h1>

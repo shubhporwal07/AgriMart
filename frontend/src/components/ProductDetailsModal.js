@@ -265,8 +265,8 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
             </span>
             <span className="text-[11px] sm:text-xs text-[#5A6B82] font-semibold flex items-center gap-1 shrink min-w-0 whitespace-nowrap truncate">
               <span className="material-symbols-outlined text-[15px] sm:text-[16px] text-[#FF9F43] shrink-0">local_shipping</span>
-              <span className="hidden sm:inline truncate">⚡ Fast Farm Dispatch</span>
-              <span className="sm:hidden truncate">⚡ Dispatch</span>
+              <span className="hidden sm:inline truncate">{isHindi ? '⚡ त्वरित खेत डिलीवरी' : '⚡ Fast Farm Dispatch'}</span>
+              <span className="sm:hidden truncate">{isHindi ? '⚡ त्वरित' : '⚡ Dispatch'}</span>
             </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -374,7 +374,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                 {product.isOrganic && (
                   <span className="absolute bottom-3 left-3 bg-white/95 text-[#A74E00] text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm border border-orange-100 z-10">
                     <span className="material-symbols-outlined text-[15px]">eco</span>
-                    Certified Organic
+                    {isHindi ? 'प्रमाणित जैविक' : 'Certified Organic'}
                   </span>
                 )}
               </div>
@@ -407,9 +407,9 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                     verified
                   </span>
                   <div>
-                    <span className="font-bold block">100% Farm Fresh Guarantee</span>
+                    <span className="font-bold block">{isHindi ? '100% प्रमाणित खेत गुणवत्ता गारंटी' : '100% Farm Fresh Guarantee'}</span>
                     <span className="text-[11px] text-[#5A6B82]">
-                      Direct from verified local cultivators
+                      {isHindi ? 'सत्यापित स्थानीय उत्पादकों एवं अनुसंधान हब से' : 'Direct from verified local cultivators'}
                     </span>
                   </div>
                 </div>
@@ -418,9 +418,9 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                     currency_exchange
                   </span>
                   <div>
-                    <span className="font-bold block">Instant No-Questions Refund</span>
+                    <span className="font-bold block">{isHindi ? 'त्वरित बिना-सवाल रिफंड' : 'Instant No-Questions Refund'}</span>
                     <span className="text-[11px] text-[#5A6B82]">
-                      Not fresh? Tap for instant UPI refund
+                      {isHindi ? 'संतुष्ट नहीं? त्वरित यूपीआई रिफंड' : 'Not fresh? Tap for instant UPI refund'}
                     </span>
                   </div>
                 </div>
@@ -436,14 +436,14 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                 {product.name}
               </h1>
               <p className="text-sm text-[#5A6B82] font-semibold mt-1">
-                Pack Size / Measurement: <span className="text-[#263449] font-bold">{product.unit}</span>
+                {isHindi ? 'पैक साइज / माप:' : 'Pack Size / Measurement:'} <span className="text-[#263449] font-bold">{product.unit}</span>
               </p>
 
               {/* Weight / Measurement indicator & packaging standards */}
               <div className="mt-2.5 p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#142B4A] mb-1.5">
                   <span>{isLiquidUnit(product.unit) ? '🧪' : (product.category || '').toLowerCase().includes('seed') ? '🌱' : '⚖️'}</span>
-                  <span>Pack Size Measurement:</span>
+                  <span>{isHindi ? 'पैक आकार माप:' : 'Pack Size Measurement:'}</span>
                   <span className="text-emerald-700 font-extrabold ml-auto">{product.unit}</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -489,8 +489,8 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                 </div>
                 <span className="text-xs text-[#5A6B82]">
                   {productReviews.length > 0
-                    ? `(${productReviews.length} verified review${productReviews.length !== 1 ? 's' : ''})`
-                    : '(No reviews yet)'}
+                    ? (isHindi ? `(${productReviews.length} सत्यापित समीक्षाएं)` : `(${productReviews.length} verified review${productReviews.length !== 1 ? 's' : ''})`)
+                    : (isHindi ? '(अभी कोई समीक्षा नहीं)' : '(No reviews yet)')}
                 </span>
               </div>
 
@@ -509,10 +509,10 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                   </div>
                   {discountVal > 0 && (
                     <span className="text-[11px] sm:text-xs font-bold text-emerald-700 block mt-0.5 truncate">
-                      You save ₹{discountVal} ({discountPercent})
+                      {isHindi ? `आप बचाते हैं ₹${discountVal} (${discountPercent})` : `You save ₹${discountVal} (${discountPercent})`}
                     </span>
                   )}
-                  <span className="text-[10px] text-[#5A6B82] block">Inclusive of all taxes</span>
+                  <span className="text-[10px] text-[#5A6B82] block">{isHindi ? 'सभी कर सहित' : 'Inclusive of all taxes'}</span>
                 </div>
 
                 {/* Add / Stepper + Wishlist */}
@@ -631,23 +631,31 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
 
               {/* Unserviceable Warning Banner */}
               {!isServiceable && (
-                <div className="mt-4 p-3.5 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between gap-3 text-xs">
+                <div className="mt-4 p-3.5 bg-rose-50 border border-rose-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2.5 text-rose-800">
                     <span className="material-symbols-outlined text-[20px] text-rose-600 shrink-0">
                       location_off
                     </span>
                     <div>
-                      <span className="font-bold block">Delivery currently unavailable in {userLocation?.name || 'this area'}</span>
-                      <span className="text-[11px] text-rose-600">AgriMart delivers within 10 km of our Central Kisan Dispatch Hub.</span>
+                      <span className="font-bold block">
+                        {isHindi
+                          ? `${userLocation?.name || 'इस क्षेत्र'} में वर्तमान में डिलीवरी अनुपलब्ध है`
+                          : `Delivery currently unavailable in ${userLocation?.name || 'this area'}`}
+                      </span>
+                      <span className="text-[11px] text-rose-600">
+                        {isHindi
+                          ? 'एग्रीमार्ट केंद्रीय किसान हब के 10 किमी दायरे में डिलीवरी करता है।'
+                          : 'AgriMart delivers within 10 km of our Central Kisan Dispatch Hub.'}
+                      </span>
                     </div>
                   </div>
                   <motion.button
                     type="button"
                     whileTap={buttonTap}
                     onClick={() => setLocationModalOpen(true)}
-                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-lg shrink-0 shadow-sm transition-colors duration-150"
+                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-lg shrink-0 shadow-sm transition-colors duration-150 self-end sm:self-auto"
                   >
-                    Change Area
+                    {isHindi ? 'क्षेत्र बदलें' : 'Change Area'}
                   </motion.button>
                 </div>
               )}
@@ -956,10 +964,10 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
                       />
                     </div>
-                    <h4 className="text-xs font-bold text-[#142B4A] line-clamp-1 group-hover:text-[#E27B12] transition-colors duration-150">
+                    <h4 className="text-xs font-bold text-[#142B4A] line-clamp-2 min-h-[32px] leading-snug group-hover:text-[#E27B12] transition-colors duration-150">
                       {item.name}
                     </h4>
-                    <span className="text-[10px] text-[#5A6B82]">{item.unit}</span>
+                    <span className="text-[10px] text-[#5A6B82] mt-0.5">{item.unit}</span>
                     <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-200">
                       <span className="font-price font-extrabold text-xs text-[#142B4A]">
                         ₹{item.price}
@@ -973,7 +981,7 @@ export default function ProductDetailsModal({ product, onClose, onSelectProduct 
                         }}
                         className="text-[10px] bg-white border border-[#142B4A] text-[#142B4A] px-2 py-0.5 rounded font-bold hover:bg-[#142B4A] hover:text-white transition-colors duration-150"
                       >
-                        ADD
+                        {isHindi ? 'जोड़ें' : 'ADD'}
                       </motion.button>
                     </div>
                   </div>

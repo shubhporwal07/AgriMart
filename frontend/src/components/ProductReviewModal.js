@@ -229,14 +229,14 @@ export default function ProductReviewModal({
               }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2 leading-snug">{item.name}</p>
               <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
                 {(item.packSize || item.weight) && (
                   <span className="font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
                     {item.packSize || item.weight}
                   </span>
                 )}
-                <span>Qty: {item.quantity || 1}</span>
+                <span>{isHindi ? 'मात्रा:' : 'Qty:'} {item.quantity || 1}</span>
               </div>
             </div>
           </div>
@@ -255,9 +255,9 @@ export default function ProductReviewModal({
                 >
                   <CheckCircle2 size={20} className="text-emerald-600 shrink-0" />
                   <div>
-                    <p className="text-sm font-extrabold text-emerald-900">Review Submitted Successfully!</p>
+                    <p className="text-sm font-extrabold text-emerald-900">{isHindi ? 'समीक्षा सफलतापूर्वक दर्ज की गई!' : 'Review Submitted Successfully!'}</p>
                     <p className="text-[11px] font-medium text-emerald-700 mt-0.5">
-                      Your authentic review is now live on this product and verified for other farmers.
+                      {isHindi ? 'आपकी वास्तविक समीक्षा अब इस उत्पाद पर अन्य किसानों के लिए लाइव है।' : 'Your authentic review is now live on this product and verified for other farmers.'}
                     </p>
                   </div>
                 </motion.div>
@@ -378,7 +378,7 @@ export default function ProductReviewModal({
                   type="text"
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
-                  placeholder="e.g. Gurpreet Singh"
+                  placeholder={isHindi ? 'उदा. गुरप्रीत सिंह' : 'e.g. Gurpreet Singh'}
                   className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-[#0B1B30]"
                 />
               </div>

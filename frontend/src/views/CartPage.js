@@ -784,11 +784,15 @@ export default function CartPage() {
               <div className="flex items-center justify-between text-xs font-bold mb-2">
                 {itemTotal >= 1000 ? (
                   <span className="text-emerald-700 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> You unlocked FREE Standard Delivery!
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> {isHindi ? 'आपने मुफ़्त मानक डिलीवरी अनलॉक कर ली है!' : 'You unlocked FREE Standard Delivery!'}
                   </span>
                 ) : (
                   <span className="text-slate-700">
-                    Add <strong className="text-[#E27B12]">₹{1000 - itemTotal}</strong> more for FREE Standard Delivery
+                    {isHindi ? (
+                      <>मुफ़्त मानक डिलीवरी के लिए <strong className="text-[#E27B12]">₹{1000 - itemTotal}</strong> और जोड़ें</>
+                    ) : (
+                      <>Add <strong className="text-[#E27B12]">₹{1000 - itemTotal}</strong> more for FREE Standard Delivery</>
+                    )}
                   </span>
                 )}
                 <span className="text-slate-400 font-mono">₹{itemTotal} / ₹1,000</span>
@@ -952,7 +956,7 @@ export default function CartPage() {
                     >
                       <div className="py-4 flex items-center gap-4">
                         {/* Product Thumbnail */}
-                        <div className="w-20 h-20 rounded-2xl bg-[#F7F9FC] border border-slate-100 overflow-hidden flex-shrink-0 relative">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#F7F9FC] border border-slate-100 overflow-hidden flex-shrink-0 relative">
                           <img
                             src={item.imageUrl || item.imageData || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80'}
                             alt={item.name}
