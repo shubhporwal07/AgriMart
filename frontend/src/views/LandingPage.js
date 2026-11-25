@@ -379,7 +379,7 @@ export default function LandingPage() {
               <Link
                 key={tile.name}
                 href={`/dashboard?category=${tile.slug}`}
-                className={`group flex flex-col items-center text-center p-4 rounded-2xl ${tile.bg} hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 ease-out border border-[#CBD5E1]/30`}
+                className={`group flex flex-col items-center justify-between text-center p-3.5 sm:p-4 rounded-2xl ${tile.bg} hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 ease-out border border-[#CBD5E1]/30 min-h-[145px] sm:min-h-[155px]`}
               >
                 <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-2 shadow-inner group-hover:scale-105 transition-transform duration-200 ease-out">
                   <span className={`material-symbols-outlined ${tile.text} text-[28px]`}>

@@ -103,14 +103,14 @@ export default function ProductGrid({ onViewDetails, onEdit, onDelete, isAdmin =
                 transition={{ duration: 0.16, ease: EASE.out }}
                 className="text-xs text-[#E27B12] font-bold mt-1"
               >
-                Search results for "{filters.searchQuery}"
+                {isHindi ? `"${filters.searchQuery}" के लिए खोज परिणाम` : `Search results for "${filters.searchQuery}"`}
               </motion.p>
             )}
           </AnimatePresence>
         </div>
 
         {/* Sort & Layout Controls */}
-        <div className="flex items-center gap-3 self-end md:self-auto shrink-0">
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end shrink-0">
           <div className="flex items-center gap-2 bg-[#EDF2F7] px-3 py-1.5 rounded-xl border border-slate-200 transition-colors duration-150 focus-within:border-[#142B4A]/40 focus-within:bg-white">
             <label htmlFor="sortDropdown" className="text-xs text-[#5A6B82] font-semibold whitespace-nowrap">
               {isHindi ? 'क्रमबद्ध करें:' : 'Sort by:'}

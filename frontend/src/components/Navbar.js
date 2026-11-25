@@ -444,7 +444,7 @@ export default function Navbar() {
                       >
                         <span className="flex items-center gap-2.5">
                           <span className="material-symbols-outlined text-[17px] text-rose-500">favorite</span>
-                          <span>My Wishlist</span>
+                          <span>{t('nav.wishlist', isHindi ? 'मेरी विशलिस्ट' : 'My Wishlist')}</span>
                         </span>
                         {safeWishlistCount > 0 && (
                           <span className="text-[10px] bg-rose-50 text-rose-600 font-bold px-1.5 py-0.5 rounded-full">
@@ -458,7 +458,7 @@ export default function Navbar() {
                         className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-[#0B1B30] transition-colors duration-150"
                       >
                         <span className="material-symbols-outlined text-[17px] text-[#5A6B82]">info</span>
-                        <span>About AgriMart</span>
+                        <span>{isHindi ? 'एग्रीमार्ट के बारे में' : 'About AgriMart'}</span>
                       </Link>
                       {isAdmin && (
                         <Link
@@ -467,7 +467,7 @@ export default function Navbar() {
                           className="flex items-center gap-2.5 px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 transition-colors duration-150"
                         >
                           <span className="material-symbols-outlined text-[17px]">admin_panel_settings</span>
-                          <span>Admin Dashboard</span>
+                          <span>{isHindi ? 'व्यवस्थापक डैशबोर्ड' : 'Admin Dashboard'}</span>
                         </Link>
                       )}
                     </div>
@@ -561,7 +561,7 @@ export default function Navbar() {
               type="text"
               value={searchInput}
               onChange={handleSearchChange}
-              placeholder="Search hybrid seeds, NPK, fertilizers..."
+              placeholder={isHindi ? 'हाइब्रिड बीज, एनपीके, खाद खोजें...' : 'Search hybrid seeds, NPK, fertilizers...'}
               className="w-full bg-transparent border-none outline-none text-xs text-[#263449] pr-16"
             />
             <AnimatePresence>
@@ -589,7 +589,7 @@ export default function Navbar() {
               whileTap={buttonTap}
               className="text-[11px] bg-[#0B1B30] text-white px-2.5 py-1 rounded-md font-bold hover:bg-[#152B48] transition-colors duration-150 shrink-0 shadow-sm"
             >
-              Search
+              {isHindi ? 'खोजें' : 'Search'}
             </motion.button>
           </form>
         </div>
@@ -686,9 +686,9 @@ export default function Navbar() {
                   >
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[20px] text-[#FF9F43]">account_circle</span>
-                      <span className="text-xs font-bold">Sign In to AgriMart</span>
+                      <span className="text-xs font-bold">{isHindi ? 'एग्रीमार्ट में साइन इन करें' : 'Sign In to AgriMart'}</span>
                     </div>
-                    <span className="text-[11px] text-[#FF9F43] font-bold">Sign In &rarr;</span>
+                    <span className="text-[11px] text-[#FF9F43] font-bold">{isHindi ? 'साइन इन' : 'Sign In'} &rarr;</span>
                   </Link>
                 )}
 
@@ -731,7 +731,7 @@ export default function Navbar() {
                   >
                     <span className="material-symbols-outlined text-[16px] text-[#E27B12]">location_on</span>
                     <span className="truncate max-w-[170px]">
-                      {userLocation?.name || 'Set Delivery Area'}
+                      {userLocation?.name || (isHindi ? 'वितरण क्षेत्र चुनें' : 'Set Delivery Area')}
                     </span>
                     <span className="material-symbols-outlined text-[14px]">expand_more</span>
                   </button>
@@ -740,7 +740,7 @@ export default function Navbar() {
                       isServiceable ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
                     }`}
                   >
-                    {isServiceable ? deliveryTime || '⚡ Express Delivery' : 'Outside 10km'}
+                    {isServiceable ? (deliveryTime || (isHindi ? '⚡ एक्सप्रेस डिलीवरी' : '⚡ Express Delivery')) : (isHindi ? '10 किमी से बाहर' : 'Outside 10km')}
                   </span>
                 </div>
 
@@ -766,7 +766,7 @@ export default function Navbar() {
                   >
                     <span className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-[#16A34A]">badge</span>
-                      <span>My Kisan Profile</span>
+                      <span>{isHindi ? 'मेरी किसान प्रोफाइल' : 'My Kisan Profile'}</span>
                     </span>
                     <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
                       ID Card
@@ -779,7 +779,7 @@ export default function Navbar() {
                   >
                     <span className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px] text-rose-500">favorite</span>
-                      <span>My Wishlist</span>
+                      <span>{isHindi ? 'मेरी विशलिस्ट' : 'My Wishlist'}</span>
                     </span>
                     {safeWishlistCount > 0 && (
                       <span className="text-[11px] bg-rose-50 text-rose-600 font-bold px-2 py-0.5 rounded-full">
@@ -793,7 +793,7 @@ export default function Navbar() {
                     className="flex items-center gap-2 text-sm text-slate-700 px-2 py-1.5 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
                   >
                     <span className="material-symbols-outlined text-[18px]">package_2</span>
-                    <span>Track My Orders</span>
+                    <span>{isHindi ? 'मेरे ऑर्डर ट्रैक करें' : 'Track My Orders'}</span>
                   </Link>
                   <Link
                     href="/about-us"
@@ -801,7 +801,7 @@ export default function Navbar() {
                     className="flex items-center gap-2 text-sm text-slate-700 px-2 py-1.5 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors duration-150"
                   >
                     <span className="material-symbols-outlined text-[18px]">info</span>
-                    <span>About AgriMart</span>
+                    <span>{isHindi ? 'एग्रीमार्ट के बारे में' : 'About AgriMart'}</span>
                   </Link>
                   {isAdmin && (
                     <Link
@@ -810,7 +810,7 @@ export default function Navbar() {
                       className="flex items-center gap-2 text-sm font-bold text-indigo-700 px-2 py-1.5 hover:bg-indigo-50 rounded-lg"
                     >
                       <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-                      <span>Admin Panel</span>
+                      <span>{isHindi ? 'व्यवस्थापक पैनल' : 'Admin Panel'}</span>
                     </Link>
                   )}
                 </div>
